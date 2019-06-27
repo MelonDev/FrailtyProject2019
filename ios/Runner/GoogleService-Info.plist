@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>286931058500-aqjfncih4tnavub7rug0ml28hc4r7tla.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.286931058500-aqjfncih4tnavub7rug0ml28hc4r7tla</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>286931058500-nc666jsr5i8dh0u8netspfe75c65vahc.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyC4SMqiU1UtzevHT79Tpp0ujaksTucZOQk</string>
+	<key>GCM_SENDER_ID</key>
+	<string>286931058500</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.melondev.frailtyProject2019</string>
+	<key>PROJECT_ID</key>
+	<string>frailty-project-2019-d03d7</string>
+	<key>STORAGE_BUCKET</key>
+	<string>frailty-project-2019-d03d7.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:286931058500:ios:c7cf32cf8a6f54f3</string>
+	<key>DATABASE_URL</key>
+	<string>https://frailty-project-2019-d03d7.firebaseio.com</string>
+</dict>
+</plist>

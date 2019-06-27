@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "286931058500",
+    "firebase_url": "https://frailty-project-2019-d03d7.firebaseio.com",
+    "project_id": "frailty-project-2019-d03d7",
+    "storage_bucket": "frailty-project-2019-d03d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:286931058500:android:4a731a63244ed54d",
+        "android_client_info": {
+          "package_name": "com.melondev.frailty_project_2019"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "286931058500-nc666jsr5i8dh0u8netspfe75c65vahc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melondev.frailty_project_2019",
+            "certificate_hash": "04a77daf4539c2946c0cf6ddc6afa9fe8ab36511"
+          }
+        },
+        {
+          "client_id": "286931058500-g2ls8244it9p1c3d68oecfp41f48koss.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCl07xDPOYAvxdBIu3Qj1FHJebga0xTnuI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "286931058500-g2ls8244it9p1c3d68oecfp41f48koss.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
