@@ -1,4 +1,4 @@
-# frailty_project_2019
+# FrailtyProject2019
 
 A new Flutter application.
 
