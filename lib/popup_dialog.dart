@@ -12,6 +12,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'main.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'Register/normal_name.dart';
 //import 'package:http/http.dart' as http;
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
@@ -120,9 +121,7 @@ Future signOut(BuildContext context, PopupRoute page) async {
 
   //page.callback(true);
 
-  //page.reload();
   Navigator.of(context).pop();
-
 
   try {
     await _auth.signOut();
@@ -276,7 +275,7 @@ int calculatingDay(DateTime date) {
   }
 }
 
-Opacity getActive(BuildContext context, PopupRoute widget) {
+Opacity getActivePersonnel(BuildContext context, PopupRoute widget) {
   return
       //ACTIVE
       Opacity(
@@ -310,212 +309,424 @@ Opacity getActive(BuildContext context, PopupRoute widget) {
                     )),
               ],
             )),
-        SingleChildScrollView(child: Column(
-          children: <Widget>[
-            Container(
-              alignment: Alignment.topLeft,
-              padding: EdgeInsets.only(top: 20, left: 25, right: 25),
-              child: Text(
-                  widget._account.firstName + " " + widget._account.lastName,
-                  style: TextStyle(
-                      fontFamily: 'SukhumvitSet',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 21,
-                      color: Colors.teal)),
-            ),
-
-            Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.only(left: 25, right: 25),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                      widget._account.personnel
-                          ? "ประเภท : บุคลากร"
-                          : "ประเภท : ผู้ใช้งานทั่วไป",
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.normal,
-                          fontSize: 16,
-                          color: Colors.black54)),
-                ],
+        SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.only(top: 20, left: 25, right: 25),
+                child: Text(
+                    widget._account.firstName + " " + widget._account.lastName,
+                    style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 21,
+                        color: Colors.teal)),
               ),
-            ),
 
-            Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.only(left: 25, right: 25),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                      "ที่อยู่ : " +
-                          "ต." +
-                          widget._account.subDistrict +
-                          " อ." +
-                          widget._account.district +
-                          " จ." +
-                          widget._account.province,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.normal,
-                          fontSize: 16,
-                          color: Colors.black54)),
-                ],
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        widget._account.personnel
+                            ? "ประเภท : บุคลากร"
+                            : "ประเภท : ผู้ใช้งานทั่วไป",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
               ),
-            ),
 
-            Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.only(left: 25, right: 25),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                      "อายุ : " +
-                          calculatingDay(widget._account.birthDate).toString(),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.normal,
-                          fontSize: 16,
-                          color: Colors.black54)),
-                ],
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        "ที่อยู่ : " +
+                            "ต." +
+                            widget._account.subDistrict +
+                            " อ." +
+                            widget._account.district +
+                            " จ." +
+                            widget._account.province,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
               ),
-            ),
 
-            Container(
-              alignment: Alignment.topLeft,
-              margin: EdgeInsets.only(left: 25, right: 25, bottom: 10),
-              child: Column(
-                children: <Widget>[
-                  Text("หน่วยงานที่สังกัด : " + widget._account.department,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.normal,
-                          fontSize: 16,
-                          color: Colors.black54)),
-                ],
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        "อายุ : " +
+                            calculatingDay(widget._account.birthDate)
+                                .toString(),
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
               ),
-            ),
 
-            //แก้ไขชื่อ-นามสกุล
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 1,
-              color: Colors.black38,
-              margin: EdgeInsets.only(top: 4, left: 25, right: 25),
-              child: null,
-            ),
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin:
-                    EdgeInsets.only(top: 16, left: 25, right: 25, bottom: 14),
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25, bottom: 10),
+                child: Column(
+                  children: <Widget>[
+                    Text("หน่วยงานที่สังกัด : " + widget._account.department,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
+              ),
+
+              //แก้ไขชื่อ-นามสกุล
+              Container(
                 width: MediaQuery.of(context).size.width,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-                child: FlatButton(
-                  onPressed: () {},
-                  child: Text("แก้ไขชื่อ-นามสกุล",
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black87)),
+                height: 1,
+                color: Colors.black38,
+                margin: EdgeInsets.only(top: 4, left: 25, right: 25),
+                child: null,
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 16, left: 25, right: 25, bottom: 14),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {
+                      
+                    },
+                    child: Text("แก้ไขชื่อ-นามสกุล",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black87)),
+                  ),
                 ),
               ),
-            ),
 
-            //แก้ไขที่อยู่
+              //แก้ไขที่อยู่
 
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin:
-                    EdgeInsets.only(top: 0, left: 25, right: 25, bottom: 10),
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 0, left: 25, right: 25, bottom: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {},
+                    child: Text("แก้ไขที่อยู่",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black87)),
+                  ),
+                ),
+              ),
+
+              Container(
                 width: MediaQuery.of(context).size.width,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-                child: FlatButton(
-                  onPressed: () {},
-                  child: Text("แก้ไขที่อยู่",
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black87)),
+                height: 1,
+                color: Colors.black38,
+                margin: EdgeInsets.only(top: 10, left: 75, right: 75),
+                child: null,
+              ),
+
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    splashColor: Colors.white54,
+                    onPressed: () {
+                      confirmSignOut(context, widget);
+                    },
+                    child: Text("ลงชื่อออก",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.white)),
+                  ),
                 ),
               ),
-            ),
+            ],
+          ),
+        )
+      ],
+    ),
+  );
+}
 
-            //อัปเกรดบัญชีผู้ใช้งาน
+Opacity getActiveNormal(BuildContext context, PopupRoute widget) {
+  return
+      //ACTIVE
+      Opacity(
+    opacity: widget._fUser != null ? 1.0 : 0.0,
+    child: Stack(
+      children: <Widget>[
+        Container(
+            height: 65,
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                    margin: EdgeInsets.only(right: 20, top: 10),
+                    alignment: Alignment.topRight,
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.teal,
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                    ),
+                    child: Center(
+                      child: Image.asset(
+                        'images/settings.png',
+                        fit: BoxFit.contain,
+                        height: 25,
+                        width: 25,
+                        color: Colors.white,
+                      ),
+                    )),
+              ],
+            )),
+        SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.only(top: 20, left: 25, right: 25),
+                child: Text(
+                    widget._account.firstName + " " + widget._account.lastName,
+                    style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 21,
+                        color: Colors.teal)),
+              ),
 
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin:
-                    EdgeInsets.only(top: 4, left: 25, right: 25, bottom: 10),
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        widget._account.personnel
+                            ? "ประเภท : บุคลากร"
+                            : "ประเภท : ผู้ใช้งานทั่วไป",
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
+              ),
+
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        "ที่อยู่ : " +
+                            "ต." +
+                            widget._account.subDistrict +
+                            " อ." +
+                            widget._account.district +
+                            " จ." +
+                            widget._account.province,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
+              ),
+
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.only(left: 25, right: 25, bottom: 10),
+                child: Column(
+                  children: <Widget>[
+                    Text(
+                        "อายุ : " +
+                            calculatingDay(widget._account.birthDate)
+                                .toString(),
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.normal,
+                            fontSize: 16,
+                            color: Colors.black54)),
+                  ],
+                ),
+              ),
+
+              //แก้ไขชื่อ-นามสกุล
+              Container(
                 width: MediaQuery.of(context).size.width,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.black12,
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-                child: FlatButton(
-                  onPressed: () {},
-                  child: Text("อัปเกรดบัญชีผู้ใช้งาน",
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.black87)),
+                height: 1,
+                color: Colors.black38,
+                margin: EdgeInsets.only(top: 4, left: 25, right: 25),
+                child: null,
+              ),
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 16, left: 25, right: 25, bottom: 14),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {},
+                    child: Text("แก้ไขชื่อ-นามสกุล",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black87)),
+                  ),
                 ),
               ),
-            ),
 
-            Container(
-              width: MediaQuery.of(context).size.width,
-              height: 1,
-              color: Colors.black38,
-              margin: EdgeInsets.only(top: 10, left: 75, right: 75),
-              child: null,
-            ),
+              //แก้ไขที่อยู่
 
-            Container(
-              alignment: Alignment.center,
-              child: Container(
-                margin:
-                    EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 10),
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 0, left: 25, right: 25, bottom: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {},
+                    child: Text("แก้ไขที่อยู่",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black87)),
+                  ),
+                ),
+              ),
+
+              //อัปเกรดบัญชีผู้ใช้งาน
+
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 4, left: 25, right: 25, bottom: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {},
+                    child: Text("อัปเกรดบัญชีผู้ใช้งาน",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.black87)),
+                  ),
+                ),
+              ),
+
+              Container(
                 width: MediaQuery.of(context).size.width,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.all(Radius.circular(16)),
-                ),
-                child: FlatButton(
-                  splashColor: Colors.white54,
-                  onPressed: () {
-                    confirmSignOut(context, widget);
-                  },
-                  child: Text("ลงชื่อออก",
-                      style: TextStyle(
-                          fontFamily: 'SukhumvitSet',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.white)),
+                height: 1,
+                color: Colors.black38,
+                margin: EdgeInsets.only(top: 10, left: 75, right: 75),
+                child: null,
+              ),
+
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    splashColor: Colors.white54,
+                    onPressed: () {
+                      confirmSignOut(context, widget);
+                    },
+                    child: Text("ลงชื่อออก",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: Colors.white)),
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),)
+            ],
+          ),
+        )
       ],
     ),
   );
@@ -524,162 +735,172 @@ Opacity getActive(BuildContext context, PopupRoute widget) {
 Opacity getInActive(BuildContext context, PopupRoute widget) {
   return //INACTIVE
       Opacity(
-    opacity: widget._fUser != null ? 0.0 : 1.0,
-    child: SingleChildScrollView(child: Column(
-      children: <Widget>[
-        Container(
-          alignment: Alignment.topLeft,
-          padding: EdgeInsets.only(top: 20, left: 25, right: 25),
-          child: Text("เลือกรูปแบบการเข้าใช้งาน",
-              style: TextStyle(
-                  fontFamily: 'SukhumvitSet',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 23,
-                  color: Colors.black87)),
-        ),
-        //ชื่อนามสกุล
-        Container(
-          width: MediaQuery.of(context).size.width,
-          height: 1,
-          color: Colors.black38,
-          margin: EdgeInsets.only(top: 10, left: 25, right: 25),
-          child: null,
-        ),
-        Container(
-          alignment: Alignment.center,
-          child: Container(
-            margin: EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 20),
-            width: MediaQuery.of(context).size.width,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-            child: FlatButton(
-              onPressed: () {},
-              child: Text("ชื่อ-นามสกุล",
-                  style: TextStyle(
-                      fontFamily: 'SukhumvitSet',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.black87)),
-            ),
-          ),
-        ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              width: 80,
-              height: 1,
-              color: Colors.black38,
-              margin: EdgeInsets.only(top: 0, left: 0, right: 20),
-              child: null,
-            ),
-            Container(
-                alignment: Alignment.center,
-                child: Text("หรือ",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontFamily: 'SukhumvitSet',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Colors.black87))),
-            Container(
-              width: 80,
-              height: 1,
-              color: Colors.black38,
-              margin: EdgeInsets.only(left: 20),
-              child: null,
-            ),
-          ],
-        ),
-
-        //google
-        Container(
-          child: Container(
-            margin: EdgeInsets.only(top: 25, left: 25, right: 25),
-            width: MediaQuery.of(context).size.width,
-            height: 60,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(16)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 10.0,
-                  ),
-                ]),
-            child: FlatButton(
-                onPressed: () {
-                  handleSignIn(widget, context);
-                },
-                child: Stack(
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(left: 6),
-                      child: Image.asset(
-                        'images/search-4.png',
-                        fit: BoxFit.contain,
-                        height: 30,
-                        width: 30,
-                      ),
+          opacity: widget._fUser != null ? 0.0 : 1.0,
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.only(top: 20, left: 25, right: 25),
+                  child: Text("เลือกรูปแบบการเข้าใช้งาน",
+                      style: TextStyle(
+                          fontFamily: 'SukhumvitSet',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 23,
+                          color: Colors.black87)),
+                ),
+                //ชื่อนามสกุล
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: 1,
+                  color: Colors.black38,
+                  margin: EdgeInsets.only(top: 10, left: 25, right: 25),
+                  child: null,
+                ),
+                Container(
+                  alignment: Alignment.center,
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: 25, left: 25, right: 25, bottom: 20),
+                    width: MediaQuery.of(context).size.width,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
-                    Center(
-                      child: Text("กูเกิล",
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                              //MaterialPageRoute(builder: (context) => SecondRoute()),
+                          RegisterRoute(
+                              builder: (BuildContext context) =>
+                                  NormalNameRegisterRoute())
+                                  );
+                      },
+                      child: Text("ชื่อ-นามสกุล",
                           style: TextStyle(
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
                               fontSize: 20,
                               color: Colors.black87)),
-                    )
-                  ],
-                )),
-          ),
-        ),
+                    ),
+                  ),
+                ),
 
-        //Facebook
-        Container(
-          child: Container(
-            margin: EdgeInsets.only(top: 25, left: 25, right: 25),
-            width: MediaQuery.of(context).size.width,
-            height: 60,
-            decoration: BoxDecoration(
-              color: Color(0xFF1465C3),
-              borderRadius: BorderRadius.all(Radius.circular(16)),
-            ),
-            child: FlatButton(
-                splashColor: Colors.white30,
-                onPressed: () {},
-                child: Stack(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(left: 6),
-                      child: Image.asset(
-                        'images/facebook.png',
-                        fit: BoxFit.contain,
-                        height: 30,
-                        width: 30,
-                      ),
+                      width: 80,
+                      height: 1,
+                      color: Colors.black38,
+                      margin: EdgeInsets.only(top: 0, left: 0, right: 20),
+                      child: null,
                     ),
-                    Center(
-                      child: Text("เฟสบุ๊ค",
-                          style: TextStyle(
-                              fontFamily: 'SukhumvitSet',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.white)),
-                    )
+                    Container(
+                        alignment: Alignment.center,
+                        child: Text("หรือ",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontFamily: 'SukhumvitSet',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.black87))),
+                    Container(
+                      width: 80,
+                      height: 1,
+                      color: Colors.black38,
+                      margin: EdgeInsets.only(left: 20),
+                      child: null,
+                    ),
                   ],
-                )),
-          ),
-        ),
-      ],
-    ),)
-  );
+                ),
+
+                //google
+                Container(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+                    width: MediaQuery.of(context).size.width,
+                    height: 60,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(16)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10.0,
+                          ),
+                        ]),
+                    child: FlatButton(
+                        onPressed: () {
+                          handleSignIn(widget, context);
+                        },
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.only(left: 6),
+                              child: Image.asset(
+                                'images/search-4.png',
+                                fit: BoxFit.contain,
+                                height: 30,
+                                width: 30,
+                              ),
+                            ),
+                            Center(
+                              child: Text("กูเกิล",
+                                  style: TextStyle(
+                                      fontFamily: 'SukhumvitSet',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.black87)),
+                            )
+                          ],
+                        )),
+                  ),
+                ),
+
+                //Facebook
+                Container(
+                  child: Container(
+                    margin: EdgeInsets.only(top: 25, left: 25, right: 25),
+                    width: MediaQuery.of(context).size.width,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Color(0xFF1465C3),
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    child: FlatButton(
+                        splashColor: Colors.white30,
+                        onPressed: () {},
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.only(left: 6),
+                              child: Image.asset(
+                                'images/facebook.png',
+                                fit: BoxFit.contain,
+                                height: 30,
+                                width: 30,
+                              ),
+                            ),
+                            Center(
+                              child: Text("เฟสบุ๊ค",
+                                  style: TextStyle(
+                                      fontFamily: 'SukhumvitSet',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: Colors.white)),
+                            )
+                          ],
+                        )),
+                  ),
+                ),
+              ],
+            ),
+          ));
 }
 
 class _popupRoute extends State<PopupRoute> {
@@ -767,12 +988,19 @@ class _popupRoute extends State<PopupRoute> {
                                                   .size
                                                   .width -
                                               35,
-                                          height:
-                                              widget._fUser != null ? 530 : 410,
+                                          height: widget._fUser != null
+                                              ? (widget._account.personnel
+                                                  ? 440
+                                                  : 490)
+                                              : 410,
                                           child: Stack(
                                             children: <Widget>[
                                               widget._fUser != null
-                                                  ? getActive(context, widget)
+                                                  ? (widget._account.personnel
+                                                      ? getActivePersonnel(
+                                                          context, widget)
+                                                      : getActiveNormal(
+                                                          context, widget))
                                                   : getInActive(context, widget)
                                             ],
                                           )))),
