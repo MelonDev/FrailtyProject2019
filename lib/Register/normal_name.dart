@@ -349,7 +349,8 @@ class _normalNameRegisterRoute extends State<NormalNameRegisterRoute> {
                           onChange: (dateTime, selectedIndex) {
                             setDateVar(dateTime);
                           },
-                          locale: DateTimePickerLocale.th,
+                          locale: DateTimePickerLocale.en_us,
+                          //th
                           dateFormat: 'dd MMMM yyyy',
                           pickerTheme: DateTimePickerTheme(
                             backgroundColor: Colors.white,

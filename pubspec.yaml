@@ -9,6 +9,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sqflite:
+  path:
+  flutter_localizations:
+    sdk: flutter
+  flutter_rounded_date_picker: ^0.2.0
   flutter_cupertino_date_picker: ^1.0.3
   google_sign_in: ^4.0.2
   firebase_auth: ^0.11.1+7
@@ -45,8 +50,18 @@ flutter:
           weight: 500
         - asset: fonts/SukhumvitSet-SemiBold.ttf
           weight: 600
-        - asset: fonts/SukhumvitSet-Thin.ttf
-          weight: 200
+    - family: THSarabunNew
+      fonts:
+        - asset: fonts/THSarabunNew Bold.ttf
+          weight: 700
+        - asset: fonts/THSarabunNew BoldItalic.ttf
+          weight: 700
+        - asset: fonts/THSarabunNew Italic.ttf
+          weight: 400
+        - asset: fonts/THSarabunNew.ttf
+          weight: 400
+          
+       
 
   assets:
     - images/settings.png

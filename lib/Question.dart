@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 
+
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -147,18 +148,57 @@ class _questionPage extends State<QuestionPage> {
                 Align(
                   alignment: Alignment.centerRight,
                   child: Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    margin: EdgeInsets.fromLTRB(0, 0, 62, 0),
                     color: Colors.transparent,
                     height: double.infinity,
-                    width: 80,
+                    width: 62,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-
-                        
-
-
+                        MaterialButton(
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          minWidth: 0,
+                          height: double.infinity,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.low_priority,
+                                  color: Colors.black.withAlpha(180),
+                                  size: 30,
+                                ),
+                              ],
+                            ),
+                            width: 30,
+                            margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50)),
+                                color: Colors.black.withAlpha(0)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    color: Colors.transparent,
+                    height: double.infinity,
+                    width: 62,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
                         MaterialButton(
                           highlightColor: Colors.transparent,
                           splashColor: Colors.transparent,
@@ -173,37 +213,18 @@ class _questionPage extends State<QuestionPage> {
                               children: <Widget>[
                                 Icon(
                                   Icons.close,
-                                  color: Colors.black.withAlpha(120),
+                                  color: Colors.black.withAlpha(180),
                                   size: 30,
-                                ),/*
-                                Container(
-                                  margin: EdgeInsets.fromLTRB(0, 2, 0, 0),
-                                  child: Text(
-                                    "ยกเลิก",
-                                    style: TextStyle(
-                                        fontFamily: 'SukhumvitSet',
-                                        fontSize: 20,
-                                        color: Colors.red,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                )*/
+                                ),
                               ],
                             ),
-                            /*Text(
-                              "ยกเลิก",
-                              style: TextStyle(
-                                  color: Colors.white.withAlpha(250),
-                                  fontFamily: 'SukhumvitSet',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),*/
-                            width: 46,
+                            width: 30,
                             margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(50)),
-                                color: Colors.black.withAlpha(40)),
+                                color: Colors.black.withAlpha(0)),
                           ),
                         ),
                       ],
@@ -222,39 +243,46 @@ class _questionPage extends State<QuestionPage> {
                           height: 100,
                           child: LayoutBuilder(builder: (context, constraint) {
                             return Container(
-                              color: Colors.transparent,
-                              width: prefix2.double.infinity,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                children: <Widget>[
-                                  Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Container(
-                                          padding:
-                                              EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                          margin:
-                                              EdgeInsets.fromLTRB(16, 0, 20, 0),
-                                          child: StreamBuilder(
-                                            stream: titleBuilder.titleStream,
-                                            builder: (context, snapshot) {
-                                              String string = snapshot.data;
-                                              return Text(
-                                                "${string}",
-                                                textAlign: TextAlign.left,
-                                                style: TextStyle(
-                                                    color: Colors.black
-                                                        .withAlpha(200),
-                                                    fontFamily: 'SukhumvitSet',
-                                                    fontSize: 24,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              );
-                                            },
-                                          ))),
-                                ],
-                              ),
-                            );
+                                color: Colors.transparent,
+                                width: prefix2.double.infinity,
+                                child: Row(
+                                  children: <Widget>[
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: <Widget>[
+                                        Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Container(
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 8, 0, 0),
+                                                margin: EdgeInsets.fromLTRB(
+                                                    16, 0, 20, 0),
+                                                child: StreamBuilder(
+                                                  stream:
+                                                      titleBuilder.titleStream,
+                                                  builder: (context, snapshot) {
+                                                    String string =
+                                                        snapshot.data;
+                                                    return Text(
+                                                      "${string}",
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          color: Colors.black
+                                                              .withAlpha(200),
+                                                          fontFamily:
+                                                              'SukhumvitSet',
+                                                          fontSize: 22,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    );
+                                                  },
+                                                ))),
+                                      ],
+                                    ),
+                                  ],
+                                ));
                           }),
                         )),
                   ],
@@ -692,9 +720,67 @@ class _multiplyWidget extends State<MultiplyPage> {
     return count;
   }
 
+  double calDesHeight() {
+    //return 440;
+    //return 350;
+    if (MediaQuery.of(context).size.height > 880) {
+      return (40 + (ques.choice.length * 80) + 30).toDouble();
+    } else {
+      return (40 +
+              ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+              (ques.choice.length <= 4 ? 30 : 0))
+          .toDouble();
+    }
+    //return (40 + (ques.choice.length * 80) + 30).toDouble();
+    /*return (40 +
+            ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+            (ques.choice.length <= 4 ? 30 : 0))
+        .toDouble();*/
+  }
+
+  double calChoiceAreaHeight() {
+    if (MediaQuery.of(context).size.height > 880) {
+      return (40 + (ques.choice.length * 80) + 30).toDouble();
+    } else {
+      return (40 +
+              ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+              (ques.choice.length <= 4 ? 30 : 0))
+          .toDouble();
+    }
+    //return (40 + (ques.choice.length * 80) + 30).toDouble();
+    /*return (40 +
+            ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+            (ques.choice.length <= 4 ? 30 : 0))
+        .toDouble();*/
+  }
+
+  double calChoiceAreaMarginTop() {
+    if (MediaQuery.of(context).size.height > 880) {
+      return (550 - (ques.choice.length * 80) - 30).toDouble();
+    } else {
+      return (550 -
+              ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) -
+              (ques.choice.length <= 4 ? 30 : 0))
+          .toDouble();
+    }
+    //return (550 - (ques.choice.length * 80) - 30).toDouble();
+    /*return (550 -
+            ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) -
+            (ques.choice.length <= 4 ? 30 : 0))
+        .toDouble();*/
+  }
+
   @override
   Widget build(BuildContext context) {
     //loadQuestion("", "", this.keys);
+
+    print(MediaQuery.of(context).size.height);
+
+    print(MediaQuery.of(context).size.height - calChoiceAreaMarginTop());
+
+    print(calDesHeight());
+    print(calChoiceAreaHeight());
+    print(calChoiceAreaMarginTop());
 
     return Container(
       color: Colors.white,
@@ -712,16 +798,8 @@ class _multiplyWidget extends State<MultiplyPage> {
                           alignment: Alignment.topCenter,
                           child: Container(
                             //margin: EdgeInsets.fromLTRB(0, 0, 0, (20+(80*count)).toDouble()),
-                            margin: EdgeInsets.fromLTRB(
-                                0,
-                                0,
-                                0,
-                                (40 +
-                                        ((ques.choice.length > 4
-                                                ? 4
-                                                : ques.choice.length) *
-                                            80))
-                                    .toDouble()),
+                            margin:
+                                EdgeInsets.fromLTRB(0, 0, 0, calDesHeight()),
                             height: double.infinity,
                             width: double.infinity,
                             color: Colors.transparent,
@@ -758,42 +836,48 @@ class _multiplyWidget extends State<MultiplyPage> {
                                 */
 
                               margin: EdgeInsets.fromLTRB(
-                                  0,
-                                  (550 -
-                                          ((ques.choice.length > 4
-                                                  ? 4
-                                                  : ques.choice.length) *
-                                              80))
-                                      .toDouble(),
-                                  0,
-                                  0),
+                                  0, calChoiceAreaMarginTop(), 0, 0),
                               width: double.infinity,
-                              height: (40 +
-                                      ((ques.choice.length > 4
-                                              ? 4
-                                              : ques.choice.length) *
-                                          80))
-                                  .toDouble(),
+                              height: calChoiceAreaHeight(),
                               //height: (50 + (count * 80)).toDouble(),
                               //height: 200,
                               color: Colors.white,
                               child: Stack(
                                 children: <Widget>[
                                   ListView.builder(
-                                      itemCount: ques.choice.length,
+                                      itemCount: ques.choice.length + 1,
                                       //itemCount: count,
                                       itemBuilder: (context, position) {
-                                        return GestureDetector(
-                                            onTap: () {
-                                              nextQuestion(
-                                                  ques.question.id,
-                                                  (ques.choice[position]
-                                                          as Choice)
-                                                      .id,
-                                                  ques.question
-                                                      .questionnaireId);
-                                            },
-                                            child: Container(
+                                        if (position == 0) {
+                                          return Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                20, 20, 20, 0),
+                                            color: Colors.transparent,
+                                            height: 30,
+                                            width: double.infinity,
+                                            child: Text(
+                                              "ตัวเลือก ${ques.choice.length} ข้อ",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color:
+                                                    Colors.teal.withAlpha(255),
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'SukhumvitSet',
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return GestureDetector(
+                                              onTap: () {
+                                                nextQuestion(
+                                                    ques.question.id,
+                                                    (ques.choice[position - 1]
+                                                            as Choice)
+                                                        .id,
+                                                    ques.question
+                                                        .questionnaireId);
+                                              },
+                                              child: Container(
                                                 margin: position == 0
                                                     ? EdgeInsets.fromLTRB(
                                                         20, 30, 20, 10)
@@ -803,12 +887,13 @@ class _multiplyWidget extends State<MultiplyPage> {
                                                 height: 60,
                                                 child: Align(
                                                   child: Text(
-                                                    (ques.choice[position]
+                                                    (ques.choice[position - 1]
                                                             as Choice)
                                                         .message,
                                                     style: TextStyle(
                                                       fontSize: 22,
-                                                      color: Colors.white.withAlpha(255),
+                                                      color: Colors.white
+                                                          .withAlpha(255),
                                                       //color: Color(0xFF42A898),
                                                       fontWeight:
                                                           FontWeight.w700,
@@ -829,8 +914,9 @@ class _multiplyWidget extends State<MultiplyPage> {
                                                                 16)),
                                                     //color: Colors.black.withAlpha(50)
                                                     color: Color(0xFF009688)),
-                                                    //color: Colors.white)
-                                                    ));
+                                                //color: Colors.white)
+                                              ));
+                                        }
                                       })
                                 ],
                               )),
@@ -1023,7 +1109,7 @@ class _numberMultiplyWidget extends State<NumberMultiplyPage> {
                         minWidth: 256,
                         height: 40,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0)),
+                            borderRadius: BorderRadius.circular(16.0)),
                         splashColor: Colors.white12,
                         color: Colors.teal,
                         elevation: 0,
@@ -1067,6 +1153,7 @@ class TextInputPage extends StatefulWidget {
   _textInputWidget createState() => _textInputWidget(ques);
 }
 
+
 class _textInputWidget extends State<TextInputPage> {
   QuestionSet ques;
 
@@ -1074,9 +1161,12 @@ class _textInputWidget extends State<TextInputPage> {
 
   bool _actionBtn = false;
 
+  
+
   @override
   Widget build(BuildContext context) {
     //loadQuestion("", "", this.keys);
+
 
     return Container(
       color: Colors.white,
@@ -1124,20 +1214,26 @@ class _textInputWidget extends State<TextInputPage> {
                               color: Colors.white,
                               child: Column(
                                 children: <Widget>[
-                                  Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Container(
-                                      margin: EdgeInsets.fromLTRB(20, 0, 20, 0),
-                                      child: Text(
-                                        "กรุณาใส่คำตอบ",
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(
-                                            fontFamily: 'SukhumvitSet',
-                                            color: Colors.black.withAlpha(150),
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold),
+                                  Stack(
+                                    children: <Widget>[
+                                      Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Container(
+                                          margin:
+                                              EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                          child: Text(
+                                            "กรุณาใส่คำตอบ",
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                fontFamily: 'SukhumvitSet',
+                                                color:
+                                                    Colors.black.withAlpha(150),
+                                                fontSize: 22,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                   Align(
                                     alignment: Alignment.center,
@@ -1155,10 +1251,10 @@ class _textInputWidget extends State<TextInputPage> {
                                             margin: EdgeInsets.fromLTRB(
                                                 20, 0, 20, 0),
                                             child: TextField(
-                                                keyboardAppearance:
-                                                    Brightness.light,
-                                                keyboardType:
-                                                    TextInputType.text,
+                                                keyboardAppearance: Brightness
+                                                    .light,
+                                                keyboardType: TextInputType
+                                                    .text,
                                                 onTap: () {
                                                   _actionBtn = true;
                                                 },
@@ -1171,13 +1267,22 @@ class _textInputWidget extends State<TextInputPage> {
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
                                                     color: Colors.black,
-                                                    fontSize: 24,
+                                                    fontSize: 21,
                                                     fontWeight:
                                                         FontWeight.normal),
                                                 cursorColor: Colors.black,
-                                                decoration:
-                                                    InputDecoration.collapsed(
-                                                        hintText: '',
+                                                decoration: InputDecoration
+                                                    .collapsed(
+                                                        hintText: 'พิมพ์ที่นี่',
+                                                        hintStyle: TextStyle(
+                                                            fontFamily:
+                                                                'SukhumvitSet',
+                                                            color: Colors.black
+                                                                .withAlpha(120),
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal),
                                                         border:
                                                             InputBorder.none)),
                                           ),
@@ -1196,7 +1301,7 @@ class _textInputWidget extends State<TextInputPage> {
                                             shape: RoundedRectangleBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(
-                                                        28.0)),
+                                                        16.0)),
                                             splashColor: Colors.white12,
                                             color: Colors.teal,
                                             elevation: 0,
@@ -1312,8 +1417,9 @@ class _numbertWidget extends State<NumberPage> {
                     width: double.infinity,
                     height: 200,
                     child: CupertinoPicker(
+                      useMagnifier: true,
                       offAxisFraction: 0.0,
-                      magnification: 1.5,
+                      magnification: 1.3,
                       backgroundColor: Colors.white,
                       children: List<Widget>.generate(arr.length, (int index) {
                         return Center(

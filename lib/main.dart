@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _checkSignIn() async {
-    //print("IS");
+    print("IS");
 
     _currentUser = await firebase.currentUser();
 
@@ -292,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (b) {
         if (isDialog) {
           List<Widget> list = [];
-          list.add(getAction("����ับทราบ", false, true, () {
+          list.add(getAction("รับทราบ", false, true, () {
             Navigator.of(context).pop();
           }));
 
