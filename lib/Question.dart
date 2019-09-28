@@ -5,10 +5,13 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart' as prefix4;
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart' as prefix0;
 import 'package:flutter/rendering.dart';
@@ -389,6 +392,8 @@ FutureBuilder<QuestionSet> loadFirstQuestion() {
           _page = new TitlePage(ques);
         } else if (ques.question.type.contains("number_multiply")) {
           _page = new NumberMultiplyPage(ques);
+        } else if (ques.question.type.contains("location_multiply")) {
+          _page = new LocationPage(ques);
         } else if (ques.question.type.contains("multiply")) {
           _page = new MultiplyPage(ques);
         } else if (ques.question.type.contains("number")) {
@@ -434,6 +439,8 @@ FutureBuilder<QuestionSet> loadTitleQuestion(
           _page = new MultiplyPage(ques);
         } else if (ques.question.type.contains("number_multiply")) {
           _page = new NumberMultiplyPage(ques);
+        } else if (ques.question.type.contains("location_multiply")) {
+          _page = new LocationPage(ques);
         } else if (ques.question.type.contains("number")) {
           _page = new NumberPage(ques);
         } else if (ques.question.type.contains("textinput")) {
@@ -553,6 +560,8 @@ FutureBuilder<QuestionSet> nextQuestionProcess(
           _page = new TitlePage(ques);
         } else if (ques.question.type.contains("number_multiply")) {
           _page = new NumberMultiplyPage(ques);
+        } else if (ques.question.type.contains("location_multiply")) {
+          _page = new LocationPage(ques);
         } else if (ques.question.type.contains("multiply")) {
           _page = new MultiplyPage(ques);
         } else if (ques.question.type.contains("number")) {
@@ -1144,6 +1153,334 @@ class _numberMultiplyWidget extends State<NumberMultiplyPage> {
   }
 }
 
+class LocationPage extends StatefulWidget {
+  QuestionSet ques;
+
+  LocationPage(this.ques);
+
+  @override
+  _locationWidget createState() => _locationWidget(ques);
+}
+
+class _locationWidget extends State<LocationPage> {
+  QuestionSet ques;
+
+  QuestionSet qFix;
+
+  _locationWidget(this.ques);
+
+  double _listHeight = 0;
+
+  var count = 2;
+
+  int calListHeight() {
+    //var count = ques.choice.length;
+    var count = 1;
+    //40+(count*80);
+    setState(() {
+      _listHeight = 40 + (count * 80).toDouble();
+    });
+    return count;
+  }
+
+  double calDesHeight() {
+    //return 440;
+    //return 350;
+    if (MediaQuery.of(context).size.height > 880) {
+      return (40 + (ques.choice.length * 80) + 30).toDouble();
+    } else {
+      return (40 +
+              ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+              (ques.choice.length <= 4 ? 30 : 0))
+          .toDouble();
+    }
+    //return (40 + (ques.choice.length * 80) + 30).toDouble();
+    /*return (40 +
+            ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+            (ques.choice.length <= 4 ? 30 : 0))
+        .toDouble();*/
+  }
+
+  double calChoiceAreaHeight() {
+    if (MediaQuery.of(context).size.height > 880) {
+      return (40 + (ques.choice.length * 80) + 30).toDouble();
+    } else {
+      return (40 +
+              ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+              (ques.choice.length <= 4 ? 30 : 0))
+          .toDouble();
+    }
+    //return (40 + (ques.choice.length * 80) + 30).toDouble();
+    /*return (40 +
+            ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) +
+            (ques.choice.length <= 4 ? 30 : 0))
+        .toDouble();*/
+  }
+
+  double calChoiceAreaMarginTop() {
+    if (MediaQuery.of(context).size.height > 880) {
+      return (550 - (ques.choice.length * 80) - 30).toDouble();
+    } else {
+      return (550 -
+              ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) -
+              (ques.choice.length <= 4 ? 30 : 0))
+          .toDouble();
+    }
+    //return (550 - (ques.choice.length * 80) - 30).toDouble();
+    /*return (550 -
+            ((ques.choice.length > 4 ? 4 : ques.choice.length) * 80) -
+            (ques.choice.length <= 4 ? 30 : 0))
+        .toDouble();*/
+  }
+
+  void _showDialog(String title, String message) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'SukhumvitSet',
+            ),
+          ),
+          content: new Text(
+            message,
+            style: TextStyle(
+              fontFamily: 'SukhumvitSet',
+            ),
+          ),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  PermissionStatus permissionStatus;
+
+  @override
+  void initState() {
+    super.initState();
+
+    PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.locationWhenInUse)
+        .then(_update);
+  }
+
+  void _update(PermissionStatus status) {
+    if (status != permissionStatus) {
+      setState(() {
+        permissionStatus = status;
+      });
+      if (permissionStatus == PermissionStatus.unknown ||
+          permissionStatus == PermissionStatus.denied) {
+        _askPermission();
+      }
+    }
+  }
+
+  void _askPermission() {
+    prefix2.print("Hello");
+    PermissionHandler()
+        .requestPermissions([PermissionGroup.locationWhenInUse]).then(_request);
+  }
+
+  void _request(Map<PermissionGroup, PermissionStatus> status) {
+    prefix2.print("_request");
+    final statuss = status[PermissionGroup.locationWhenInUse];
+    _update(statuss);
+  }
+
+  void getLocation() async {
+    GeolocationStatus geolocationStatus =
+        await Geolocator().checkGeolocationPermissionStatus();
+    prefix2.print(geolocationStatus.toString());
+    prefix2.print(geolocationStatus.value);
+
+    PermissionStatus permission = await PermissionHandler()
+        .checkPermissionStatus(PermissionGroup.locationWhenInUse);
+    print(permission.value);
+
+    //bool a = await _requestPermission(PermissionGroup.location);
+    //prefix2.print(a);
+
+    if (permission == PermissionStatus.granted) {
+      var lo = await Geolocator().getCurrentPosition();
+      _showDialog("Your Location","Lat: ${lo.latitude}\nLong: ${lo.longitude}\nTimeStamp: ${lo.timestamp}\nSpeed: ${lo.speed}\nSpeedAccuracy: ${lo.speedAccuracy}" );
+    }
+  }
+
+  Future<bool> _requestPermission(PermissionGroup permission) async {
+    final PermissionHandler _permissionHandler = PermissionHandler();
+    var result = await _permissionHandler.requestPermissions([permission]);
+    if (result[permission] == PermissionStatus.granted) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    prefix2.print(permissionStatus);
+    return Container(
+      color: Colors.white,
+      child: SafeArea(
+        child: Container(
+          color: Colors.black.withAlpha(30),
+          //color: Color(0xFF009688),
+          child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
+            Expanded(
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Stack(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                            //margin: EdgeInsets.fromLTRB(0, 0, 0, (20+(80*count)).toDouble()),
+                            margin:
+                                EdgeInsets.fromLTRB(0, 0, 0, calDesHeight()),
+                            height: double.infinity,
+                            width: double.infinity,
+                            color: Colors.transparent,
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                                child: AutoSizeText(
+                                  ques.question.message,
+                                  minFontSize: 16,
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    color: Colors.black.withAlpha(160),
+                                    fontWeight: FontWeight.w700,
+                                    //color: Colors.white.withAlpha(230),
+                                    fontFamily: 'SukhumvitSet',
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                              //margin: EdgeInsets.fromLTRB(0, 580, 0, 0),
+                              /*
+                            margin: EdgeInsets.fromLTRB(
+                                0,
+                                (560 - ((count > 5 ? 5 : count) * 80))
+                                    .toDouble(),
+                                0,
+                                0),
+                                */
+
+                              margin: EdgeInsets.fromLTRB(
+                                  0, calChoiceAreaMarginTop(), 0, 0),
+                              width: double.infinity,
+                              height: calChoiceAreaHeight(),
+                              //height: (50 + (count * 80)).toDouble(),
+                              //height: 200,
+                              color: Colors.white,
+                              child: Stack(
+                                children: <Widget>[
+                                  ListView.builder(
+                                      itemCount: ques.choice.length + 1,
+                                      //itemCount: count,
+                                      itemBuilder: (context, position) {
+                                        if (position == 0) {
+                                          return Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                20, 20, 20, 0),
+                                            color: Colors.transparent,
+                                            height: 30,
+                                            width: double.infinity,
+                                            child: Text(
+                                              "ตัวเลือก ${ques.choice.length} ข้อ",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color:
+                                                    Colors.teal.withAlpha(255),
+                                                fontWeight: FontWeight.w700,
+                                                fontFamily: 'SukhumvitSet',
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          return GestureDetector(
+                                              onTap: () {
+                                                /*nextQuestion(
+                                                    ques.question.id,
+                                                    (ques.choice[position - 1]
+                                                            as Choice)
+                                                        .id,
+                                                    ques.question
+                                                        .questionnaireId);*/
+                                                getLocation();
+                                              },
+                                              child: Container(
+                                                margin: position == 0
+                                                    ? EdgeInsets.fromLTRB(
+                                                        20, 30, 20, 10)
+                                                    : EdgeInsets.fromLTRB(
+                                                        20, 10, 20, 10),
+                                                width: double.infinity,
+                                                height: 60,
+                                                child: Align(
+                                                  child: Text(
+                                                    (ques.choice[position - 1]
+                                                            as Choice)
+                                                        .message,
+                                                    style: TextStyle(
+                                                      fontSize: 22,
+                                                      color: Colors.white
+                                                          .withAlpha(255),
+                                                      //color: Color(0xFF42A898),
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                      //color: Colors.white.withAlpha(230),
+                                                      fontFamily:
+                                                          'SukhumvitSet',
+                                                    ),
+                                                  ),
+                                                ),
+                                                decoration: BoxDecoration(
+                                                    /*border: new Border.all(
+                                                        color:
+                                                            Color(0xFF42A898),
+                                                        width: 3.0),*/
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                16)),
+                                                    //color: Colors.black.withAlpha(50)
+                                                    color: Color(0xFF009688)),
+                                                //color: Colors.white)
+                                              ));
+                                        }
+                                      })
+                                ],
+                              )),
+                        )
+                      ],
+                    )))
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
 class TextInputPage extends StatefulWidget {
   QuestionSet ques;
 
@@ -1153,7 +1490,6 @@ class TextInputPage extends StatefulWidget {
   _textInputWidget createState() => _textInputWidget(ques);
 }
 
-
 class _textInputWidget extends State<TextInputPage> {
   QuestionSet ques;
 
@@ -1161,12 +1497,9 @@ class _textInputWidget extends State<TextInputPage> {
 
   bool _actionBtn = false;
 
-  
-
   @override
   Widget build(BuildContext context) {
     //loadQuestion("", "", this.keys);
-
 
     return Container(
       color: Colors.white,
@@ -1498,11 +1831,11 @@ class PlaceholderWidget extends StatelessWidget {
 }
 
 class Choice {
-  final String id;
-  final String message;
-  final String questionId;
-  final int position;
-  final String destinationId;
+  String id;
+  String message;
+  String questionId;
+  int position;
+  String destinationId;
 
   Choice({
     this.id,
@@ -1552,9 +1885,9 @@ class Question {
 }
 
 class QuestionSet {
-  final Question fromQuestion;
-  final Question question;
-  final List choice;
+  Question fromQuestion;
+  Question question;
+  List choice;
 
   QuestionSet({
     this.fromQuestion,

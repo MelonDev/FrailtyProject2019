@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +8,18 @@ import 'package:flutter/painting.dart' as prefix2;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart' as prefix1;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frailty_project_2019/Bloc/authentication/authentication_bloc.dart';
 import 'package:frailty_project_2019/Model/Account.dart';
 import 'package:frailty_project_2019/Model/TemporaryCode.dart';
 import 'package:frailty_project_2019/popup_dialog.dart' as prefix0;
 import 'package:frailty_project_2019/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:frailty_project_2019/Design/new_main.dart';
 import 'dart:io';
 import 'dart:ui';
+import 'Bloc/flow_bloc_delegate.dart';
 import 'popup_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'api.dart';
@@ -22,7 +27,12 @@ import 'api.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  BlocSupervisor.delegate = FlowBlocDelegate();
+  return runApp(MyApp());
+}
+
+//void main() => runApp(MyApp());
 /*void main() => runApp(MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
@@ -35,6 +45,8 @@ ProgressDialog pr;
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -45,7 +57,12 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Color(0xFF009688)),
-      home: MyHomePage(title: 'ระบบวิเคราะห์ภาวะเปราะบาง'),
+      home: BlocProvider(
+        builder: (BuildContext context) => AuthenticationBloc(),
+        child: NewMain(),
+      ),
+      //home: NewMain(),
+      //home: MyHomePage(title: 'ระบบวิเคราะห์ภาวะเปราะบาง'),
     );
   }
 }
@@ -124,8 +141,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void initDialog(String message) async {
-    pr = ProgressDialog(context, ProgressDialogType.Normal);
-    pr.setMessage(message);
+    //pr = ProgressDialog(context, ProgressDialogType.Normal);
+    pr = ProgressDialog(context, type: ProgressDialogType.Normal);
+    //pr.setMessage(message);
+    pr.style(message: message);
     pr.show();
   }
 
@@ -638,22 +657,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                   "กำลังโหลด..")) {
                                                               } else {
                                                                 Navigator.push(
-                                                                  context,
-                                                                  TransparentRoute(
-                                                                      builder: (BuildContext context) => prefix0.PopupRoute(
-                                                                          setTextBtn,
-                                                                          loadTextBtn,
-                                                                          cupertinoDialog,
-                                                                          getAction,
-                                                                          initDialog,
-                                                                          hideDialog,
-                                                                          _currentUser,
-                                                                          _account
-                                                                          //callback:
-                                                                          //    () {},
-                                                                          )));
+                                                                    context,
+                                                                    TransparentRoute(
+                                                                        builder: (BuildContext context) => prefix0.PopupRoute(
+                                                                            setTextBtn,
+                                                                            loadTextBtn,
+                                                                            cupertinoDialog,
+                                                                            getAction,
+                                                                            initDialog,
+                                                                            hideDialog,
+                                                                            _currentUser,
+                                                                            _account
+                                                                            //callback:
+                                                                            //    () {},
+                                                                            )));
                                                               }
-                                                              
                                                             },
                                                             child: Container(
                                                                 child: Padding(
