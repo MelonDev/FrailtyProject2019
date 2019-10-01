@@ -56,10 +56,7 @@ class AuthenticationBloc
     yield AuthenticatingState();
 
     try {
-      print("fakeskadk");
       Account _google = await _googleSignIn.signIn().catchError((onError) {
-        //await _googleSignIn.signInSilently().catchError((onError) {
-        print("Error $onError");
       }).whenComplete(() async*{
       }).then((onValue) async {
         if (onValue != null) {
@@ -81,9 +78,6 @@ class AuthenticationBloc
                   'https://melondev-frailty-project.herokuapp.com/api/account/showDetailFromId';
               Map map = {"id": "", "oauth": onValueAccount.user.uid.toString()};
               var response = await http.post(url, body: map);
-              //print('Response status: ${response.statusCode}');
-              //print('Response body: ${response.body}');
-
               Account account = Account.fromJson(jsonDecode(response.body));
               return account;
             }else {
@@ -93,7 +87,6 @@ class AuthenticationBloc
           return firebase;
         }else {
           return null;
-          print("asdka[qq");
         }
       }).catchError((onError){
         return null;
@@ -104,37 +97,6 @@ class AuthenticationBloc
       }else {
         yield UnAuthenticationState();
       }
-
-/*
-      if (_googleUser != null) {
-        final GoogleSignInAuthentication googleAuth =
-            await _googleUser.authentication;
-
-        final FirebaseUser user = await _firebaseAuth
-            .signInWithCredential(GoogleAuthProvider.getCredential(
-                idToken: googleAuth.idToken,
-                accessToken: googleAuth.accessToken))
-            .whenComplete(() {
-          //page?._callback();
-          print("T2");
-        }).catchError((onError) {
-          print("error $onError");
-        }).then((onValue) {
-          print("T4");
-
-          //page._hideProgressDialog();
-        });
-
-
-        if (user != null) {
-          print("T6");
-
-          print("signed in " + user.displayName);
-
-
-          return user;
-        }
-      }*/
 
     } catch (error) {
       yield ErrorAuthenticationState(error.toString());
@@ -151,9 +113,6 @@ class AuthenticationBloc
               'https://melondev-frailty-project.herokuapp.com/api/account/showDetailFromId';
           Map map = {"id": "", "oauth": onValue.uid.toString()};
           var response = await http.post(url, body: map);
-          //print('Response status: ${response.statusCode}');
-          //print('Response body: ${response.body}');
-
           Account account = Account.fromJson(jsonDecode(response.body));
           return account;
         } else {
