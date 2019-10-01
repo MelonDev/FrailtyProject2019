@@ -8,6 +8,8 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:frailty_project_2019/Bloc/authentication/authentication_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
+import '../home.dart';
+
 class NewMain extends StatefulWidget {
   _newMain createState() => new _newMain();
 }
@@ -50,6 +52,14 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
     }
   }
 
+  void goToQuestion(BuildContext context){
+    Navigator.push(
+        context,
+        HomeRoute(
+            builder:
+                (BuildContext context) =>
+                HomePage()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +267,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                                                       ),
                                                       onPressed: () {
                                                         if(_state is AuthenticatedState){
-                                                          print("I'm ready!");
+                                                          //print("I'm ready!");
+                                                          goToQuestion(context);
                                                         }else {
                                                           _panelController.open();
                                                         }
