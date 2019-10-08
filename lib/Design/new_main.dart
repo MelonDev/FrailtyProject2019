@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,9 @@ import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:frailty_project_2019/Bloc/authentication/authentication_bloc.dart';
+import 'package:frailty_project_2019/Design/catalogue_page.dart';
+import 'package:frailty_project_2019/Design/setting_page.dart';
+import 'package:frailty_project_2019/Tools/frailty_route.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import '../home.dart';
@@ -14,9 +18,12 @@ class NewMain extends StatefulWidget {
   _newMain createState() => new _newMain();
 }
 
-class _newMain extends State<NewMain> with WidgetsBindingObserver implements AuthenticationDelegate {
+class _newMain extends State<NewMain>
+    with WidgetsBindingObserver
+    implements AuthenticationDelegate {
   static const _appname = "ระบบวิเคราะห์ภาวะเปราะบาง";
   AuthenticationBloc _authenticationBloc;
+
   var _context;
   var firebaseAuth = FirebaseAuth.instance;
   PanelController _panelController = new PanelController();
@@ -35,10 +42,10 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch(state) {
+    switch (state) {
       case AppLifecycleState.resumed:
         print("resumed");
-        _authenticationBloc.dispatch(AuthenticatingLogin());
+        _authenticationBloc.dispatch(AuthenticatingLoginEvent("กำลังรีเฟรส.."));
         break;
       case AppLifecycleState.inactive:
         print("inactive");
@@ -52,25 +59,278 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
     }
   }
 
-  void goToQuestion(BuildContext context){
-    Navigator.push(
-        context,
-        HomeRoute(
-            builder:
-                (BuildContext context) =>
-                HomePage()));
+  void goToQuestion(BuildContext context) {
+    Navigator.push(context,
+        FrailtyRoute(builder: (BuildContext context) => CataloguePage()));
   }
 
   @override
   Widget build(BuildContext context) {
     _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    //_authenticationBloc = AuthenticationBloc();
+    //_authenticationBloc = BlocProvider.BlocProvider.of(context).authenticationBloc;
+
     _context = context;
+
+    return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, _state) {
+      if (_state is InitialAuthenticationState) {
+        _authenticationBloc.dispatch(AuthenticatingLoginEvent("เช็คสถานะ.."));
+        return SizedBox();
+      } else if (_state is AuthenticatingState) {
+        return Material(
+          child: Container(
+              color: Colors.teal,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                      child: SpinKitThreeBounce(
+                        color: Colors.white,
+                        size: 50.0,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                      child: Text(_state.message,
+                          style: TextStyle(
+                            color: Colors.white.withAlpha(220),
+                              fontSize: 18,
+                              fontFamily: 'SukhumvitSet',
+                              fontWeight: FontWeight.normal)),
+                    )
+                  ],
+                ),
+              )),
+        );
+      } else if (_state is AuthenticatedState ||
+          _state is UnAuthenticationState) {
+        return Material(
+          color: Color(0xFFD9D9D9),
+          child: SlidingUpPanel(
+            controller: _panelController,
+            parallaxEnabled: true,
+            minHeight: (105 + (Device.get().isIphoneX ? 25 : 0).toDouble()),
+            maxHeight: _state is AuthenticatedState
+                ? (_state.account.personnel ? 520 : 570)
+                : 460,
+            backdropEnabled: true,
+            backdropTapClosesPanel: true,
+            renderPanelSheet: false,
+            panel: _floatingPanel(context, _state),
+            collapsed: _floatingCollapsed(_state),
+            body: Scaffold(
+              backgroundColor: Color(0xFFD9D9D9),
+              appBar: AppBar(
+                elevation: 0,
+                title: Text(_appname,
+                    style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold)),
+              ),
+              body: BlocBuilder(
+                bloc: _authenticationBloc,
+                builder: (BuildContext context, AuthenticationState _state) {
+                  return Stack(
+                    children: <Widget>[
+                      Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                                colors: [
+                                  Color(0xFF52c7b8),
+                                  Color(0xFFD9D9D9),
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Stack(children: <Widget>[
+                              Center(
+                                child: Container(
+                                  margin: EdgeInsets.fromLTRB(
+                                      17.5, 25.0, 17.5, 120.0),
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(24)),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              blurRadius: 10.0,
+                                            ),
+                                          ]),
+                                      child: Stack(
+                                        children: <Widget>[
+                                          Container(
+                                            constraints:
+                                                BoxConstraints(maxWidth: 530),
+                                            //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
+                                            decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(24)),
+                                                color: Colors.white),
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Container(
+                                                  padding: EdgeInsets.only(
+                                                      top: 26,
+                                                      left: 30,
+                                                      right: 30,
+                                                      bottom: 20),
+                                                  color: Colors.transparent,
+                                                  child: Image.asset(
+                                                    'images/funny-elderly-couple-dancing-cartoon-vector-24002358.jpg',
+                                                    fit: BoxFit.contain,
+                                                    height: Device.get()
+                                                            .isIphoneX
+                                                        ? MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            1.7
+                                                        : MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            3.2,
+                                                  ),
+                                                ),
+                                                Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            24, 0, 20, 0),
+                                                    child: Align(
+                                                        alignment:
+                                                            Alignment.topLeft,
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: <Widget>[
+                                                            Text(
+                                                              'แบบทดสอบภาวะเปราะบาง',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                              style: TextStyle(
+                                                                  fontFamily:
+                                                                      'SukhumvitSet',
+                                                                  fontSize:
+                                                                      Device.get()
+                                                                              .isTablet
+                                                                          ? 26
+                                                                          : 21,
+                                                                  color: Colors
+                                                                      .teal[600]
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                            Text(
+                                                              'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                              maxLines: 5,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              style: TextStyle(
+                                                                  fontFamily:
+                                                                      'SukhumvitSet',
+                                                                  fontSize: Device
+                                                                              .get()
+                                                                          .isTablet
+                                                                      ? 22
+                                                                      : 17,
+                                                                  color: Colors
+                                                                      .black45,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .normal),
+                                                            )
+                                                          ],
+                                                        ))),
+                                                Container(
+                                                  height: 1,
+                                                  width: 180,
+                                                  margin: EdgeInsets.only(
+                                                      top: 15, bottom: 15),
+                                                  color: Colors.teal,
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(
+                                                      bottom: 20),
+                                                  child: MaterialButton(
+                                                    minWidth: 256,
+                                                    height: 56,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        14.0)),
+                                                    splashColor: Colors.white12,
+                                                    color: Colors.teal,
+                                                    elevation: 0,
+                                                    highlightElevation: 0,
+                                                    child: Text(
+                                                      _state is AuthenticatedState
+                                                          ? "เริ่มทำแบบทดสอบ"
+                                                          : "ลงชื่อเข้าใช้",
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          fontFamily:
+                                                              'SukhumvitSet',
+                                                          fontSize: 20,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                    onPressed: () {
+                                                      if (_state
+                                                          is AuthenticatedState) {
+                                                        //print("I'm ready!");
+                                                        goToQuestion(context);
+                                                      } else {
+                                                        _panelController.open();
+                                                      }
+                                                    },
+                                                  ),
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ],
+                                      )),
+                                ),
+                              )
+                            ]),
+                          ))
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      } else {
+        return Container();
+      }
+    });
 
     return BlocBuilder(
         bloc: _authenticationBloc,
         builder: (BuildContext context, AuthenticationState _state) {
           if (_state is InitialAuthenticationState) {
-            _authenticationBloc.dispatch(AuthenticatingLogin());
+            _authenticationBloc.dispatch(AuthenticatingLoginEvent(null));
             return SizedBox();
           } else if (_state is AuthenticatingState) {
             return Container(
@@ -109,7 +369,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                   ),
                   body: BlocBuilder(
                     bloc: _authenticationBloc,
-                    builder: (BuildContext context, AuthenticationState _state) {
+                    builder:
+                        (BuildContext context, AuthenticationState _state) {
                       return Stack(
                         children: <Widget>[
                           Container(
@@ -133,8 +394,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                                                 Radius.circular(24)),
                                             boxShadow: [
                                               BoxShadow(
-                                                color:
-                                                Colors.grey.withOpacity(0.5),
+                                                color: Colors.grey
+                                                    .withOpacity(0.5),
                                                 blurRadius: 10.0,
                                               ),
                                             ]),
@@ -143,8 +404,9 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                                             Container(
                                               //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
                                               decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.all(
-                                                      Radius.circular(24)),
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(24)),
                                                   color: Colors.white),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -159,73 +421,75 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                                                     child: Image.asset(
                                                       'images/funny-elderly-couple-dancing-cartoon-vector-24002358.jpg',
                                                       fit: BoxFit.contain,
-                                                      height: Device.get()
-                                                          .isIphoneX
-                                                          ? MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                          1.7
-                                                          : MediaQuery.of(context)
-                                                          .size
-                                                          .width /
-                                                          3.2,
+                                                      height: Device
+                                                                  .get()
+                                                              .isIphoneX
+                                                          ? MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              1.7
+                                                          : MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width /
+                                                              3.2,
                                                     ),
                                                   ),
                                                   Padding(
                                                       padding:
-                                                      EdgeInsets.fromLTRB(
-                                                          24, 0, 20, 0),
+                                                          EdgeInsets.fromLTRB(
+                                                              24, 0, 20, 0),
                                                       child: Align(
                                                           alignment:
-                                                          Alignment.topLeft,
+                                                              Alignment.topLeft,
                                                           child: Column(
                                                             crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                                CrossAxisAlignment
+                                                                    .start,
                                                             children: <Widget>[
                                                               Text(
                                                                 'แบบทดสอบภาวะเปราะบาง',
                                                                 textAlign:
-                                                                TextAlign
-                                                                    .left,
+                                                                    TextAlign
+                                                                        .left,
                                                                 style: TextStyle(
                                                                     fontFamily:
-                                                                    'SukhumvitSet',
+                                                                        'SukhumvitSet',
                                                                     fontSize:
-                                                                    Device.get()
-                                                                        .isTablet
-                                                                        ? 26
-                                                                        : 21,
+                                                                        Device.get().isTablet
+                                                                            ? 26
+                                                                            : 21,
                                                                     color: Colors
-                                                                        .teal[600]
+                                                                        .teal[
+                                                                            600]
                                                                         .withOpacity(
-                                                                        0.8),
+                                                                            0.8),
                                                                     fontWeight:
-                                                                    FontWeight
-                                                                        .bold),
+                                                                        FontWeight
+                                                                            .bold),
                                                               ),
                                                               Text(
                                                                 'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
                                                                 textAlign:
-                                                                TextAlign
-                                                                    .left,
+                                                                    TextAlign
+                                                                        .left,
                                                                 maxLines: 5,
                                                                 overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                                 style: TextStyle(
                                                                     fontFamily:
-                                                                    'SukhumvitSet',
-                                                                    fontSize: Device
-                                                                        .get()
-                                                                        .isTablet
-                                                                        ? 22
-                                                                        : 17,
+                                                                        'SukhumvitSet',
+                                                                    fontSize:
+                                                                        Device.get().isTablet
+                                                                            ? 22
+                                                                            : 17,
                                                                     color: Colors
                                                                         .black45,
                                                                     fontWeight:
-                                                                    FontWeight
-                                                                        .normal),
+                                                                        FontWeight
+                                                                            .normal),
                                                               )
                                                             ],
                                                           ))),
@@ -243,12 +507,13 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                                                       minWidth: 256,
                                                       height: 56,
                                                       shape:
-                                                      RoundedRectangleBorder(
-                                                          borderRadius:
-                                                          BorderRadius
-                                                              .circular(
-                                                              14.0)),
-                                                      splashColor: Colors.white12,
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          14.0)),
+                                                      splashColor:
+                                                          Colors.white12,
                                                       color: Colors.teal,
                                                       elevation: 0,
                                                       highlightElevation: 0,
@@ -256,21 +521,25 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                                                         _state is AuthenticatedState
                                                             ? "เริ่มทำแบบทดสอบ"
                                                             : "ลงชื่อเข้าใช้",
-                                                        textAlign: TextAlign.left,
+                                                        textAlign:
+                                                            TextAlign.left,
                                                         style: TextStyle(
                                                             fontFamily:
-                                                            'SukhumvitSet',
+                                                                'SukhumvitSet',
                                                             fontSize: 20,
                                                             color: Colors.white,
                                                             fontWeight:
-                                                            FontWeight.bold),
+                                                                FontWeight
+                                                                    .bold),
                                                       ),
                                                       onPressed: () {
-                                                        if(_state is AuthenticatedState){
+                                                        if (_state
+                                                            is AuthenticatedState) {
                                                           //print("I'm ready!");
                                                           goToQuestion(context);
-                                                        }else {
-                                                          _panelController.open();
+                                                        } else {
+                                                          _panelController
+                                                              .open();
                                                         }
                                                       },
                                                     ),
@@ -368,7 +637,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
         : getActiveNormal(context, _state);
   }
 
-  Widget _unauthenticationCard(BuildContext context, AuthenticationState _state) {
+  Widget _unauthenticationCard(
+      BuildContext context, AuthenticationState _state) {
     return getInActive(context, _state);
   }
 
@@ -383,7 +653,7 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
         padding: EdgeInsets.fromLTRB(0, 0, 0,
             Device.get().isIos ? (Device.get().isIphoneX ? 16 : 0) : 0),
         child: FlatButton(
-          onPressed: (){
+          onPressed: () {
             _panelController.open();
           },
           child: _state is AuthenticatedState
@@ -550,7 +820,7 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                   ),
                   child: FlatButton(
                     onPressed: () {},
-                    child: Text("แก้ไขชื่อ-นามสกุล",
+                    child: Text("แก้ไขโปรไฟล์",
                         style: TextStyle(
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.bold,
@@ -632,7 +902,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                   child: FlatButton(
                     splashColor: Colors.white54,
                     onPressed: () {
-                      _authenticationBloc.dispatch(UnAuthenticatingLogin());
+                      _authenticationBloc
+                          .dispatch(UnAuthenticatingLoginEvent());
                       //confirmSignOut(context, widget);
                     },
                     child: Text("ลงชื่อออก",
@@ -745,7 +1016,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                     children: <Widget>[
                       Text(
                           "อายุ : " +
-                              calculatingDay(_state.account.birthDate).toString(),
+                              calculatingDay(_state.account.birthDate)
+                                  .toString(),
                           textAlign: TextAlign.left,
                           style: TextStyle(
                               fontFamily: 'SukhumvitSet',
@@ -783,8 +1055,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                 Container(
                   alignment: Alignment.center,
                   child: Container(
-                    margin:
-                    EdgeInsets.only(top: 16, left: 25, right: 25, bottom: 14),
+                    margin: EdgeInsets.only(
+                        top: 16, left: 25, right: 25, bottom: 14),
                     width: MediaQuery.of(context).size.width,
                     height: 60,
                     decoration: BoxDecoration(
@@ -793,7 +1065,7 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                     ),
                     child: FlatButton(
                       onPressed: () {},
-                      child: Text("แก้ไขชื่อ-นามสกุล",
+                      child: Text("แก้ไขโปรไฟล์",
                           style: TextStyle(
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
@@ -803,13 +1075,13 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                   ),
                 ),
 
-                //แก้ไขที่อยู่
+                //ตั้งค่า
 
                 Container(
                   alignment: Alignment.center,
                   child: Container(
-                    margin:
-                    EdgeInsets.only(top: 0, left: 25, right: 25, bottom: 10),
+                    margin: EdgeInsets.only(
+                        top: 0, left: 25, right: 25, bottom: 10),
                     width: MediaQuery.of(context).size.width,
                     height: 60,
                     decoration: BoxDecoration(
@@ -817,8 +1089,14 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: FlatButton(
-                      onPressed: () {},
-                      child: Text("แก้ไขที่อยู่",
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            FrailtyRoute(
+                                builder: (BuildContext context) =>
+                                    SettingPage()));
+                      },
+                      child: Text("ตั้งค่า",
                           style: TextStyle(
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
@@ -839,8 +1117,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                 Container(
                   alignment: Alignment.center,
                   child: Container(
-                    margin:
-                    EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 10),
+                    margin: EdgeInsets.only(
+                        top: 20, left: 25, right: 25, bottom: 10),
                     width: MediaQuery.of(context).size.width,
                     height: 60,
                     decoration: BoxDecoration(
@@ -850,7 +1128,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
                     child: FlatButton(
                       splashColor: Colors.white54,
                       onPressed: () {
-                        _authenticationBloc.dispatch(UnAuthenticatingLogin());
+                        _authenticationBloc
+                            .dispatch(UnAuthenticatingLoginEvent());
                       },
                       child: Text("ลงชื่อออก",
                           style: TextStyle(
@@ -961,7 +1240,8 @@ class _newMain extends State<NewMain> with WidgetsBindingObserver implements Aut
               child: FlatButton(
                   onPressed: () {
                     //handleSignIn(widget, context);
-                    _authenticationBloc.dispatch(GoogleLogin());
+                    _authenticationBloc.dispatch(GoogleLoginEvent());
+                    //_authenticationBloc.dispatch(TestEvent(context));
                   },
                   child: Stack(
                     children: <Widget>[

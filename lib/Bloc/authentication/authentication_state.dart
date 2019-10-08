@@ -31,6 +31,11 @@ class UnAuthenticationState extends AuthenticationState {
 }
 
 class AuthenticatingState extends AuthenticationState {
+
+  final String message;
+
+  AuthenticatingState(this.message);
+
   @override
   String toString() {
     return "AuthenticatingState";

@@ -5,21 +5,23 @@ abstract class AuthenticationEvent {}
 
 abstract class AuthenticationDelegate {
   void onSuccess(String message);
+
   void onError(String message);
 }
 
-class FacebookLogin extends AuthenticationEvent {
+class FacebookLoginEvent extends AuthenticationEvent {}
 
+class GoogleLoginEvent extends AuthenticationEvent {}
+
+class AuthenticatingLoginEvent extends AuthenticationEvent {
+  String message;
+  AuthenticatingLoginEvent(this.message);
 }
 
-class GoogleLogin extends AuthenticationEvent {
+class UnAuthenticatingLoginEvent extends AuthenticationEvent {}
 
-}
+class TestEvent extends AuthenticationEvent {
+  BuildContext context;
 
-class AuthenticatingLogin extends AuthenticationEvent {
-
-}
-
-class UnAuthenticatingLogin extends AuthenticationEvent {
-
+  TestEvent(this.context);
 }
