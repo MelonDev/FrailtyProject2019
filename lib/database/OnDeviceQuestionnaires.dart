@@ -32,7 +32,7 @@ class OnDeviceQuestionnaires {
 
   final String choiceTable = "CHOICE";
   final String choiceId = "id";
-  final String choiceQuestionnaireId = "questionnaireId";
+  final String choiceQuestionnaireId = "questionId";
   final String choiceMessage = "message";
   final String choicePosition = "position";
   final String choiceDestinationId = "destinationId";
@@ -41,7 +41,7 @@ class OnDeviceQuestionnaires {
 
   Future<Database> initDatabase() async {
     var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'mydatabases.db');
+    String path = join(databasesPath, 'mylocaldatabase.db');
     Database db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
           await db.execute(
@@ -84,7 +84,12 @@ class OnDeviceQuestionnaires {
     //await insertToDatabase(questionTable,await downloadQuestionDatabase());
     //await insertToDatabase(questionnaireTable,await downloadQuestionnaireDatabase());
 
-    batch.commit();
+    batch.commit().then((onValue){
+      print("Batch Complete");
+    }).catchError((error){
+      print("Batch Error: $error");
+    });
+
   }
 
   Future insertToDatabase(String tableName,List list) async {

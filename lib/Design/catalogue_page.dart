@@ -30,6 +30,9 @@ class _cataloguePage extends State<CataloguePage> {
   @override
   void initState() {
     super.initState();
+    _catalogueBloc = BlocProvider.of<CatalogueBloc>(this.context);
+
+    _catalogueBloc.dispatch(QuestionnaireSelectedEvent());
   }
 
   List<Widget> _tabChildren = [
@@ -54,119 +57,16 @@ class _cataloguePage extends State<CataloguePage> {
 
   @override
   Widget build(BuildContext context) {
-    _catalogueBloc = BlocProvider.of<CatalogueBloc>(this.context);
-    //_catalogueBloc = CatalogueBloc();
-    /*return BlocBuilder(
-        bloc: _catalogueBloc,
-        builder: (BuildContext context, CatalogueState _state) {
-          return mainLayout(context, _state);
-        });*/
+
 
     return BlocBuilder<CatalogueBloc, CatalogueState>(
         builder: (context, _state) {
           return mainLayout(context, _state);
         });
-    /*
-    return Scaffold(
-      backgroundColor: Color(0xFFE0E0E0),
-      appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        titleSpacing: 0.0,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        // Don't show the leading button
-        title: Stack(
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Container(
-                    color: Colors.transparent,
-                    child: SizedBox(
-                      width: 60,
-                      height: double.infinity,
-                      child: LayoutBuilder(builder: (context, constraint) {
-                        return FlatButton(
-                            padding: EdgeInsets.all(0),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            color: Colors.transparent,
-                            child: Icon(
-                              Icons.close,
-                              size: constraint.biggest.height - 26,
-                              color: Colors.black.withAlpha(150),
-                            ));
-                      }),
-                    )),
-              ],
-            ),
-            SizedBox(
-              height: double.infinity,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      _titleText,
-                      style: TextStyle(
-                          color: Colors.black.withAlpha(200),
-                          fontFamily: 'SukhumvitSet',
-                          //fontSize: 20,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: <Widget>[Container()],
-            )
-          ],
-        ),
-
-        brightness: Brightness.light,
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: onTabTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.assignment),
-            title: new Text(
-              'แบบทดสอบ',
-              style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
-            ),
-          ),
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.history),
-            title: new Text(
-              'ยังทำไม่เสร็จ',
-              style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
-            ),
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.check),
-              title: Text(
-                'ทำเสร็จแล้ว',
-                style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
-              ))
-        ],
-      ),
-      body: _tabChildren[_currentIndex],
-    );
-
-     */
   }
 
   Widget mainLayout(BuildContext context, CatalogueState _state) {
+
     return Scaffold(
       backgroundColor: Color(0xFFE0E0E0),
       appBar: AppBar(
@@ -320,6 +220,7 @@ class QuestionnaireTab extends StatelessWidget {
 
 
   final List<String> _tabList = ["ชุดหลัก", "ชุดรอง"];
+
 
   @override
   Widget build(BuildContext context) {

@@ -99,6 +99,8 @@ class MyHomePage extends StatefulWidget {
 class IPhoneXPadding extends Container {
   final Widget child;
 
+
+
   IPhoneXPadding({
     @required this.child,
   });

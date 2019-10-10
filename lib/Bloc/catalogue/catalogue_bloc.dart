@@ -63,7 +63,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     try {
       var questionnaireList = await OnDeviceQuestionnaires().getQuestionnaireDatabase();
 
-      await OnDeviceQuestion().nextQuesion("24129d77-f289-4634-a34f-e00c623ccf5f", "65c99713-8950-4bcd-9b82-c8cc43795679", "");
+      //await OnDeviceQuestion().nextQuesion("24129d77-f289-4634-a34f-e00c623ccf5f", "65c99713-8950-4bcd-9b82-c8cc43795679", "");
 
       yield QuestionnaireCatalogueState(questionnaireList);
     } catch (error) {

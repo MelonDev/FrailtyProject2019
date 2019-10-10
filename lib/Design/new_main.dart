@@ -11,6 +11,7 @@ import 'package:frailty_project_2019/Design/catalogue_page.dart';
 import 'package:frailty_project_2019/Design/setting_page.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'dart:io';
 
 import '../home.dart';
 
@@ -69,6 +70,7 @@ class _newMain extends State<NewMain>
     _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     //_authenticationBloc = AuthenticationBloc();
     //_authenticationBloc = BlocProvider.BlocProvider.of(context).authenticationBloc;
+
 
     _context = context;
 
