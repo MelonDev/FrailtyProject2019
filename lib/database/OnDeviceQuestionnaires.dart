@@ -32,7 +32,7 @@ class OnDeviceQuestionnaires {
 
   final String choiceTable = "CHOICE";
   final String choiceId = "id";
-  final String choiceQuestionnaireId = "questionId";
+  final String choiceQuestionId = "questionId";
   final String choiceMessage = "message";
   final String choicePosition = "position";
   final String choiceDestinationId = "destinationId";
@@ -51,7 +51,7 @@ class OnDeviceQuestionnaires {
           await db.execute(
               'CREATE TABLE IF NOT EXISTS  $questionTable ($questionId text primary key,$questionMessage text not null,$questionType text not null,$questionPosition integer not null,$questionQuestionnaireId text not null,$questionCategory text not null)');
           await db.execute(
-              'CREATE TABLE IF NOT EXISTS  $choiceTable ($choiceId text primary key,$choiceQuestionnaireId text not null,$choiceMessage text not null,$choicePosition integer not null,$choiceDestinationId text not null)');
+              'CREATE TABLE IF NOT EXISTS  $choiceTable ($choiceId text primary key,$choiceQuestionId text not null,$choiceMessage text not null,$choicePosition integer not null,$choiceDestinationId text not null)');
         });
     return db;
   }
@@ -154,7 +154,6 @@ class OnDeviceQuestionnaires {
     List<Map> maps = await database.rawQuery('SELECT * FROM $questionnaireTable');
     if (maps.isNotEmpty) {
       return maps.map((model) {
-
         var q = Questionnaire.fromMap(model);
         return q;
       }).toList();
