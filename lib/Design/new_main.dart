@@ -1284,7 +1284,7 @@ class _newMain extends State<NewMain>
               child: FlatButton(
                   splashColor: Colors.white30,
                   onPressed: () {
-                    
+
                   },
                   child: Stack(
                     children: <Widget>[

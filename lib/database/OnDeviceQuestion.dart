@@ -214,10 +214,18 @@ class OnDeviceQuestion {
           } else {
             if (qA1.type.contains("multiply")) {
               if (choiceYouChoose != null) {
+                print(qA1.id);
+                print(choiceYouChoose.toLowerCase());
+
                 List<Map> choiceRaw = await database.rawQuery(
-                    "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${choiceYouChoose.toLowerCase()}') ORDER BY $questionPosition ASC");
+                    "SELECT * FROM $choiceTable  WHERE ($choiceId = '${choiceYouChoose.toUpperCase()}') ORDER BY $choicePosition ASC");
                 Map choiceRaws = choiceRaw.first;
+                print(choiceRaws.length);
                 var choice = Choice.fromMap(choiceRaws);
+
+                print(choice.questionId);
+                print(qA1.id);
+                print(choice.destinationId.length);
 
                 if (choice.questionId.toLowerCase() == qA1.id.toLowerCase() &&
                     choice.destinationId.length > 1) {

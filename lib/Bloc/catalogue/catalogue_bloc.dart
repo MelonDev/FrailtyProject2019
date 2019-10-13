@@ -62,7 +62,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
 
     try {
       var questionnaireList = await OnDeviceQuestionnaires().getQuestionnaireDatabase();
-
+/*
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", null, null);
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", "e1a09147-1b16-48d2-86f3-16535d415902", null);
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", "5cb96909-3ab9-4159-8dc9-380b59e391c1", null);
@@ -77,7 +77,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
 
 
 
-      var a = await OnDeviceQuestion().nextQuesion("24129d77-f289-4634-a34f-e00c623ccf5f", "65c99713-8950-4bcd-9b82-c8cc43795679", null);
+      var a = await OnDeviceQuestion().nextQuesion("5C942947-12EF-4F31-A7ED-6793AD85F609", "6242EF8E-AD46-4FF8-9705-E653D51BDCDE", "1b8278c5-d9af-448a-aa25-c56b9fdff123");
       if(a != null){
         print(a.question.message);
         for (var i in a.choices){
@@ -87,7 +87,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
       }else {
         print("A_NULL");
       }
-
+*/
 
 
       yield QuestionnaireCatalogueState(questionnaireList);

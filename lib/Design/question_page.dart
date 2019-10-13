@@ -1,11 +1,32 @@
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
+import 'package:frailty_project_2019/Model/Choice.dart';
+import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
+import 'package:frailty_project_2019/Tools/CellCalculator.dart';
+import 'package:path/path.dart';
+
+part 'QuestionPage/title_page.dart';
+
+part 'QuestionPage/number_multiply_page.dart';
+
+part 'QuestionPage/location_page.dart';
+
+part 'QuestionPage/multiply_page.dart';
+
+part 'QuestionPage/number_page.dart';
+
+part 'QuestionPage/text_input_page.dart';
+
+part 'QuestionPage/main_page.dart';
 
 class MainQuestion extends StatefulWidget {
   String _keys;
+  String uuid;
 
-  MainQuestion(this._keys);
+  MainQuestion(this._keys, this.uuid);
 
   @override
   _questionPage createState() => _questionPage();
@@ -14,6 +35,12 @@ class MainQuestion extends StatefulWidget {
 class _questionPage extends State<MainQuestion> {
   QuestionnaireBloc _questionnaireBloc;
 
+  CellCalculator _cellCalculator;
+
+  String _questionnaireKey;
+
+  String _uuid;
+
   @override
   void setState(fn) {
     super.setState(fn);
@@ -21,196 +48,54 @@ class _questionPage extends State<MainQuestion> {
 
   @override
   Widget build(BuildContext context) {
+    _uuid = widget.uuid;
+    _questionnaireKey = widget._keys;
+
     _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(this.context);
-    //return Container();
+    _cellCalculator = new CellCalculator(context);
+
+    _questionnaireBloc
+        .dispatch(NextQuestionEvent(_questionnaireKey, null, null));
+
+    print("UUID: $_uuid");
 
     return BlocBuilder<QuestionnaireBloc, QuestionnaireState>(
         builder: (context, _state) {
       return mainLayout(context, _state);
     });
-    
-
   }
 
   Widget mainLayout(BuildContext context, QuestionnaireState _state) {
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(60.0),
-          child: AppBar(
-            iconTheme: IconThemeData(color: Colors.white),
-            titleSpacing: 0.0,
-            centerTitle: true,
-            automaticallyImplyLeading: false, // Don't show the leading button
-            title: Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 62, 0),
-                    color: Colors.transparent,
-                    height: double.infinity,
-                    width: 62,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        MaterialButton(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          minWidth: 0,
-                          height: double.infinity,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.low_priority,
-                                  color: Colors.black.withAlpha(180),
-                                  size: 30,
-                                ),
-                              ],
-                            ),
-                            width: 30,
-                            margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.all(Radius.circular(50)),
-                                color: Colors.black.withAlpha(0)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                    color: Colors.transparent,
-                    height: double.infinity,
-                    width: 62,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        MaterialButton(
-                          highlightColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          minWidth: 0,
-                          height: double.infinity,
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Icon(
-                                  Icons.close,
-                                  color: Colors.black.withAlpha(180),
-                                  size: 30,
-                                ),
-                              ],
-                            ),
-                            width: 30,
-                            margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.all(Radius.circular(50)),
-                                color: Colors.black.withAlpha(0)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  children: <Widget>[
-                    Container(
-                        color: Colors.transparent,
-                        child: SizedBox(
-                          width: 280,
-                          height: 100,
-                          child: LayoutBuilder(builder: (context, constraint) {
-                            return Container(
-                                color: Colors.transparent,
-                                width: double.infinity,
-                                child: Row(
-                                  children: <Widget>[
-                                    Column(
-                                      mainAxisAlignment:
-                                      MainAxisAlignment.center,
-                                      mainAxisSize: MainAxisSize.max,
-                                      children: <Widget>[
-                                        Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Container(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 8, 0, 0),
-                                                margin: EdgeInsets.fromLTRB(
-                                                    16, 0, 20, 0),
-                                                child: Text(
-                                                  "ข้อที่ ",
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                      color: Colors.black
-                                                          .withAlpha(200),
-                                                      fontFamily:
-                                                      'SukhumvitSet',
-                                                      fontSize: 22,
-                                                      fontWeight:
-                                                      FontWeight.bold),
-                                                ))),
-                                      ],
-                                    ),
-                                  ],
-                                ));
-                          }),
-                        )),
-                  ],
-                ),
-                SizedBox(
-                  height: double.infinity,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          "",
-                          style: TextStyle(
-                              color: Colors.black.withAlpha(200),
-                              fontFamily: 'SukhumvitSet',
-                              //fontSize: 20,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[Container()],
-                )
-              ],
-            ),
-
-            brightness: Brightness.light,
-            backgroundColor: Colors.white,
-            elevation: 0,
-          ),
-        ),
-        body: //builder
-        Container(color: Colors.red,));
+        appBar: mainPageAppbar(_state, context),
+        body: _pageManager(context, _state));
   }
 
+  Widget _pageManager(BuildContext context, QuestionnaireState _state) {
+    if (_state is InitialQuestionnaireState) {
+      return Container(
+        color: Colors.white,
+      );
+    } else if (_state is LoadingQuestionState) {
+      return Container(
+        color: Colors.red,
+      );
+    } else if (_state is TitleQuestionState) {
+      return _titlePage(context, _state);
+    } else if (_state is NumberMultiplyQuestionState) {
+      return _numberMultiplyPage(context, _state);
+    } else if (_state is LocationQuestionState) {
+      return _locationPage(context, _state);
+    } else if (_state is MultiplyQuestionState) {
+      return _multiplyPage(context, _state);
+    } else if (_state is NumberQuestionState) {
+      return _numberPage(context, _state);
+    } else if (_state is TextInputQuestionState) {
+      return _textInputPage(context, _state);
+    } else if (_state is RequestPermissionState) {
+      return Container(
+        color: Colors.blue,
+      );
+    }
+  }
 }

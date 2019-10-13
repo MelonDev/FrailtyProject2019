@@ -8,6 +8,7 @@ import 'package:frailty_project_2019/Design/question_page.dart';
 import 'package:frailty_project_2019/Question.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
 import 'package:frailty_project_2019/home.dart';
+import 'package:uuid/uuid.dart';
 
 class CataloguePage extends StatefulWidget {
   CataloguePage();
@@ -18,10 +19,10 @@ class CataloguePage extends StatefulWidget {
 
 class _cataloguePage extends State<CataloguePage> {
   final List<String> _tabList = ["แบบทดสอบ", "ยังทำไม่เสร็จ", "ทำเสร็จแล้ว"];
+
   //CatalogueBloc _catalogueBloc; = CatalogueBloc();
 
   CatalogueBloc _catalogueBloc;
-
 
   String _titleText = "แบบทดสอบ";
 
@@ -57,16 +58,13 @@ class _cataloguePage extends State<CataloguePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     return BlocBuilder<CatalogueBloc, CatalogueState>(
         builder: (context, _state) {
-          return mainLayout(context, _state);
-        });
+      return mainLayout(context, _state);
+    });
   }
 
   Widget mainLayout(BuildContext context, CatalogueState _state) {
-
     return Scaffold(
       backgroundColor: Color(0xFFE0E0E0),
       appBar: AppBar(
@@ -182,7 +180,7 @@ class _cataloguePage extends State<CataloguePage> {
     }
   }
 
-  Widget loadingTab(){
+  Widget loadingTab() {
     return Container(
       color: Colors.transparent,
       child: Center(
@@ -193,10 +191,7 @@ class _cataloguePage extends State<CataloguePage> {
       ),
     );
   }
-
-
 }
-
 
 class PlaceholderWidget extends StatelessWidget {
   final Color color;
@@ -211,30 +206,27 @@ class PlaceholderWidget extends StatelessWidget {
   }
 }
 
-
 class QuestionnaireTab extends StatelessWidget {
-
   QuestionnaireCatalogueState _state;
 
   QuestionnaireTab(this._state);
 
-
   final List<String> _tabList = ["ชุดหลัก", "ชุดรอง"];
-
 
   @override
   Widget build(BuildContext context) {
     if (this._state == null) {
       return Container();
-    }
-    else {
+    } else {
       return Stack(
         children: <Widget>[
           Container(
             color: Color(0xFFE0E0E0),
             child: ListView.builder(
               padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
-              itemCount: (_state.questionnaireList == null ? 0 :_tabList.length + _state.questionnaireList.length),
+              itemCount: (_state.questionnaireList == null
+                  ? 0
+                  : _tabList.length + _state.questionnaireList.length),
               itemBuilder: (context, position) {
                 if (position == 0 || position == 2) {
                   return Container(
@@ -256,28 +248,24 @@ class QuestionnaireTab extends StatelessWidget {
                       ));
                 } else {
                   return GestureDetector(
-                    onTap: () =>
-                    {
+                    onTap: () => {
                       Navigator.push(
                           context,
                           //MaterialPageRoute(builder: (context) => SecondRoute()),
                           FrailtyRoute(
-                              builder: (BuildContext context) =>
-
-                                  MainQuestion(position == 1
+                              builder: (BuildContext context) => MainQuestion(
+                                  position == 1
                                       ? _state.questionnaireList[0].id
-                                      : _state.questionnaireList[position - 2]
-                                      .id)))
-
-
-
+                                      : _state
+                                          .questionnaireList[position - 2].id,
+                                  Uuid().v4())))
                     },
                     child: Padding(
                         padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                         child: Container(
                           decoration: BoxDecoration(
                               borderRadius:
-                              BorderRadius.all(Radius.circular(10)),
+                                  BorderRadius.all(Radius.circular(10)),
                               color: Colors.white),
                           child: Padding(
                               padding: const EdgeInsets.all(16.0),
@@ -290,8 +278,9 @@ class QuestionnaireTab extends StatelessWidget {
                                           position == 1
                                               ? _state.questionnaireList[0].name
                                               : _state
-                                              .questionnaireList[position - 2]
-                                              .name,
+                                                  .questionnaireList[
+                                                      position - 2]
+                                                  .name,
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             color: Colors.black54,
@@ -303,11 +292,11 @@ class QuestionnaireTab extends StatelessWidget {
                                   ),
                                   Text(
                                       position == 1
-                                          ? _state.questionnaireList[0]
-                                          .description
-                                          : _state.questionnaireList[position -
-                                          2]
-                                          .description,
+                                          ? _state
+                                              .questionnaireList[0].description
+                                          : _state
+                                              .questionnaireList[position - 2]
+                                              .description,
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         color: Colors.black54,
