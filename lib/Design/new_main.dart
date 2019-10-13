@@ -1,3 +1,4 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -1282,7 +1283,9 @@ class _newMain extends State<NewMain>
               ),
               child: FlatButton(
                   splashColor: Colors.white30,
-                  onPressed: () {},
+                  onPressed: () {
+                    
+                  },
                   child: Stack(
                     children: <Widget>[
                       Container(

@@ -18,6 +18,8 @@ class AuthenticatingLoginEvent extends AuthenticationEvent {
   AuthenticatingLoginEvent(this.message);
 }
 
+class AppleLoginEvent extends AuthenticationEvent {}
+
 class UnAuthenticatingLoginEvent extends AuthenticationEvent {}
 
 class TestEvent extends AuthenticationEvent {

@@ -1,9 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:bloc/bloc.dart';
+import 'package:device_info/device_info.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:frailty_project_2019/Model/Account.dart';
 import 'package:frailty_project_2019/Model/Version.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
@@ -24,8 +27,6 @@ class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   var _firebaseAuth = FirebaseAuth.instance;
 
-
-
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
       'https://www.googleapis.com/auth/contacts.readonly',
@@ -40,8 +41,9 @@ class AuthenticationBloc
       AuthenticationEvent event) async* {
     if (event is AuthenticatingLoginEvent) {
       yield* _mapAuthenticatingToState(event);
-    } else
-    if (event is FacebookLoginEvent) {} else if (event is GoogleLoginEvent) {
+    } else if (event is AppleLoginEvent) {
+    } else if (event is FacebookLoginEvent) {
+    } else if (event is GoogleLoginEvent) {
       yield* _mapGoogleLoginToState();
     } else if (event is UnAuthenticatingLoginEvent) {
       yield* _mapUnAuthenticatingToState();
@@ -73,11 +75,11 @@ class AuthenticationBloc
           .then((onValue) async {
         if (onValue != null) {
           final GoogleSignInAuthentication googleAuth =
-          await onValue.authentication;
+              await onValue.authentication;
           var firebase = await _firebaseAuth
               .signInWithCredential(GoogleAuthProvider.getCredential(
-              idToken: googleAuth.idToken,
-              accessToken: googleAuth.accessToken))
+                  idToken: googleAuth.idToken,
+                  accessToken: googleAuth.accessToken))
               .whenComplete(() {
             print("T2");
           }).catchError((onError) {
@@ -86,7 +88,7 @@ class AuthenticationBloc
           }).then((onValueAccount) async {
             print("T4");
             if (onValueAccount != null) {
-             return loadAccountFromHeroku(onValueAccount.user);
+              return loadAccountFromHeroku(onValueAccount.user);
             } else {
               return null;
             }
@@ -121,7 +123,7 @@ class AuthenticationBloc
       }
       var _auth = await _firebaseAuth.currentUser().then((onValue) async {
         if (onValue != null) {
-         return loadAccountFromHeroku(onValue);
+          return loadAccountFromHeroku(onValue);
         } else {
           return null;
         }
