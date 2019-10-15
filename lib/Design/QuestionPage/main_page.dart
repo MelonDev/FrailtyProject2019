@@ -1,13 +1,7 @@
 part of '../question_page.dart';
 
-Future<int> getSavedAnswerInLocal() async{
-
-}
-
-Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
+Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
   ThemeData _themeData = Theme.of(context);
-
-
 
   return PreferredSize(
     preferredSize: Size.fromHeight(60.0),
@@ -54,8 +48,7 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
                       margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(50)),
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
                           color: Colors.black.withAlpha(0)),
                     ),
                   ),
@@ -98,8 +91,7 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
                       margin: EdgeInsets.fromLTRB(0, 6, 0, 6),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(50)),
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
                           color: Colors.black.withAlpha(0)),
                     ),
                   ),
@@ -124,29 +116,35 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
                           child: Row(
                             children: <Widget>[
                               Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 mainAxisSize: MainAxisSize.max,
                                 children: <Widget>[
                                   Align(
                                       alignment: Alignment.centerLeft,
                                       child: Container(
-                                          padding: EdgeInsets.fromLTRB(
-                                              0, 8, 0, 0),
-                                          margin: EdgeInsets.fromLTRB(
-                                              16, 0, 20, 0),
-                                          child: Text(
-                                            "ข้อที่ ",
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                //color: Colors.black.withAlpha(200),
-                                                color: _themeData.primaryTextTheme.title.color,
-                                                fontFamily:
-                                                'SukhumvitSet',
-                                                fontSize: 22,
-                                                fontWeight:
-                                                FontWeight.bold),
-                                          ))),
+                                          padding:
+                                              EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                          margin:
+                                              EdgeInsets.fromLTRB(16, 0, 20, 0),
+                                          child: _state.questionCounter != null
+                                              ? (_state.questionCounter > 0
+                                                  ? Text(
+                                                      "ข้อที่ ${_state.questionCounter}",
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          //color: Colors.black.withAlpha(200),
+                                                          color: _themeData
+                                                              .primaryTextTheme
+                                                              .title
+                                                              .color,
+                                                          fontFamily:
+                                                              'SukhumvitSet',
+                                                          fontSize: 22,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    )
+                                                  : Container())
+                                              : Container())),
                                 ],
                               ),
                             ],

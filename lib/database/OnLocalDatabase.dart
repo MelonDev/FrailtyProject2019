@@ -1,5 +1,6 @@
 import 'package:frailty_project_2019/Model/Answer.dart';
 import 'package:frailty_project_2019/Model/AnswerPack.dart';
+import 'package:frailty_project_2019/Model/Question.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/UncompletedData.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestion.dart';
@@ -56,6 +57,7 @@ class OnLocalDatabase {
     batch.insert(answerPackTable, answerPack.toMap());
     batch.commit().then((onValue) {
       preferences.setString("CURRENT_ANSWERPACK", answerPack.id);
+      preferences.setInt("CURRENT_QUESTION", 0);
       print("Batch Complete");
     }).catchError((error) {
       print("Batch Error: $error");
@@ -134,6 +136,21 @@ class OnLocalDatabase {
     }).catchError((error) {
       print("Batch Error: $error");
     });
+  }
+
+  Future<int> getCounter(String answerPackIds) async {
+    Database database = await _initDatabase();
+
+
+    List<Map> list = await database
+        .rawQuery(
+        "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackIds.toUpperCase()}')")
+        .then((onValue) => onValue);
+
+    print(list.length);
+
+    return list.length;
+
   }
 
   Future<List<UncompletedData>> loadUnCompletedList() async {

@@ -5,10 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
 import 'package:frailty_project_2019/Model/Choice.dart';
+import 'package:frailty_project_2019/Model/Question.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
 import 'package:frailty_project_2019/Tools/CellCalculator.dart';
 import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'QuestionPage/title_page.dart';
 
@@ -43,6 +45,8 @@ class _questionPage extends State<MainQuestion> {
 
   String _uuid;
 
+  int numberCounter;
+
   @override
   void setState(fn) {
     super.setState(fn);
@@ -50,8 +54,6 @@ class _questionPage extends State<MainQuestion> {
 
   @override
   Widget build(BuildContext context) {
-
-
     _uuid = widget.uuid;
     _questionnaireKey = widget._keys;
 
@@ -59,7 +61,7 @@ class _questionPage extends State<MainQuestion> {
     _cellCalculator = new CellCalculator(context);
 
     _questionnaireBloc
-        .dispatch(NextQuestionEvent(_questionnaireKey, null, null,null));
+        .dispatch(NextQuestionEvent(_questionnaireKey, null, null, null));
 
     print("UUID: $_uuid");
 
@@ -71,7 +73,7 @@ class _questionPage extends State<MainQuestion> {
 
   Widget mainLayout(BuildContext context, QuestionnaireState _state) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         appBar: mainPageAppbar(_state, context),
         body: _pageManager(context, _state));
   }
@@ -100,7 +102,8 @@ class _questionPage extends State<MainQuestion> {
                   padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                   child: Text(_state.message,
                       style: TextStyle(
-                          color: Theme.of(context).primaryTextTheme.subtitle.color,
+                          color:
+                              Theme.of(context).primaryTextTheme.subtitle.color,
                           fontSize: 18,
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.normal)),
@@ -109,16 +112,22 @@ class _questionPage extends State<MainQuestion> {
             ),
           ));
     } else if (_state is TitleQuestionState) {
+      //getCounter();
       return _titlePage(context, _state);
     } else if (_state is NumberMultiplyQuestionState) {
+      //getCounter();
       return _numberMultiplyPage(context, _state);
     } else if (_state is LocationQuestionState) {
+      //getCounter();
       return _locationPage(context, _state);
     } else if (_state is MultiplyQuestionState) {
+      //getCounter();
       return _multiplyPage(context, _state);
     } else if (_state is NumberQuestionState) {
+      //getCounter();
       return _numberPage(context, _state);
     } else if (_state is TextInputQuestionState) {
+      //getCounter();
       return _textInputPage(context, _state);
     } else if (_state is RequestPermissionState) {
       return Container(
@@ -126,4 +135,18 @@ class _questionPage extends State<MainQuestion> {
       );
     }
   }
+
+  /*
+  void getCounter() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final String currentAnswerPack =
+        preferences.getString("CURRENT_ANSWERPACK");
+
+    int count = await OnLocalDatabase().getCounter(currentAnswerPack) + 1;
+    numberCounter = count;
+  }
+
+   */
+
+
 }

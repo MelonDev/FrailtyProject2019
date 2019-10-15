@@ -5,9 +5,11 @@ import 'package:bloc/bloc.dart';
 import 'package:frailty_project_2019/Model/AnswerPack.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/UncompletedData.dart';
+import 'package:frailty_project_2019/Model/UncompletedDataPack.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestion.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestionnaires.dart';
 import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,7 +33,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     } else if (event is CompletedSelectedEvent) {
       print("CompletedSelectedEvent");
       yield* _mapCompletedToState();
-    }else if(event is UncompletedDeleteItemEvent){
+    } else if (event is UncompletedDeleteItemEvent) {
       yield* _mapDeleteUncompletedToState(event);
     }
   }
@@ -67,7 +69,8 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     yield LoadingCatalogueState();
 
     try {
-      var questionnaireList = await OnDeviceQuestionnaires().getQuestionnaireDatabase();
+      var questionnaireList =
+          await OnDeviceQuestionnaires().getQuestionnaireDatabase();
 /*
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", null, null);
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", "e1a09147-1b16-48d2-86f3-16535d415902", null);
@@ -95,7 +98,6 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
       }
 */
 
-
       yield QuestionnaireCatalogueState(questionnaireList);
     } catch (error) {
       yield ErrorCatalogueState();
@@ -107,21 +109,72 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
   Stream<CatalogueState> _mapUncompletedToState() async* {
     yield LoadingCatalogueState();
 
-    List<UncompletedData> uncompletedData = await OnLocalDatabase().loadUnCompletedList();
+    List<UncompletedData> uncompletedData =
+        await OnLocalDatabase().loadUnCompletedList();
 
+    List<UncompleteDataPack> newList = _compareListDate(uncompletedData);
+    //print("$uncompletedData $a");
 
-    yield UncompletedCatalogueState(uncompletedData);
+    yield UncompletedCatalogueState(newList.reversed.toList());
+    //yield UncompletedCatalogueState(uncompletedData.reversed.toList());
   }
 
-  Stream<CatalogueState> _mapDeleteUncompletedToState(UncompletedDeleteItemEvent event) async* {
+  Stream<CatalogueState> _mapDeleteUncompletedToState(
+      UncompletedDeleteItemEvent event) async* {
     yield LoadingCatalogueState();
 
     await OnLocalDatabase().deleteSlot(event.uncompletedData.answerPack.id);
 
-    await Future.delayed(Duration(milliseconds: 500));
-    
-    List<UncompletedData> uncompletedData = await OnLocalDatabase().loadUnCompletedList();
-    yield UncompletedCatalogueState(uncompletedData);
+    await Future.delayed(Duration(milliseconds: 200));
+
+    List<UncompletedData> uncompletedData =
+        await OnLocalDatabase().loadUnCompletedList();
+
+    List<UncompleteDataPack> newList = _compareListDate(uncompletedData);
+    //print("$uncompletedData $a");
+
+    yield UncompletedCatalogueState(newList.reversed.toList());
+    //yield UncompletedCatalogueState(uncompletedData.reversed.toList());
+
+  }
+
+  List<UncompleteDataPack> _compareListDate(
+      List<UncompletedData> originalList) {
+    List<UncompleteDataPack> newList = [];
+
+    DateTime _datetime;
+
+    int counter = 0;
+
+    for (var data in originalList) {
+      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      DateTime dateTime = formatter.parse(data.answerPack.dateTime);
+      DateTime _date =
+          DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0, 0, 0);
+
+      if (_datetime == null) {
+        _datetime = _date;
+        //newList.add(UncompleteDataPack(uncompletedData: null, labelDateTime: formatter.format(_date)));
+      }
+
+      if (_date.isAfter(_datetime)) {
+        newList.add(UncompleteDataPack(uncompletedData: null, labelDateTime: formatter.format(_date)));
+        newList.add(UncompleteDataPack(uncompletedData: data,labelDateTime: null));
+        _datetime = _date;
+      } else {
+        newList.add(UncompleteDataPack(uncompletedData: data,labelDateTime: null));
+      }
+
+      counter++;
+
+      if(counter == originalList.length){
+        newList.add(UncompleteDataPack(uncompletedData: null, labelDateTime: formatter.format(_date)));
+      }
+
+
+    }
+
+    return newList;
   }
 
   Stream<CatalogueState> _mapCompletedToState() async* {

@@ -3,24 +3,36 @@ part of 'questionnaire_bloc.dart';
 @immutable
 abstract class QuestionnaireState {}
 
-class InitialQuestionnaireState extends QuestionnaireState {
+class MyQuestionnaireState extends QuestionnaireState {
+  final int questionCounter;
+
+  MyQuestionnaireState(this.questionCounter);
+}
+
+
+class InitialQuestionnaireState extends MyQuestionnaireState {
+
+  InitialQuestionnaireState() : super(0);
+
   @override
   String toString() {
     return "InitialQuestionnaireState";
   }
 }
 
-class FirstQuestionState extends QuestionnaireState {
+class FirstQuestionState extends MyQuestionnaireState {
+  FirstQuestionState() : super(0);
+
   @override
   String toString() {
     return "FirstQuestionState";
   }
 }
 
-class LoadingQuestionState extends QuestionnaireState {
+class LoadingQuestionState extends MyQuestionnaireState {
   final String message;
 
-  LoadingQuestionState(this.message);
+  LoadingQuestionState(this.message) : super(0);
 
   @override
   String toString() {
@@ -28,10 +40,10 @@ class LoadingQuestionState extends QuestionnaireState {
   }
 }
 
-class TitleQuestionState extends QuestionnaireState {
+class TitleQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  TitleQuestionState(this.questionWithChoice);
+  TitleQuestionState(this.questionWithChoice,int counter) : super(counter);
 
   @override
   String toString() {
@@ -39,11 +51,11 @@ class TitleQuestionState extends QuestionnaireState {
   }
 }
 
-class NumberMultiplyQuestionState extends QuestionnaireState {
+class NumberMultiplyQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
   final List<int> numberList;
 
-  NumberMultiplyQuestionState(this.questionWithChoice,this.numberList);
+  NumberMultiplyQuestionState(this.questionWithChoice,this.numberList,int counter) : super(counter);
 
   @override
   String toString() {
@@ -51,10 +63,10 @@ class NumberMultiplyQuestionState extends QuestionnaireState {
   }
 }
 
-class LocationQuestionState extends QuestionnaireState {
+class LocationQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  LocationQuestionState(this.questionWithChoice);
+  LocationQuestionState(this.questionWithChoice,int counter) : super(counter);
 
   @override
   String toString() {
@@ -62,10 +74,10 @@ class LocationQuestionState extends QuestionnaireState {
   }
 }
 
-class MultiplyQuestionState extends QuestionnaireState {
+class MultiplyQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  MultiplyQuestionState(this.questionWithChoice);
+  MultiplyQuestionState(this.questionWithChoice,int counter) : super(counter);
 
   @override
   String toString() {
@@ -73,12 +85,12 @@ class MultiplyQuestionState extends QuestionnaireState {
   }
 }
 
-class NumberQuestionState extends QuestionnaireState {
+class NumberQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
   final List<int> numberList;
 
 
-  NumberQuestionState(this.questionWithChoice,this.numberList);
+  NumberQuestionState(this.questionWithChoice,this.numberList,int counter) : super(counter);
 
   @override
   String toString() {
@@ -86,10 +98,10 @@ class NumberQuestionState extends QuestionnaireState {
   }
 }
 
-class TextInputQuestionState extends QuestionnaireState {
+class TextInputQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  TextInputQuestionState(this.questionWithChoice);
+  TextInputQuestionState(this.questionWithChoice,int counter) : super(counter);
 
   @override
   String toString() {
@@ -97,7 +109,9 @@ class TextInputQuestionState extends QuestionnaireState {
   }
 }
 
-class RequestPermissionState extends QuestionnaireState {
+class RequestPermissionState extends MyQuestionnaireState {
+  RequestPermissionState() : super(0);
+
   @override
   String toString() {
     return "RequestPermissionState";

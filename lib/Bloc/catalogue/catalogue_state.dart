@@ -24,7 +24,7 @@ class QuestionnaireCatalogueState extends CatalogueState {
 }
 
 class UncompletedCatalogueState extends CatalogueState {
-  final List<UncompletedData> data;
+  final List<UncompleteDataPack> data;
 
   UncompletedCatalogueState(this.data);
 

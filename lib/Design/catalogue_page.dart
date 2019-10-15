@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -197,7 +198,7 @@ class _cataloguePage extends State<CataloguePage> {
       color: Colors.transparent,
       child: Center(
         child: SpinKitThreeBounce(
-          color: Colors.black38,
+          color: _themeData.primaryTextTheme.subtitle.color,
           size: 50.0,
         ),
       ),
@@ -219,6 +220,8 @@ class PlaceholderWidget extends StatelessWidget {
 }
 
 class UncompletedTab extends StatelessWidget {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+
   CatalogueBloc _catalogueBloc;
 
   UncompletedCatalogueState _state;
@@ -241,29 +244,172 @@ class UncompletedTab extends StatelessWidget {
           Container(
             //color: Color(0xFFE0E0E0),
             color: _themeData.backgroundColor,
+
             child: ListView.builder(
               padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
               itemCount: _state.data.length,
               itemBuilder: (context, position) {
-                return Slidable(
-                  actionPane: SlidableBehindActionPane(),
-                  actionExtentRatio: 0.25,
-                  child: _cardWidget(context, position),
-                  secondaryActions: <Widget>[
-                    Container(
-                      padding: EdgeInsets.fromLTRB(0, 20, 16, 32),
-                      child: IconSlideAction(
-                        caption: 'ลบ',
-                        color: Colors.red,
-                        icon: Icons.delete,
-                        onTap: () {
-                          _catalogueBloc.dispatch(UncompletedDeleteItemEvent(
-                              _state.data[position]));
-                        },
-                      ),
-                    )
-                  ],
-                );
+                if (_state.data[position].uncompletedData != null) {
+                  return Slidable(
+                    actionPane: SlidableBehindActionPane(),
+                    actionExtentRatio: 0.25,
+                    child: _cardWidget(context, position),
+                    secondaryActions: <Widget>[
+                      Container(
+                        padding: EdgeInsets.fromLTRB(0, 0, 16, 16),
+                        child: IconSlideAction(
+                          caption: 'ลบ',
+                          color: Colors.red,
+                          icon: Icons.delete,
+                          onTap: () {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    MediaQuery.of(context).platformBrightness ==
+                                            Brightness.dark
+                                        ? new CupertinoAlertDialog(
+                                            title: new Text(
+                                              "ยืนยันการลบ",
+                                              style: TextStyle(
+                                                  fontFamily: _themeData
+                                                      .primaryTextTheme
+                                                      .subtitle
+                                                      .fontFamily,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white.withAlpha(200)),
+                                            ),
+                                            content: new Text(
+                                                "หากคุณต้องการจบบันทึกอันนี้ให้กดปุ่มยืนยัน",
+                                                style: TextStyle(
+                                                    fontFamily: _themeData
+                                                        .primaryTextTheme
+                                                        .subtitle
+                                                        .fontFamily,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.white.withAlpha(200).withAlpha(150))),
+                                            actions: [
+                                              CupertinoDialogAction(
+                                                isDestructiveAction: true,
+                                                child: new Text("ยืนยัน",
+                                                    style: TextStyle(
+                                                        fontFamily: _themeData
+                                                            .primaryTextTheme
+                                                            .subtitle
+                                                            .fontFamily,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.red)),
+                                                onPressed: () {
+                                                  _catalogueBloc.dispatch(
+                                                      UncompletedDeleteItemEvent(
+                                                          _state.data[position]
+                                                              .uncompletedData));
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              CupertinoDialogAction(
+                                                child: new Text("ยกเลิก",
+                                                    style: TextStyle(
+                                                        fontFamily: _themeData
+                                                            .primaryTextTheme
+                                                            .subtitle
+                                                            .fontFamily,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.white.withAlpha(200))),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              )
+                                            ],
+                                          )
+                                        : new CupertinoAlertDialog(
+                                            title: new Text(
+                                              "ยืนยันการลบ",
+                                              style: TextStyle(
+                                                  fontFamily: _themeData
+                                                      .primaryTextTheme
+                                                      .subtitle
+                                                      .fontFamily,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black.withAlpha(180)),
+                                            ),
+                                            content: new Text(
+                                                "หากคุณต้องการจบบันทึกอันนี้ให้กดปุ่มยืนยัน",
+                                                style: TextStyle(
+                                                    fontFamily: _themeData
+                                                        .primaryTextTheme
+                                                        .subtitle
+                                                        .fontFamily,
+                                                    fontSize: 16,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    color: Colors.black.withAlpha(180).withAlpha(150))),
+                                            actions: [
+                                              CupertinoDialogAction(
+                                                isDestructiveAction: true,
+                                                child: new Text("ยืนยัน",
+                                                    style: TextStyle(
+                                                        fontFamily: _themeData
+                                                            .primaryTextTheme
+                                                            .subtitle
+                                                            .fontFamily,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.red)),
+                                                onPressed: () {
+                                                  _catalogueBloc.dispatch(
+                                                      UncompletedDeleteItemEvent(
+                                                          _state.data[position]
+                                                              .uncompletedData));
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              CupertinoDialogAction(
+                                                child: new Text("ยกเลิก",
+                                                    style: TextStyle(
+                                                        fontFamily: _themeData
+                                                            .primaryTextTheme
+                                                            .subtitle
+                                                            .fontFamily,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        color: Colors.black.withAlpha(180))),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              )
+                                            ],
+                                          ));
+                          },
+                        ),
+                      )
+                    ],
+                  );
+                } else if (_state.data[position].labelDateTime != null) {
+                  return Container(
+                      color: Colors.transparent,
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 6),
+                      child: Text(
+                        _loadDateForLabel(_state.data[position].labelDateTime),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: _themeData.primaryTextTheme.subtitle.color,
+                            fontFamily: _themeData
+                                .primaryTextTheme.subtitle.fontFamily),
+                      ));
+                } else {
+                  return Container();
+                }
               },
             ),
           ),
@@ -287,15 +433,20 @@ class UncompletedTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     RoundedProgressBar(
-
                         height: 10,
                         milliseconds: 2000,
-                        percent: _calculatePercent(_state.data[position].totalQuestion.toDouble(),_state.data[position].completedQuestion.toDouble()),
+                        percent: _calculatePercent(
+                            _state.data[position].uncompletedData.totalQuestion
+                                .toDouble(),
+                            _state.data[position].uncompletedData
+                                .completedQuestion
+                                .toDouble()),
                         style: RoundedProgressBarStyle(
-                          colorBorder: _themeData.backgroundColor,
-                          backgroundProgress: _themeData.backgroundColor,
-                          colorProgress: _themeData.canvasColor,
-                            borderWidth: 1, widthShadow: 0),
+                            colorBorder: _themeData.backgroundColor,
+                            backgroundProgress: _themeData.backgroundColor,
+                            colorProgress: _themeData.canvasColor,
+                            borderWidth: 1,
+                            widthShadow: 0),
                         borderRadius: BorderRadius.circular(10)),
                     SizedBox(
                       height: 20,
@@ -316,7 +467,7 @@ class UncompletedTab extends StatelessWidget {
                                           .primaryTextTheme.title.fontFamily)),
                               TextSpan(
                                   text:
-                                      "${_state.data[position].answerPack.id}",
+                                      "${_state.data[position].uncompletedData.answerPack.id}",
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       color: _themeData
@@ -344,7 +495,7 @@ class UncompletedTab extends StatelessWidget {
                                         .primaryTextTheme.title.fontFamily)),
                             TextSpan(
                                 text:
-                                    "${_state.data[position].completedQuestion} จาก ${_state.data[position].totalQuestion} ข้อ",
+                                    "${_state.data[position].uncompletedData.completedQuestion} จาก ${_state.data[position].uncompletedData.totalQuestion} ข้อ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
@@ -372,7 +523,7 @@ class UncompletedTab extends StatelessWidget {
                                         .primaryTextTheme.title.fontFamily)),
                             TextSpan(
                                 text:
-                                    "${_loadDate(_state.data[position].answerPack.dateTime)}",
+                                    "${_loadDate(_state.data[position].uncompletedData.answerPack.dateTime)}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
@@ -400,7 +551,7 @@ class UncompletedTab extends StatelessWidget {
                                         .primaryTextTheme.title.fontFamily)),
                             TextSpan(
                                 text:
-                                    "\n${_state.data[position].questionnaire.name}",
+                                    "\n${_state.data[position].uncompletedData.questionnaire.name}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
@@ -417,8 +568,14 @@ class UncompletedTab extends StatelessWidget {
     );
   }
 
-  double _calculatePercent(double full,double current){
-    return (current * 100)/full;
+  double _calculatePercent(double full, double current) {
+    return (current * 100) / full;
+  }
+
+  String _loadDateForLabel(String date) {
+    var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateTime dateTime = formatter.parse(date);
+    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543}";
   }
 
   String _loadDate(String date) {
