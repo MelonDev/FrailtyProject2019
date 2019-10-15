@@ -46,6 +46,11 @@ dependencies:
 
   splashscreen: ^1.2.0
 
+  dynamic_theme: ^1.0.1
+  flutter_slidable: ^0.5.4
+  flutter_rounded_progress_bar: ^0.1.2
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -83,7 +88,7 @@ flutter:
 
   assets:
     - images/settings.png
-    - images/funny-elderly-couple-dancing-cartoon-vector-24002358.jpg
+    - images/funny-elderly-couple-dancing-cartoon-vector-24002358.png
     - images/search-4.png
     - images/facebook.png
     - images/round_low_priority.png

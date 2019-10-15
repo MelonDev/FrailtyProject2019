@@ -1,5 +1,6 @@
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,8 @@ class _newMain extends State<NewMain>
   static const _appname = "ระบบวิเคราะห์ภาวะเปราะบาง";
   AuthenticationBloc _authenticationBloc;
 
+  ThemeData _theme;
+
   var _context;
   var firebaseAuth = FirebaseAuth.instance;
   PanelController _panelController = new PanelController();
@@ -34,6 +37,7 @@ class _newMain extends State<NewMain>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+
   }
 
   @override
@@ -47,7 +51,7 @@ class _newMain extends State<NewMain>
     switch (state) {
       case AppLifecycleState.resumed:
         print("resumed");
-        _authenticationBloc.dispatch(AuthenticatingLoginEvent("กำลังรีเฟรส.."));
+        _authenticationBloc.dispatch(AuthenticatingLoginEvent("กำลังรีเฟรส..",context));
         break;
       case AppLifecycleState.inactive:
         print("inactive");
@@ -72,18 +76,20 @@ class _newMain extends State<NewMain>
     //_authenticationBloc = AuthenticationBloc();
     //_authenticationBloc = BlocProvider.BlocProvider.of(context).authenticationBloc;
 
+    //DynamicTheme.of(context).setBrightness(MediaQuery.of(context).platformBrightness);
 
+    _theme = Theme.of(context);
     _context = context;
 
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, _state) {
       if (_state is InitialAuthenticationState) {
-        _authenticationBloc.dispatch(AuthenticatingLoginEvent("เช็คสถานะ.."));
+        _authenticationBloc.dispatch(AuthenticatingLoginEvent("เช็คสถานะ..",context));
         return SizedBox();
       } else if (_state is AuthenticatingState) {
         return Material(
           child: Container(
-              color: Colors.teal,
+              color: _theme.accentColor,
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -100,7 +106,7 @@ class _newMain extends State<NewMain>
                       padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                       child: Text(_state.message,
                           style: TextStyle(
-                            color: Colors.white.withAlpha(220),
+                              color: Colors.white.withAlpha(220),
                               fontSize: 18,
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal)),
@@ -112,7 +118,8 @@ class _newMain extends State<NewMain>
       } else if (_state is AuthenticatedState ||
           _state is UnAuthenticationState) {
         return Material(
-          color: Color(0xFFD9D9D9),
+          //color: Color(0xFFD9D9D9),
+          color: _theme.scaffoldBackgroundColor,
           child: SlidingUpPanel(
             controller: _panelController,
             parallaxEnabled: true,
@@ -126,11 +133,13 @@ class _newMain extends State<NewMain>
             panel: _floatingPanel(context, _state),
             collapsed: _floatingCollapsed(_state),
             body: Scaffold(
-              backgroundColor: Color(0xFFD9D9D9),
+              backgroundColor: _theme.scaffoldBackgroundColor,
               appBar: AppBar(
+                backgroundColor: Theme.of(context).appBarTheme.color,
                 elevation: 0,
                 title: Text(_appname,
                     style: TextStyle(
+                      color: Colors.white,
                         fontFamily: 'SukhumvitSet',
                         fontWeight: FontWeight.bold)),
               ),
@@ -145,8 +154,9 @@ class _newMain extends State<NewMain>
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                                 colors: [
-                                  Color(0xFF52c7b8),
-                                  Color(0xFFD9D9D9),
+                                  //Color(0xFF52c7b8),
+                                  _theme.secondaryHeaderColor,
+                                  _theme.scaffoldBackgroundColor,
                                 ],
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter),
@@ -164,7 +174,7 @@ class _newMain extends State<NewMain>
                                           boxShadow: [
                                             BoxShadow(
                                               color:
-                                                  Colors.grey.withOpacity(0.5),
+                                              _theme.primaryColor.withAlpha(100),
                                               blurRadius: 10.0,
                                             ),
                                           ]),
@@ -177,7 +187,7 @@ class _newMain extends State<NewMain>
                                             decoration: BoxDecoration(
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(24)),
-                                                color: Colors.white),
+                                                color: _theme.cardColor),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: <Widget>[
@@ -189,7 +199,7 @@ class _newMain extends State<NewMain>
                                                       bottom: 20),
                                                   color: Colors.transparent,
                                                   child: Image.asset(
-                                                    'images/funny-elderly-couple-dancing-cartoon-vector-24002358.jpg',
+                                                    'images/funny-elderly-couple-dancing-cartoon-vector-24002358.png',
                                                     fit: BoxFit.contain,
                                                     height: Device.get()
                                                             .isIphoneX
@@ -253,8 +263,7 @@ class _newMain extends State<NewMain>
                                                                           .isTablet
                                                                       ? 22
                                                                       : 17,
-                                                                  color: Colors
-                                                                      .black45,
+                                                                  color: _theme.primaryTextTheme.subtitle.color,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .normal),
@@ -324,6 +333,23 @@ class _newMain extends State<NewMain>
             ),
           ),
         );
+      }else if(_state is ErrorAuthenticationState){
+        return Material(
+          color: Colors.red,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(_state.error.indexOf('Failed host lookup') > 0 ?'Network Error' :'Error',style: TextStyle(
+                  fontFamily: Theme.of(context).primaryTextTheme.title.fontFamily,
+                  fontSize: 22,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold
+                ),)
+              ],
+            ),
+          ),
+        );
       } else {
         return Container();
       }
@@ -333,7 +359,7 @@ class _newMain extends State<NewMain>
         bloc: _authenticationBloc,
         builder: (BuildContext context, AuthenticationState _state) {
           if (_state is InitialAuthenticationState) {
-            _authenticationBloc.dispatch(AuthenticatingLoginEvent(null));
+            _authenticationBloc.dispatch(AuthenticatingLoginEvent(null,null));
             return SizedBox();
           } else if (_state is AuthenticatingState) {
             return Container(
@@ -585,7 +611,8 @@ class _newMain extends State<NewMain>
                   style: TextStyle(
                       fontFamily: 'SukhumvitSet',
                       fontSize: 21,
-                      color: Colors.teal[600].withOpacity(0.8),
+                      //color: Colors.teal[600].withOpacity(0.8),
+                      color: _theme.accentColor,
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -594,7 +621,8 @@ class _newMain extends State<NewMain>
                   style: TextStyle(
                       fontFamily: 'SukhumvitSet',
                       fontSize: 15,
-                      color: Colors.black45,
+                      //color: Colors.black45,
+                      color: _theme.primaryTextTheme.subtitle.color,
                       fontWeight: FontWeight.w500),
                 )
               ],
@@ -612,7 +640,8 @@ class _newMain extends State<NewMain>
                           EdgeInsets.only(right: 0, left: 5, top: 5, bottom: 5),
                       child: Image.asset(
                         'images/settings.png',
-                        color: Colors.black45,
+                        //color: Colors.black45,
+                        color: _theme.primaryTextTheme.subtitle.color,
                         fit: BoxFit.contain,
                       )),
                 )),
@@ -628,7 +657,8 @@ class _newMain extends State<NewMain>
         style: TextStyle(
             fontFamily: 'SukhumvitSet',
             fontSize: 21,
-            color: Colors.black54.withOpacity(0.8),
+            //color: Colors.black54.withOpacity(0.8),
+            color: _theme.primaryTextTheme.title.color,
             fontWeight: FontWeight.bold),
       ),
     );
@@ -648,7 +678,7 @@ class _newMain extends State<NewMain>
   Widget _floatingCollapsed(AuthenticationState _state) {
     return Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: _theme.cardColor,
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(24.0), topRight: Radius.circular(24.0)),
         ),
@@ -668,12 +698,13 @@ class _newMain extends State<NewMain>
   Widget _floatingPanel(BuildContext context, AuthenticationState _state) {
     return Container(
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: _theme.cardColor,
           borderRadius: BorderRadius.all(Radius.circular(24.0)),
           boxShadow: [
             BoxShadow(
               blurRadius: 16.0,
-              color: Colors.grey.withAlpha(100),
+              //color: Colors.grey.withAlpha(100),
+              color: _theme.primaryColor.withAlpha(100)
             ),
           ]),
       margin: EdgeInsets.fromLTRB(16, 20, 16, Device.get().isIphoneX ? 40 : 16),
@@ -756,7 +787,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: Colors.black54)),
+                            color: _theme.primaryTextTheme.subtitle.color)),
                   ],
                 ),
               ),
@@ -779,7 +810,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: Colors.black54)),
+                            color: _theme.primaryTextTheme.subtitle.color)),
                   ],
                 ),
               ),
@@ -797,7 +828,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: Colors.black54)),
+                            color: _theme.primaryTextTheme.subtitle.color)),
                   ],
                 ),
               ),
@@ -806,7 +837,7 @@ class _newMain extends State<NewMain>
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 1,
-                color: Colors.black38,
+                color: _theme.dividerColor,
                 margin: EdgeInsets.only(top: 4, left: 25, right: 25),
                 child: null,
               ),
@@ -818,7 +849,7 @@ class _newMain extends State<NewMain>
                   width: MediaQuery.of(context).size.width,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.black12,
+                    color: _theme.primaryTextTheme.subtitle.color.withAlpha(100),
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: FlatButton(
@@ -828,7 +859,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Colors.black87)),
+                            color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
                   ),
                 ),
               ),
@@ -843,7 +874,7 @@ class _newMain extends State<NewMain>
                   width: MediaQuery.of(context).size.width,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.black12,
+                    color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: FlatButton(
@@ -853,7 +884,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Colors.black87)),
+                            color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
                   ),
                 ),
               ),
@@ -868,7 +899,7 @@ class _newMain extends State<NewMain>
                   width: MediaQuery.of(context).size.width,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: Colors.black12,
+                    color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: FlatButton(
@@ -878,7 +909,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: Colors.black87)),
+                            color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
                   ),
                 ),
               ),
@@ -886,7 +917,7 @@ class _newMain extends State<NewMain>
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 1,
-                color: Colors.black38,
+                color: _theme.dividerColor,
                 margin: EdgeInsets.only(top: 10, left: 75, right: 75),
                 child: null,
               ),
@@ -984,7 +1015,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: Colors.black54)),
+                              color: _theme.primaryTextTheme.subtitle.color)),
                     ],
                   ),
                 ),
@@ -1007,7 +1038,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: Colors.black54)),
+                              color: _theme.primaryTextTheme.subtitle.color)),
                     ],
                   ),
                 ),
@@ -1026,7 +1057,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: Colors.black54)),
+                              color: _theme.primaryTextTheme.subtitle.color)),
                     ],
                   ),
                 ),
@@ -1042,7 +1073,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: Colors.black54)),
+                              color: _theme.primaryTextTheme.subtitle.color)),
                     ],
                   ),
                 ),
@@ -1051,7 +1082,7 @@ class _newMain extends State<NewMain>
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: 1,
-                  color: Colors.black38,
+                  color: _theme.dividerColor,
                   margin: EdgeInsets.only(top: 4, left: 25, right: 25),
                   child: null,
                 ),
@@ -1063,7 +1094,7 @@ class _newMain extends State<NewMain>
                     width: MediaQuery.of(context).size.width,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.black12,
+                      color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: FlatButton(
@@ -1073,7 +1104,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Colors.black87)),
+                              color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
                     ),
                   ),
                 ),
@@ -1088,7 +1119,7 @@ class _newMain extends State<NewMain>
                     width: MediaQuery.of(context).size.width,
                     height: 60,
                     decoration: BoxDecoration(
-                      color: Colors.black12,
+                      color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: FlatButton(
@@ -1104,7 +1135,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: Colors.black87)),
+                              color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
                     ),
                   ),
                 ),
@@ -1112,7 +1143,7 @@ class _newMain extends State<NewMain>
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: 1,
-                  color: Colors.black38,
+                  color: _theme.dividerColor,
                   margin: EdgeInsets.only(top: 10, left: 75, right: 75),
                   child: null,
                 ),
@@ -1164,13 +1195,13 @@ class _newMain extends State<NewMain>
                     fontFamily: 'SukhumvitSet',
                     fontWeight: FontWeight.bold,
                     fontSize: 23,
-                    color: Colors.black87)),
+                    color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
           ),
           //ชื่อนามสกุล
           Container(
             width: MediaQuery.of(context).size.width,
             height: 1,
-            color: Colors.black38,
+            color: _theme.dividerColor,
             margin: EdgeInsets.only(top: 10, left: 25, right: 25),
             child: null,
           ),
@@ -1181,7 +1212,7 @@ class _newMain extends State<NewMain>
               width: MediaQuery.of(context).size.width,
               height: 60,
               decoration: BoxDecoration(
-                color: Colors.black12,
+                color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
                 borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
               child: FlatButton(
@@ -1191,7 +1222,7 @@ class _newMain extends State<NewMain>
                         fontFamily: 'SukhumvitSet',
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
-                        color: Colors.black87)),
+                        color: _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
               ),
             ),
           ),
@@ -1202,7 +1233,7 @@ class _newMain extends State<NewMain>
               Container(
                 width: 80,
                 height: 1,
-                color: Colors.black38,
+                color: _theme.dividerColor,
                 margin: EdgeInsets.only(top: 0, left: 0, right: 20),
                 child: null,
               ),
@@ -1214,11 +1245,11 @@ class _newMain extends State<NewMain>
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
-                          color: Colors.black87))),
+                          color: _theme.primaryTextTheme.subtitle.color.withAlpha(150)))),
               Container(
                 width: 80,
                 height: 1,
-                color: Colors.black38,
+                color: _theme.dividerColor,
                 margin: EdgeInsets.only(left: 20),
                 child: null,
               ),
@@ -1283,9 +1314,7 @@ class _newMain extends State<NewMain>
               ),
               child: FlatButton(
                   splashColor: Colors.white30,
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                   child: Stack(
                     children: <Widget>[
                       Container(

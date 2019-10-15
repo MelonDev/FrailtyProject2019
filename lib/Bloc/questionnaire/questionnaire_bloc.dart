@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestion.dart';
+import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:meta/meta.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'questionnaire_event.dart';
 
@@ -34,14 +36,35 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
   @override
   Stream<QuestionnaireState> mapNextQuestionEventToState(
       NextQuestionEvent event) async* {
-    yield LoadingQuestionState();
-    QuestionWithChoice questionWithChoice = await OnDeviceQuestion()
+    yield LoadingQuestionState("กำลังเปิดคำถาม..");
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    OnLocalDatabase onLocalDatabase = OnLocalDatabase();
+
+    QuestionWithChoice questionWithChoice;
+
+    if (event.questionnaireId != null &&
+        event.choiceYouChoose == null &&
+        event.currentQuestionId == null) {
+      await onLocalDatabase.createLocalSlot().then((_) async {
+        questionWithChoice = await loadNext(event);
+      });
+    } else if (event.questionnaireId != null &&
+        event.currentQuestionId != null &&
+        event.value != null) {
+      await onLocalDatabase
+          .saveLocalSlot(event.currentQuestionId, event.value)
+          .then((_) async {
+            questionWithChoice = await loadNext(event);
+          });
+    }
+
+    /*QuestionWithChoice questionWithChoice = await OnDeviceQuestion()
         .nextQuesion(event.questionnaireId, event.currentQuestionId,
             event.choiceYouChoose);
+*/
 
-    print("Current: ${event.questionnaireId} ${event.currentQuestionId} ${event.choiceYouChoose}");
-    print("Current: ${questionWithChoice.question.questionnaireId} ${questionWithChoice.question.id} ${questionWithChoice.question.type}");
-
+    await Future.delayed(Duration(milliseconds: 500));
 
     if (questionWithChoice != null) {
       if (questionWithChoice.question.type.contains("title")) {
@@ -50,7 +73,8 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
         yield TextInputQuestionState(questionWithChoice);
       } else if (questionWithChoice.question.type.contains("number_multiply")) {
         yield NumberMultiplyQuestionState(questionWithChoice, generateNumber());
-      } else if (questionWithChoice.question.type.contains("location_multiply")) {
+      } else if (questionWithChoice.question.type
+          .contains("location_multiply")) {
         yield LocationQuestionState(questionWithChoice);
       } else if (questionWithChoice.question.type.contains("multiply")) {
         yield MultiplyQuestionState(questionWithChoice);
@@ -63,4 +87,16 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
       yield InitialQuestionnaireState();
     }
   }
+
+  Future<QuestionWithChoice> loadNext(NextQuestionEvent event) async{
+    QuestionWithChoice questionWithChoice = await OnDeviceQuestion().nextQuesion(
+        event.questionnaireId,
+        event.currentQuestionId,
+        event.choiceYouChoose);
+    //print("Current: ${event.questionnaireId} ${event.currentQuestionId} ${event.choiceYouChoose}");
+    //print("Current: ${questionWithChoice.question.questionnaireId} ${questionWithChoice.question.id} ${questionWithChoice.question.type}");
+
+    return questionWithChoice;
+  }
+
 }

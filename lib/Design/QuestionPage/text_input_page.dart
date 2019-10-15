@@ -1,15 +1,17 @@
 part of '../question_page.dart';
 
 Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
+  ThemeData _themeData = Theme.of(context);
+
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
 
   bool _actionBtn = false;
 
   return Container(
-    color: Colors.white,
+    color: _themeData.primaryColor,
     child: SafeArea(
       child: Container(
-        color: Colors.white,
+        color: _themeData.primaryColor,
         //color: Color(0xFF009688),
         child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
           Expanded(
@@ -22,7 +24,8 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                             0, 0, 0, _actionBtn ? 180 : 240),
                         height: double.infinity,
                         width: double.infinity,
-                        color: Colors.black.withAlpha(30),
+                        //color: Colors.black.withAlpha(30),
+                        color: _themeData.backgroundColor,
                         child: Align(
                           alignment: Alignment.center,
                           child: Container(
@@ -33,7 +36,8 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                               maxFontSize: 34,
                               style: TextStyle(
                                 fontSize: 34,
-                                color: Colors.black.withAlpha(200),
+                                //color: Colors.black.withAlpha(200),
+                                color: _themeData.primaryTextTheme.subtitle.color,
                                 fontWeight: FontWeight.bold,
                                 //color: Colors.white.withAlpha(230),
                                 fontFamily: 'SukhumvitSet',
@@ -48,7 +52,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                             margin: EdgeInsets.fromLTRB(0, 00, 0, 0),
                             width: double.infinity,
                             height: _actionBtn ? 150 : 220,
-                            color: Colors.white,
+                            color: _themeData.primaryColor,
                             child: Column(
                               children: <Widget>[
                                 Stack(
@@ -63,8 +67,8 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                               fontFamily: 'SukhumvitSet',
-                                              color:
-                                              Colors.black.withAlpha(150),
+                                              //color: Colors.black.withAlpha(150),
+                                              color: _themeData.primaryTextTheme.title.color,
                                               fontSize: 22,
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -81,7 +85,9 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(10)),
-                                          color: Colors.black.withAlpha(30)),
+                                          //color: Colors.black.withAlpha(30)
+                                        color: _themeData.primaryTextTheme.title.color.withAlpha(30)
+                                      ),
                                       child: Align(
                                         alignment: Alignment.center,
                                         child: Container(
@@ -103,19 +109,20 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                               },
                                               style: TextStyle(
                                                   fontFamily: 'SukhumvitSet',
-                                                  color: Colors.black,
+                                                  //color: Colors.black,
+                                                  color: _themeData.primaryTextTheme.subtitle.color,
                                                   fontSize: 21,
                                                   fontWeight:
                                                   FontWeight.normal),
-                                              cursorColor: Colors.black,
+                                              cursorColor: _themeData.cursorColor,
                                               decoration: InputDecoration
                                                   .collapsed(
                                                   hintText: 'พิมพ์ที่นี่',
                                                   hintStyle: TextStyle(
                                                       fontFamily:
                                                       'SukhumvitSet',
-                                                      color: Colors.black
-                                                          .withAlpha(120),
+                                                      //color: Colors.black.withAlpha(120),
+                                                      color: _themeData.primaryTextTheme.title.color.withAlpha(160),
                                                       fontSize: 20,
                                                       fontWeight:
                                                       FontWeight
@@ -159,7 +166,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                                   new FocusNode());
                                               _actionBtn = false;
                                             } else {
-                                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null));
+                                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
                                             }
                                           },
                                         ),

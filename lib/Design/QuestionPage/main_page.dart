@@ -1,6 +1,14 @@
 part of '../question_page.dart';
 
+Future<int> getSavedAnswerInLocal() async{
+
+}
+
 Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
+  ThemeData _themeData = Theme.of(context);
+
+
+
   return PreferredSize(
     preferredSize: Size.fromHeight(60.0),
     child: AppBar(
@@ -36,7 +44,8 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
                         children: <Widget>[
                           Icon(
                             Icons.low_priority,
-                            color: Colors.black.withAlpha(180),
+                            //color: Colors.black.withAlpha(180),
+                            color: _themeData.primaryTextTheme.title.color,
                             size: 30,
                           ),
                         ],
@@ -79,7 +88,8 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
                         children: <Widget>[
                           Icon(
                             Icons.close,
-                            color: Colors.black.withAlpha(180),
+                            //color: Colors.black.withAlpha(180),
+                            color: _themeData.primaryTextTheme.title.color,
                             size: 30,
                           ),
                         ],
@@ -129,8 +139,8 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
                                             "ข้อที่ ",
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
-                                                color: Colors.black
-                                                    .withAlpha(200),
+                                                //color: Colors.black.withAlpha(200),
+                                                color: _themeData.primaryTextTheme.title.color,
                                                 fontFamily:
                                                 'SukhumvitSet',
                                                 fontSize: 22,
@@ -172,8 +182,8 @@ Widget mainPageAppbar(QuestionnaireState _state,BuildContext context){
         ],
       ),
 
-      brightness: Brightness.light,
-      backgroundColor: Colors.white,
+      brightness: _themeData.brightness,
+      backgroundColor: _themeData.primaryColor,
       elevation: 0,
     ),
   );

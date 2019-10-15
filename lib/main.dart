@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,8 @@ import 'package:frailty_project_2019/Bloc/catalogue/catalogue_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
 import 'package:frailty_project_2019/Model/Account.dart';
 import 'package:frailty_project_2019/Model/TemporaryCode.dart';
+import 'package:frailty_project_2019/ThemeData/BasicDarkThemeData.dart';
+import 'package:frailty_project_2019/ThemeData/BasicLightThemeData.dart';
 import 'package:frailty_project_2019/popup_dialog.dart' as prefix0;
 import 'package:frailty_project_2019/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -33,7 +36,6 @@ import 'package:flutter/foundation.dart';
 void main() {
   BlocSupervisor.delegate = FlowBlocDelegate();
   return runApp(MyApp());
-
 }
 
 //void main() => runApp(MyApp());
@@ -50,7 +52,6 @@ ProgressDialog pr;
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -58,32 +59,51 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
+
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthenticationBloc>(
-          builder: (context) =>
-          AuthenticationBloc()..dispatch(AuthenticatingLoginEvent(null))
-        ),
+            builder: (context) =>
+                AuthenticationBloc()..dispatch(AuthenticatingLoginEvent(null,null))),
         BlocProvider<CatalogueBloc>(
           builder: (context) =>
-          CatalogueBloc()
-            ..dispatch(QuestionnaireSelectedEvent()),
+              CatalogueBloc()..dispatch(QuestionnaireSelectedEvent()),
         ),
         BlocProvider<QuestionnaireBloc>(
           builder: (context) =>
-              QuestionnaireBloc()..dispatch(InitialQuestionnaireEvent())
-          ,
+              QuestionnaireBloc()..dispatch(InitialQuestionnaireEvent()),
         )
       ],
+      child: DynamicTheme(
+          defaultBrightness:Brightness.light,
+              //MediaQuery.of(context).platformBrightness == Brightness.light
+                  //? Brightness.light
+                  //: Brightness.dark,
+          data: (brightness) {
+            return brightness == Brightness.light ? BasicLightThemeData().getTheme() : BasicDarkThemeData().getTheme();
+          },
+          themedWidgetBuilder: (context, theme) {
+            return MaterialApp(
+              title: 'Flutter Demo',
+              debugShowCheckedModeBanner: false,
+              theme: theme,
+              //darkTheme: BasicDarkThemeData().getTheme(),
+              home: NewMain(),
+            );
+          }),
+
+      /*
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(primaryColor: Color(0xFF009688)),
+        theme: BasicLightThemeData().getTheme(),
+        darkTheme: BasicDarkThemeData().getTheme(),
         home: NewMain(),
 
       ),
-    );
 
+       */
+    );
   }
 }
 
@@ -99,8 +119,6 @@ class MyHomePage extends StatefulWidget {
 class IPhoneXPadding extends Container {
   final Widget child;
 
-
-
   IPhoneXPadding({
     @required this.child,
   });
@@ -114,7 +132,7 @@ class IPhoneXPadding extends Container {
     }
 
     var homeIndicatorHeight =
-    mediaQueryData.orientation == Orientation.portrait ? 22.0 : 20.0;
+        mediaQueryData.orientation == Orientation.portrait ? 22.0 : 20.0;
 
     var outer = mediaQueryData.padding;
     var bottom = outer.bottom + homeIndicatorHeight;
@@ -145,9 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Account _account;
 
-  String _firstName = "",
-      _lastname = "",
-      _userStatus = "";
+  String _firstName = "", _lastname = "", _userStatus = "";
 
   CupertinoAlertDialog alert;
 
@@ -226,8 +242,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void cupertinoDialog(BuildContext context, String title, String content,
-      List<Widget> list) {
+  void cupertinoDialog(
+      BuildContext context, String title, String content, List<Widget> list) {
     //Navigator.pop(context);
 
     alert = CupertinoAlertDialog(
@@ -241,17 +257,17 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         content: content != null
             ? Text(
-          content,
-          style:
-          prefix2.TextStyle(fontFamily: 'SukhumvitSet', fontSize: 18),
-        )
+                content,
+                style:
+                    prefix2.TextStyle(fontFamily: 'SukhumvitSet', fontSize: 18),
+              )
             : null,
         actions: list);
     showDialog(context: context, child: alert);
   }
 
-  CupertinoDialogAction getAction(String message, bool destructive, bool active,
-      Function func) {
+  CupertinoDialogAction getAction(
+      String message, bool destructive, bool active, Function func) {
     return CupertinoDialogAction(
         child: Text(
           message,
@@ -386,7 +402,8 @@ class _MyHomePageState extends State<MyHomePage> {
       if (size.height >= 812.0 &&
           size.height <
               1000.0) /*||
-          (size.width >= 812.0 && size.width < 1000.0))*/ {
+          (size.width >= 812.0 && size.width < 1000.0))*/
+      {
         return true;
       }
     }
@@ -442,7 +459,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
                                   borderRadius:
-                                  BorderRadius.all(Radius.circular(24)),
+                                      BorderRadius.all(Radius.circular(24)),
                                   color: Colors.white),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
@@ -458,26 +475,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                       'images/funny-elderly-couple-dancing-cartoon-vector-24002358.jpg',
                                       fit: BoxFit.contain,
                                       height: _isIPhoneX(MediaQuery.of(context))
-                                          ? MediaQuery
-                                          .of(context)
-                                          .size
-                                          .width /
-                                          1.7
-                                          : MediaQuery
-                                          .of(context)
-                                          .size
-                                          .width /
-                                          3.2,
+                                          ? MediaQuery.of(context).size.width /
+                                              1.7
+                                          : MediaQuery.of(context).size.width /
+                                              3.2,
                                     ),
                                   ),
                                   Padding(
                                       padding:
-                                      EdgeInsets.fromLTRB(24, 0, 20, 0),
+                                          EdgeInsets.fromLTRB(24, 0, 20, 0),
                                       child: Align(
                                           alignment: Alignment.topLeft,
                                           child: Column(
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
                                                 'แบบทดสอบภาวะเปราะบาง',
@@ -485,14 +496,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
                                                     fontSize: _isIPad(
-                                                        MediaQuery.of(
-                                                            context))
+                                                            MediaQuery.of(
+                                                                context))
                                                         ? 28
                                                         : 23,
                                                     color: Colors.teal[600]
                                                         .withOpacity(0.8),
                                                     fontWeight:
-                                                    FontWeight.bold),
+                                                        FontWeight.bold),
                                               ),
                                               Text(
                                                 'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
@@ -502,13 +513,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
                                                     fontSize: _isIPad(
-                                                        MediaQuery.of(
-                                                            context))
+                                                            MediaQuery.of(
+                                                                context))
                                                         ? 22
                                                         : 17,
                                                     color: Colors.black45,
                                                     fontWeight:
-                                                    FontWeight.normal),
+                                                        FontWeight.normal),
                                               )
                                             ],
                                           ))),
@@ -516,7 +527,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     height: 1,
                                     width: 180,
                                     margin:
-                                    EdgeInsets.only(top: 15, bottom: 15),
+                                        EdgeInsets.only(top: 15, bottom: 15),
                                     color: Colors.teal,
                                   ),
                                   Container(
@@ -526,7 +537,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       height: 56,
                                       shape: RoundedRectangleBorder(
                                           borderRadius:
-                                          BorderRadius.circular(14.0)),
+                                              BorderRadius.circular(14.0)),
                                       splashColor: Colors.white12,
                                       color: Colors.teal,
                                       elevation: 0,
@@ -544,14 +555,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                       onPressed: () {
-                                        if (_mainBtn.contains(
-                                            "กำลังโหลด..")) {} else
-                                        if (_currentUser == null) {
+                                        if (_mainBtn.contains("กำลังโหลด..")) {
+                                        } else if (_currentUser == null) {
                                           final result = Navigator.push(
                                               context,
                                               TransparentRoute(
                                                   builder: (BuildContext
-                                                  context) =>
+                                                          context) =>
                                                       prefix0.PopupRoute(
                                                           setTextBtn,
                                                           loadTextBtn,
@@ -561,10 +571,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           hideDialog,
                                                           _currentUser,
                                                           _account
-                                                        /*callback: () {
+                                                          /*callback: () {
                                                     _checkSignIn();
                                                   },*/
-                                                      )));
+                                                          )));
                                         } else {
                                           Navigator.push(
                                               context,
@@ -572,7 +582,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               HomeRoute(
                                                   builder:
                                                       (BuildContext context) =>
-                                                      HomePage()));
+                                                          HomePage()));
                                         }
 
                                         //print(result.toString());
@@ -580,7 +590,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         //  _checkSignIn();
                                         //}
                                         /*Navigator.of(context).push(TransparentRoute(
-                                      
+
                                         builder: (BuildContext context) =>
                                             SecondRoute()));
 */
@@ -609,10 +619,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ? 116.00 + 22.00
                                   : 116.00,
                               color: Colors.transparent,
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width - 35,
+                              width: MediaQuery.of(context).size.width - 35,
                               child: Stack(
                                 children: <Widget>[
                                   Align(
@@ -651,63 +658,58 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 //ACTIVE
                                                 Opacity(
                                                     opacity:
-                                                    _currentUser != null
-                                                        ? 1.0
-                                                        : 0.0,
+                                                        _currentUser != null
+                                                            ? 1.0
+                                                            : 0.0,
                                                     child: Padding(
                                                       padding:
-                                                      const EdgeInsets.only(
+                                                          const EdgeInsets.only(
                                                         left: 0.0,
                                                       ),
                                                       child: Container(
                                                           padding:
-                                                          EdgeInsets.only(
-                                                              top: 5),
-                                                          width: MediaQuery
-                                                              .of(
-                                                              context)
+                                                              EdgeInsets.only(
+                                                                  top: 5),
+                                                          width: MediaQuery.of(
+                                                                  context)
                                                               .size
                                                               .width,
                                                           decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius
-                                                                  .only(
+                                                              borderRadius: BorderRadius.only(
                                                                   topLeft:
-                                                                  const Radius
-                                                                      .circular(
-                                                                      24.0),
+                                                                      const Radius
+                                                                              .circular(
+                                                                          24.0),
                                                                   topRight:
-                                                                  const Radius
-                                                                      .circular(
-                                                                      24.0)),
+                                                                      const Radius
+                                                                              .circular(
+                                                                          24.0)),
                                                               color:
-                                                              Colors.white),
+                                                                  Colors.white),
                                                           child: FlatButton(
                                                             splashColor: Colors
                                                                 .transparent,
                                                             highlightColor:
-                                                            Colors
-                                                                .transparent,
+                                                                Colors
+                                                                    .transparent,
                                                             onPressed: () {
-                                                              if (_mainBtn
-                                                                  .contains(
-                                                                  "กำลังโหลด..")) {} else {
+                                                              if (_mainBtn.contains(
+                                                                  "กำลังโหลด..")) {
+                                                              } else {
                                                                 Navigator.push(
                                                                     context,
                                                                     TransparentRoute(
-                                                                        builder: (
-                                                                            BuildContext context) =>
-                                                                            prefix0
-                                                                                .PopupRoute(
-                                                                                setTextBtn,
-                                                                                loadTextBtn,
-                                                                                cupertinoDialog,
-                                                                                getAction,
-                                                                                initDialog,
-                                                                                hideDialog,
-                                                                                _currentUser,
-                                                                                _account
-                                                                              //callback:
-                                                                              //    () {},
+                                                                        builder: (BuildContext context) => prefix0.PopupRoute(
+                                                                            setTextBtn,
+                                                                            loadTextBtn,
+                                                                            cupertinoDialog,
+                                                                            getAction,
+                                                                            initDialog,
+                                                                            hideDialog,
+                                                                            _currentUser,
+                                                                            _account
+                                                                            //callback:
+                                                                            //    () {},
                                                                             )));
                                                               }
                                                             },
@@ -715,79 +717,49 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 child: Padding(
                                                                     padding: EdgeInsets
                                                                         .fromLTRB(
-                                                                        15.0,
-                                                                        14.0,
-                                                                        15.0,
-                                                                        0.0),
+                                                                            15.0,
+                                                                            14.0,
+                                                                            15.0,
+                                                                            0.0),
                                                                     child:
-                                                                    Stack(
+                                                                        Stack(
                                                                       children: <
                                                                           Widget>[
                                                                         Column(
                                                                           mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .max,
+                                                                              MainAxisSize.max,
                                                                           crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                              CrossAxisAlignment.start,
                                                                           children: <
                                                                               Widget>[
                                                                             Text(
                                                                               //'ชัยวิวัฒน์ กกสันเทียะ',
                                                                               '$_firstName $_lastname',
-                                                                              textAlign: TextAlign
-                                                                                  .left,
-                                                                              style: TextStyle(
-                                                                                  fontFamily: 'SukhumvitSet',
-                                                                                  fontSize: 23,
-                                                                                  color: Colors
-                                                                                      .teal[600]
-                                                                                      .withOpacity(
-                                                                                      0.8),
-                                                                                  fontWeight: FontWeight
-                                                                                      .bold),
+                                                                              textAlign: TextAlign.left,
+                                                                              style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 23, color: Colors.teal[600].withOpacity(0.8), fontWeight: FontWeight.bold),
                                                                             ),
                                                                             Text(
                                                                               'ประเภท: $_userStatus',
-                                                                              textAlign: TextAlign
-                                                                                  .left,
-                                                                              style: TextStyle(
-                                                                                  fontFamily: 'SukhumvitSet',
-                                                                                  fontSize: 17,
-                                                                                  color: Colors
-                                                                                      .black45,
-                                                                                  fontWeight: FontWeight
-                                                                                      .w700),
+                                                                              textAlign: TextAlign.left,
+                                                                              style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 17, color: Colors.black45, fontWeight: FontWeight.w700),
                                                                             )
                                                                           ],
                                                                         ),
                                                                         Align(
                                                                             alignment:
-                                                                            Alignment
-                                                                                .topRight,
+                                                                                Alignment.topRight,
                                                                             child: Container(
                                                                               height: 60,
                                                                               width: 60,
-                                                                              color: Colors
-                                                                                  .transparent,
-                                                                              padding: EdgeInsets
-                                                                                  .all(
-                                                                                  9),
+                                                                              color: Colors.transparent,
+                                                                              padding: EdgeInsets.all(9),
                                                                               child: FlatButton(
                                                                                   onPressed: null,
-                                                                                  padding: EdgeInsets
-                                                                                      .only(
-                                                                                      right: 5,
-                                                                                      left: 5,
-                                                                                      top: 5,
-                                                                                      bottom: 5),
-                                                                                  child: Image
-                                                                                      .asset(
+                                                                                  padding: EdgeInsets.only(right: 5, left: 5, top: 5, bottom: 5),
+                                                                                  child: Image.asset(
                                                                                     'images/settings.png',
-                                                                                    color: Colors
-                                                                                        .black45,
-                                                                                    fit: BoxFit
-                                                                                        .contain,
+                                                                                    color: Colors.black45,
+                                                                                    fit: BoxFit.contain,
                                                                                   )),
                                                                             )),
                                                                       ],
@@ -798,63 +770,58 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 //INACTIVE
                                                 Opacity(
                                                     opacity:
-                                                    _currentUser != null
-                                                        ? 0.0
-                                                        : 1.0,
+                                                        _currentUser != null
+                                                            ? 0.0
+                                                            : 1.0,
                                                     child: Padding(
                                                       padding:
-                                                      const EdgeInsets.only(
+                                                          const EdgeInsets.only(
                                                         left: 0.0,
                                                       ),
                                                       child: Container(
                                                           padding:
-                                                          EdgeInsets.only(
-                                                              top: 5),
-                                                          width: MediaQuery
-                                                              .of(
-                                                              context)
+                                                              EdgeInsets.only(
+                                                                  top: 5),
+                                                          width: MediaQuery.of(
+                                                                  context)
                                                               .size
                                                               .width,
                                                           decoration: BoxDecoration(
-                                                              borderRadius: BorderRadius
-                                                                  .only(
+                                                              borderRadius: BorderRadius.only(
                                                                   topLeft:
-                                                                  const Radius
-                                                                      .circular(
-                                                                      24.0),
+                                                                      const Radius
+                                                                              .circular(
+                                                                          24.0),
                                                                   topRight:
-                                                                  const Radius
-                                                                      .circular(
-                                                                      24.0)),
+                                                                      const Radius
+                                                                              .circular(
+                                                                          24.0)),
                                                               color:
-                                                              Colors.white),
+                                                                  Colors.white),
                                                           child: FlatButton(
                                                             splashColor: Colors
                                                                 .transparent,
                                                             highlightColor:
-                                                            Colors
-                                                                .transparent,
+                                                                Colors
+                                                                    .transparent,
                                                             onPressed: () {
-                                                              if (_mainBtn
-                                                                  .contains(
-                                                                  "กำลังโหลด..")) {} else {
+                                                              if (_mainBtn.contains(
+                                                                  "กำลังโหลด..")) {
+                                                              } else {
                                                                 Navigator.push(
                                                                     context,
                                                                     TransparentRoute(
-                                                                        builder: (
-                                                                            BuildContext context) =>
-                                                                            prefix0
-                                                                                .PopupRoute(
-                                                                                setTextBtn,
-                                                                                loadTextBtn,
-                                                                                cupertinoDialog,
-                                                                                getAction,
-                                                                                initDialog,
-                                                                                hideDialog,
-                                                                                _currentUser,
-                                                                                _account
-                                                                              //callback:
-                                                                              //    () {},
+                                                                        builder: (BuildContext context) => prefix0.PopupRoute(
+                                                                            setTextBtn,
+                                                                            loadTextBtn,
+                                                                            cupertinoDialog,
+                                                                            getAction,
+                                                                            initDialog,
+                                                                            hideDialog,
+                                                                            _currentUser,
+                                                                            _account
+                                                                            //callback:
+                                                                            //    () {},
                                                                             )));
                                                               }
                                                             },
@@ -862,42 +829,28 @@ class _MyHomePageState extends State<MyHomePage> {
                                                                 child: Padding(
                                                                     padding: EdgeInsets
                                                                         .fromLTRB(
-                                                                        15.0,
-                                                                        14.0,
-                                                                        15.0,
-                                                                        0.0),
+                                                                            15.0,
+                                                                            14.0,
+                                                                            15.0,
+                                                                            0.0),
                                                                     child:
-                                                                    Stack(
+                                                                        Stack(
                                                                       children: <
                                                                           Widget>[
                                                                         Column(
                                                                           mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .max,
+                                                                              MainAxisSize.max,
                                                                           crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
+                                                                              CrossAxisAlignment.start,
                                                                           children: <
                                                                               Widget>[
                                                                             Container(
-                                                                              alignment: Alignment
-                                                                                  .center,
-                                                                              padding: EdgeInsets
-                                                                                  .only(
-                                                                                  top: 15),
+                                                                              alignment: Alignment.center,
+                                                                              padding: EdgeInsets.only(top: 15),
                                                                               child: Text(
                                                                                 'กรุณาลงชื่อเข้าใช้งาน',
-                                                                                textAlign: TextAlign
-                                                                                    .center,
-                                                                                style: TextStyle(
-                                                                                    fontFamily: 'SukhumvitSet',
-                                                                                    fontSize: 21,
-                                                                                    color: Colors
-                                                                                        .black54
-                                                                                        .withOpacity(
-                                                                                        0.8),
-                                                                                    fontWeight: FontWeight
-                                                                                        .bold),
+                                                                                textAlign: TextAlign.center,
+                                                                                style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 21, color: Colors.black54.withOpacity(0.8), fontWeight: FontWeight.bold),
                                                                               ),
                                                                             )
                                                                           ],

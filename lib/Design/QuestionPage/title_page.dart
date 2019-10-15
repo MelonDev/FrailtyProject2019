@@ -1,13 +1,15 @@
 part of '../question_page.dart';
 
 Widget _titlePage(BuildContext context,TitleQuestionState state) {
+  ThemeData _themeData = Theme.of(context);
+
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
 
   return Container(
-    color: Colors.white,
+    color: _themeData.primaryColor,
     child: SafeArea(
       child: Container(
-        color: Colors.white,
+        color: _themeData.primaryColor,
         //color: Color(0xFF009688),
         child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
           Expanded(
@@ -23,7 +25,7 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                         child: Align(
                           alignment: Alignment.center,
                           child: Container(
-                            color: Colors.white,
+                            color: _themeData.primaryColor,
                             margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
                             child: AutoSizeText(
                               state.questionWithChoice.question.message,
@@ -31,7 +33,8 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                               maxFontSize: 30,
                               style: TextStyle(
                                 fontSize: 30,
-                                color: Colors.black.withAlpha(200),
+                                color: _themeData.primaryTextTheme.subtitle.color,
+                                //color: Colors.black.withAlpha(200),
                                 fontWeight: FontWeight.bold,
                                 //color: Colors.white.withAlpha(230),
                                 fontFamily: 'SukhumvitSet',
@@ -46,7 +49,7 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                             margin: EdgeInsets.fromLTRB(0, 200, 0, 0),
                             width: double.infinity,
                             height: 200,
-                            color: Colors.white,
+                            color: _themeData.primaryColor,
                             child: Stack(
                               children: <Widget>[
                                 Align(
@@ -55,7 +58,7 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                                       splashColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onPressed: () {
-                                        _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null));
+                                        _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
                                       },
                                       child: Container(
                                         height: 80,
@@ -63,16 +66,17 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                                         child: Icon(
                                           Icons.arrow_forward_ios,
                                           size: 30,
-                                          color: Colors.black.withAlpha(180),
+                                          //color: Colors.black.withAlpha(180),
+                                          color: _themeData.primaryTextTheme.title.color,
                                         ),
                                         decoration: BoxDecoration(
                                             border: new Border.all(
-                                                color: Colors.black
-                                                    .withAlpha(180),
+                                                //color: Colors.black.withAlpha(180),
+                                              color: _themeData.primaryTextTheme.title.color,
                                                 width: 2.0),
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50)),
-                                            color: Colors.white),
+                                            color: _themeData.primaryColor),
                                       ),
                                     ))
                               ],

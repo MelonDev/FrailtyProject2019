@@ -2,10 +2,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
 import 'package:frailty_project_2019/Model/Choice.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
 import 'package:frailty_project_2019/Tools/CellCalculator.dart';
+import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:path/path.dart';
 
 part 'QuestionPage/title_page.dart';
@@ -48,6 +50,8 @@ class _questionPage extends State<MainQuestion> {
 
   @override
   Widget build(BuildContext context) {
+
+
     _uuid = widget.uuid;
     _questionnaireKey = widget._keys;
 
@@ -55,7 +59,7 @@ class _questionPage extends State<MainQuestion> {
     _cellCalculator = new CellCalculator(context);
 
     _questionnaireBloc
-        .dispatch(NextQuestionEvent(_questionnaireKey, null, null));
+        .dispatch(NextQuestionEvent(_questionnaireKey, null, null,null));
 
     print("UUID: $_uuid");
 
@@ -67,6 +71,7 @@ class _questionPage extends State<MainQuestion> {
 
   Widget mainLayout(BuildContext context, QuestionnaireState _state) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
         appBar: mainPageAppbar(_state, context),
         body: _pageManager(context, _state));
   }
@@ -78,8 +83,31 @@ class _questionPage extends State<MainQuestion> {
       );
     } else if (_state is LoadingQuestionState) {
       return Container(
-        color: Colors.red,
-      );
+          color: Theme.of(context).primaryColor,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                  child: SpinKitThreeBounce(
+                    color: Theme.of(context).primaryTextTheme.subtitle.color,
+                    size: 50.0,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                  child: Text(_state.message,
+                      style: TextStyle(
+                          color: Theme.of(context).primaryTextTheme.subtitle.color,
+                          fontSize: 18,
+                          fontFamily: 'SukhumvitSet',
+                          fontWeight: FontWeight.normal)),
+                )
+              ],
+            ),
+          ));
     } else if (_state is TitleQuestionState) {
       return _titlePage(context, _state);
     } else if (_state is NumberMultiplyQuestionState) {

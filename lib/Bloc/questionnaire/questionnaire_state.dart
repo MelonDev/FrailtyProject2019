@@ -18,6 +18,10 @@ class FirstQuestionState extends QuestionnaireState {
 }
 
 class LoadingQuestionState extends QuestionnaireState {
+  final String message;
+
+  LoadingQuestionState(this.message);
+
   @override
   String toString() {
     return "LoadingQuestionState";

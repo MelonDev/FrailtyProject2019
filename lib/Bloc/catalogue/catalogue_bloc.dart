@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
+import 'package:frailty_project_2019/Model/AnswerPack.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
+import 'package:frailty_project_2019/Model/UncompletedData.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestion.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestionnaires.dart';
+import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 
@@ -18,6 +21,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
 
   @override
   Stream<CatalogueState> mapEventToState(CatalogueEvent event) async* {
+    await OnLocalDatabase().analysisLocalAnswerPack();
     if (event is QuestionnaireSelectedEvent) {
       print("QuestionnaireSelectedEvent");
       yield* _mapOfflineQuestionnaireLoadingToState();
@@ -27,6 +31,8 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     } else if (event is CompletedSelectedEvent) {
       print("CompletedSelectedEvent");
       yield* _mapCompletedToState();
+    }else if(event is UncompletedDeleteItemEvent){
+      yield* _mapDeleteUncompletedToState(event);
     }
   }
 
@@ -99,8 +105,23 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
   }
 
   Stream<CatalogueState> _mapUncompletedToState() async* {
-    //yield LoadingCatalogueState();
-    yield UncompletedCatalogueState();
+    yield LoadingCatalogueState();
+
+    List<UncompletedData> uncompletedData = await OnLocalDatabase().loadUnCompletedList();
+
+
+    yield UncompletedCatalogueState(uncompletedData);
+  }
+
+  Stream<CatalogueState> _mapDeleteUncompletedToState(UncompletedDeleteItemEvent event) async* {
+    yield LoadingCatalogueState();
+
+    await OnLocalDatabase().deleteSlot(event.uncompletedData.answerPack.id);
+
+    await Future.delayed(Duration(milliseconds: 500));
+    
+    List<UncompletedData> uncompletedData = await OnLocalDatabase().loadUnCompletedList();
+    yield UncompletedCatalogueState(uncompletedData);
   }
 
   Stream<CatalogueState> _mapCompletedToState() async* {

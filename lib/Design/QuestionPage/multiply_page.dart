@@ -4,12 +4,15 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
   CellCalculator _cellCalculator = new CellCalculator(context);
 
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
+  ThemeData _themeData = Theme.of(context);
+
 
   return Container(
-    color: Colors.white,
+    color: _themeData.primaryColor,
     child: SafeArea(
       child: Container(
-        color: Colors.black.withAlpha(30),
+        //color: Colors.black.withAlpha(30),
+        color: _themeData.backgroundColor,
         //color: Color(0xFF009688),
         child: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
           Expanded(
@@ -37,7 +40,8 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                 minFontSize: 16,
                                 style: TextStyle(
                                   fontSize: 28,
-                                  color: Colors.black.withAlpha(160),
+                                  //color: Colors.black.withAlpha(160),
+                                  color: _themeData.primaryTextTheme.subtitle.color,
                                   fontWeight: FontWeight.w700,
                                   //color: Colors.white.withAlpha(230),
                                   fontFamily: 'SukhumvitSet',
@@ -68,7 +72,7 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                 .questionWithChoice),
                             //height: (50 + (count * 80)).toDouble(),
                             //height: 200,
-                            color: Colors.white,
+                            color: _themeData.primaryColor,
                             child: Stack(
                               children: <Widget>[
                                 ListView.builder(
@@ -99,7 +103,7 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                       } else {
                                         return GestureDetector(
                                             onTap: () {
-                                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId, state.questionWithChoice.question.id, state.questionWithChoice.choices[position - 1].id));
+                                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId, state.questionWithChoice.question.id, state.questionWithChoice.choices[position - 1].id,state.questionWithChoice.choices[position - 1].id));
                                             },
                                             child: Container(
                                               margin: position == 0

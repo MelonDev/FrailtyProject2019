@@ -24,6 +24,10 @@ class QuestionnaireCatalogueState extends CatalogueState {
 }
 
 class UncompletedCatalogueState extends CatalogueState {
+  final List<UncompletedData> data;
+
+  UncompletedCatalogueState(this.data);
+
   @override
   String toString() {
     return "UncompletedCatalogueState";

@@ -17,7 +17,8 @@ class NextQuestionEvent extends QuestionnaireEvent {
   String questionnaireId;
   String currentQuestionId;
   String choiceYouChoose;
+  String value;
 
-  NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose);
+  NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value);
 
 }

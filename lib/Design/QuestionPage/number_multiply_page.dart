@@ -1,12 +1,16 @@
 part of '../question_page.dart';
 
 Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState state) {
+  ThemeData _themeData = Theme.of(context);
+
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
 
   bool _actionBtn = false;
 
+  int myValue;
+
   return Container(
-    color: Colors.white,
+    color: _themeData.primaryColor,
     child: SafeArea(
         child: Stack(
           children: <Widget>[
@@ -14,7 +18,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                 margin: EdgeInsets.fromLTRB(0, 0, 0, 311),
                 height: double.infinity,
                 width: double.infinity,
-                color: Color(0xFFEDEDED),
+                //color: Color(0xFFEDEDED),
+                color: _themeData.backgroundColor,
                 child: Align(
                   alignment: Alignment.center,
                   child: Container(
@@ -25,7 +30,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                       maxFontSize: 28,
                       style: TextStyle(
                         fontSize: 28,
-                        color: Colors.black.withAlpha(200),
+                        //color: Colors.black.withAlpha(200),
+                        color: _themeData.primaryTextTheme.subtitle.color,
                         fontWeight: FontWeight.bold,
                         //color: Colors.white.withAlpha(230),
                         fontFamily: 'SukhumvitSet',
@@ -49,7 +55,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   .of(context)
                                   .size
                                   .width - 41) / 2,
-                              color: Colors.white,
+                              color: _themeData.primaryColor,
                               child: Column(
                                 children: <Widget>[
                                   Container(
@@ -59,7 +65,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                       style: TextStyle(
                                           fontFamily: 'SukhumvitSet',
                                           fontSize: 22,
-                                          color: Colors.black.withAlpha(150),
+                                          //color: Colors.black.withAlpha(150),
+                                          color: _themeData.primaryTextTheme.subtitle.color,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -74,7 +81,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                     child: CupertinoPicker(
                                       offAxisFraction: 0.0,
                                       magnification: 1.5,
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: _themeData.primaryColor,
                                       children: List<Widget>.generate(
                                           state.numberList.length,
                                               (int index) {
@@ -85,16 +92,18 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
                                                     fontSize: 22,
-                                                    color:
-                                                    Colors.black.withAlpha(
-                                                        200),
+                                                    //color: Colors.black.withAlpha(200),
+                                                    color: _themeData.primaryTextTheme.subtitle.color,
                                                     fontWeight: FontWeight
                                                         .bold),
                                               ),
                                             );
                                           }),
                                       itemExtent: 30,
-                                      onSelectedItemChanged: (int value) {},
+                                      onSelectedItemChanged: (int value) {
+                                        myValue = value;
+
+                                      },
                                     ),
                                   ),
                                 ],
@@ -102,7 +111,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                           Container(
                             width: 1,
                             height: 160,
-                            color: Colors.black.withAlpha(30),
+                            //color: Colors.black.withAlpha(30),
+                            color: _themeData.dividerColor,
                           ),
                           Container(
                               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
@@ -112,7 +122,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   .of(context)
                                   .size
                                   .width - 41) / 2,
-                              color: Colors.white,
+                              color: _themeData.primaryColor,
                               child: Column(
                                 children: <Widget>[
                                   Container(
@@ -122,7 +132,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                       style: TextStyle(
                                           fontFamily: 'SukhumvitSet',
                                           fontSize: 22,
-                                          color: Colors.black.withAlpha(150),
+                                          //color: Colors.black.withAlpha(150),
+                                          color: _themeData.primaryTextTheme.subtitle.color,
                                           fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -137,7 +148,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                     child: CupertinoPicker(
                                       offAxisFraction: 0.0,
                                       magnification: 1.5,
-                                      backgroundColor: Colors.white,
+                                      backgroundColor: _themeData.primaryColor,
                                       children: List<Widget>.generate(
                                           state.numberList.length,
                                               (int index) {
@@ -148,9 +159,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
                                                     fontSize: 22,
-                                                    color:
-                                                    Colors.black.withAlpha(
-                                                        200),
+                                                    //color: Colors.black.withAlpha(200),
+                                                    color: _themeData.primaryTextTheme.subtitle.color,
                                                     fontWeight: FontWeight
                                                         .bold),
                                               ),
@@ -168,7 +178,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                         padding: EdgeInsets.fromLTRB(30, 20, 30, 26),
                         width: double.infinity,
                         height: 96,
-                        color: Colors.white,
+                        color: _themeData.primaryColor,
                         child: MaterialButton(
                           minWidth: 256,
                           height: 40,
@@ -193,7 +203,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   .requestFocus(new FocusNode());
                               _actionBtn = false;
                             } else {
-                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null));
+                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
 
                             }
                           },

@@ -15,5 +15,12 @@ class QuestionnaireSelectedEvent extends CatalogueEvent {}
 
 class UncompletedSelectedEvent extends CatalogueEvent {}
 
+class UncompletedDeleteItemEvent extends CatalogueEvent {
+  final UncompletedData uncompletedData;
+
+  UncompletedDeleteItemEvent(this.uncompletedData);
+}
+
+
 
 class CompletedSelectedEvent extends CatalogueEvent {}

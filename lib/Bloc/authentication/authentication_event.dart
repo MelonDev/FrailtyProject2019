@@ -15,7 +15,9 @@ class GoogleLoginEvent extends AuthenticationEvent {}
 
 class AuthenticatingLoginEvent extends AuthenticationEvent {
   String message;
-  AuthenticatingLoginEvent(this.message);
+  BuildContext context;
+
+  AuthenticatingLoginEvent(this.message,this.context);
 }
 
 class AppleLoginEvent extends AuthenticationEvent {}

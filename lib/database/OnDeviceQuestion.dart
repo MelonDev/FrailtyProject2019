@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:frailty_project_2019/Model/Choice.dart';
 import 'package:frailty_project_2019/Model/Question.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
+import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/Version.dart';
-import 'package:frailty_project_2019/home.dart';
 import 'package:frailty_project_2019/main.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -320,4 +320,30 @@ class OnDeviceQuestion {
 
     //print(maps.length);
   }
+
+  Future<int> countOfQuestionnaire(String questionnaire) async {
+    Database database = await initDatabase();
+
+    return await database
+        .rawQuery(
+            "SELECT * FROM $questionTable WHERE ($questionQuestionnaireId = '${questionnaire.toUpperCase()}')")
+        .then((onValue) => onValue.length);
+  }
+
+  Future<Questionnaire> findQuestionnaire(String questionIds) async {
+    Database database = await initDatabase();
+
+    List<Map> maps = await database
+        .rawQuery(
+            "SELECT * FROM $questionTable WHERE ($questionId = '${questionIds.toUpperCase()}')")
+        .then((onValue) => onValue);
+    Map map = maps.first;
+    var question = Question.fromMap(map);
+
+    return await database
+        .rawQuery(
+        "SELECT * FROM $questionnaireTable WHERE ($questionnaireId = '${question.questionnaireId.toUpperCase()}')")
+        .then((onValue) => Questionnaire.fromMap(onValue.first));
+  }
+
 }

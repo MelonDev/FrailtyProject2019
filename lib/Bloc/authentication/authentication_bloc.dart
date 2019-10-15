@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:bloc/bloc.dart';
 import 'package:device_info/device_info.dart';
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
@@ -14,9 +16,11 @@ import 'package:frailty_project_2019/database/OfflineStaticDatabase.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestionnaires.dart';
 import 'package:frailty_project_2019/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 
 part 'authentication_event.dart';
@@ -116,6 +120,23 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAuthenticatingToState(
       AuthenticatingLoginEvent event) async* {
     try {
+      if(event.context != null){
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        final bool customDarkMode = preferences.getBool("CUSTOM_DARKMODE");
+
+        if(customDarkMode == null) {
+          preferences.setBool("CUSTOM_DARKMODE", false);
+          DynamicTheme.of(event.context).setBrightness(MediaQuery.of(event.context).platformBrightness);
+        }else {
+          if(!customDarkMode){
+            DynamicTheme.of(event.context).setBrightness(MediaQuery.of(event.context).platformBrightness);
+          }
+        }
+      }
+
+
+
+
       if (event.message == null) {
         yield AuthenticatingState("กำลังล็อคอิน..");
       } else {
@@ -149,6 +170,9 @@ class AuthenticationBloc
        */
 
       if (_auth != null) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        preferences.setString("USER_ID",_auth.id.toUpperCase());
+
         yield AuthenticatedState(_auth);
       } else {
         yield UnAuthenticationState();
@@ -169,6 +193,8 @@ class AuthenticationBloc
         }
       });
       if (_auth != null) {
+
+
         yield AuthenticatedState(_auth);
       } else {
         yield UnAuthenticationState();
