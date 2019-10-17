@@ -164,7 +164,6 @@ class OnLocalDatabase {
 
     List<UncompletedData> unList = [];
 
-
     for (var answerPack in answerPackList) {
 
       List<Map> pass = await database

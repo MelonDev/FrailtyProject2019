@@ -15,7 +15,7 @@ class Account {
   final DateTime birthDate;
   final bool personnel;
 
-  Account(this.id, this.firstName, this.lastName, this.subDistrict,this.district, this.province, this.department, this.email,this.loginType, this.oAuthId, this.birthDate, this.personnel);
+  Account({this.id, this.firstName, this.lastName, this.subDistrict,this.district, this.province, this.department, this.email,this.loginType, this.oAuthId, this.birthDate, this.personnel});
 
   Account.fromJson(Map<String, dynamic> json)
       : id = json['id'],

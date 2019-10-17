@@ -158,7 +158,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
       }
 
       if (_date.isAfter(_datetime)) {
-        newList.add(UncompleteDataPack(uncompletedData: null, labelDateTime: formatter.format(_date)));
+        newList.add(UncompleteDataPack(uncompletedData: null, labelDateTime: formatter.format(_datetime)));
         newList.add(UncompleteDataPack(uncompletedData: data,labelDateTime: null));
         _datetime = _date;
       } else {

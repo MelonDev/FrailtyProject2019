@@ -36,8 +36,8 @@ dependencies:
   material_design_icons_flutter: 3.2.4096
   flutter_device_type: ^0.2.0
 
-  bloc: ^0.15.0
-  flutter_bloc: ^0.21.0
+  bloc: ^0.16.1
+  flutter_bloc: ^0.22.1
   shared_preferences: ^0.5.3+4
 
   flutter_spinkit: ^4.0.0
@@ -49,6 +49,8 @@ dependencies:
   dynamic_theme: ^1.0.1
   flutter_slidable: ^0.5.4
   flutter_rounded_progress_bar: ^0.1.2
+
+  connectivity: ^0.4.5
 
 
 dev_dependencies:
@@ -83,8 +85,8 @@ flutter:
           weight: 400
         - asset: fonts/THSarabunNew.ttf
           weight: 400
-          
-       
+
+
 
   assets:
     - images/settings.png

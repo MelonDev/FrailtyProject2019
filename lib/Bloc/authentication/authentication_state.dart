@@ -3,19 +3,26 @@ part of 'authentication_bloc.dart';
 @immutable
 abstract class AuthenticationState {}
 
+class MyAuthenticationState extends AuthenticationState {
+  final bool isOffline;
+
+  MyAuthenticationState(this.isOffline);
+}
+
 
 class InitialAuthenticationState extends AuthenticationState {
+
   @override
   String toString() {
     return "InitialAuthenticationState";
   }
 }
 
-class AuthenticatedState extends AuthenticationState {
+class AuthenticatedState extends MyAuthenticationState {
 
   final Account account;
 
-  AuthenticatedState(this.account);
+  AuthenticatedState({@required this.account,isOffline}) : super(isOffline);
 
   @override
   String toString() {
@@ -23,7 +30,10 @@ class AuthenticatedState extends AuthenticationState {
   }
 }
 
-class UnAuthenticationState extends AuthenticationState {
+class UnAuthenticationState extends MyAuthenticationState {
+
+  UnAuthenticationState({isOffline}) : super(isOffline);
+
   @override
   String toString() {
     return "UnAuthenticationState";
@@ -34,7 +44,7 @@ class AuthenticatingState extends AuthenticationState {
 
   final String message;
 
-  AuthenticatingState(this.message);
+  AuthenticatingState({@required this.message});
 
   @override
   String toString() {
@@ -45,6 +55,7 @@ class AuthenticatingState extends AuthenticationState {
 class ErrorAuthenticationState extends AuthenticationState {
 
   final String error;
+
 
   ErrorAuthenticationState(this.error);
 

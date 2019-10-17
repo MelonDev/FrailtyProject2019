@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:bloc/bloc.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:device_info/device_info.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,10 +58,23 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapUnAuthenticatingToState() async* {
-    yield AuthenticatingState("กำลังชื่อออก");
+    yield AuthenticatingState(message: "กำลังชื่อออก");
     try {
       await _firebaseAuth.signOut();
       await _googleSignIn.signOut();
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      preferences.remove("ACCOUNT_USER_ID");
+      preferences.remove("ACCOUNT_USER_FIRSTNAME");
+      preferences.remove("ACCOUNT_USER_LASTNAME");
+      preferences.remove("ACCOUNT_USER_PROVINCE");
+      preferences.remove("ACCOUNT_USER_DISTRICT");
+      preferences.remove("ACCOUNT_USER_SUBDISREICT");
+      preferences.remove("ACCOUNT_USER_EMAIL");
+      preferences.remove("ACCOUNT_USER_LOGINTYPE");
+      preferences.remove("ACCOUNT_USER_OAUTHID");
+      preferences.remove("ACCOUNT_USER_PERSONNEL");
+      preferences.remove("ACCOUNT_USER_DEPARTMENT");
+      preferences.remove("ACCOUNT_USER_BIRTHDATE");
       print("SignOut Successful");
       yield UnAuthenticationState();
     } catch (error) {
@@ -69,9 +83,10 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapGoogleLoginToState() async* {
-    yield AuthenticatingState("กำลังล็อคอิน..");
+    yield AuthenticatingState(message: "กำลังล็อคอิน..");
 
     try {
+
       Account _google = await _googleSignIn
           .signIn()
           .catchError((onError) {})
@@ -106,9 +121,26 @@ class AuthenticationBloc
       });
 
       if (_google != null) {
-        yield AuthenticatingState("กำลังโหลดฐานข้อมูล..");
+        var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        preferences.setString("ACCOUNT_USER_ID", _google.id);
+        preferences.setString("ACCOUNT_USER_FIRSTNAME", _google.firstName);
+        preferences.setString("ACCOUNT_USER_LASTNAME", _google.lastName);
+        preferences.setString("ACCOUNT_USER_PROVINCE", _google.province);
+        preferences.setString("ACCOUNT_USER_DISTRICT", _google.district);
+        preferences.setString("ACCOUNT_USER_SUBDISREICT", _google.subDistrict);
+        preferences.setString("ACCOUNT_USER_EMAIL", _google.email);
+        preferences.setString("ACCOUNT_USER_LOGINTYPE", _google.loginType);
+        preferences.setString("ACCOUNT_USER_OAUTHID", _google.oAuthId);
+        preferences.setBool("ACCOUNT_USER_PERSONNEL", _google.personnel);
+        preferences.setString("ACCOUNT_USER_DEPARTMENT", _google.department);
+        preferences.setString(
+            "ACCOUNT_USER_BIRTHDATE", formatter.format(_google.birthDate));
+
+        yield AuthenticatingState(message: "กำลังโหลดฐานข้อมูล..");
         await OnDeviceQuestionnaires().afterLogin();
-        yield AuthenticatedState(_google);
+        yield AuthenticatedState(account: _google);
       } else {
         yield UnAuthenticationState();
       }
@@ -120,71 +152,79 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAuthenticatingToState(
       AuthenticatingLoginEvent event) async* {
     try {
-      if(event.context != null){
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        final bool customDarkMode = preferences.getBool("CUSTOM_DARKMODE");
+      bool connected = await _checkInternetConnection() ?? false;
 
-        if(customDarkMode == null) {
-          preferences.setBool("CUSTOM_DARKMODE", false);
-          DynamicTheme.of(event.context).setBrightness(MediaQuery.of(event.context).platformBrightness);
-        }else {
-          if(!customDarkMode){
-            DynamicTheme.of(event.context).setBrightness(MediaQuery.of(event.context).platformBrightness);
+      if (connected) {
+        if (event.context != null) {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          final bool customDarkMode = preferences.getBool("CUSTOM_DARKMODE");
+
+          if (customDarkMode == null) {
+            preferences.setBool("CUSTOM_DARKMODE", false);
+            DynamicTheme.of(event.context)
+                .setBrightness(MediaQuery.of(event.context).platformBrightness);
+          } else {
+            if (!customDarkMode) {
+              DynamicTheme.of(event.context).setBrightness(
+                  MediaQuery.of(event.context).platformBrightness);
+            }
           }
         }
-      }
 
-
-
-
-      if (event.message == null) {
-        yield AuthenticatingState("กำลังล็อคอิน..");
-      } else {
-        yield AuthenticatingState(event.message);
-      }
-      var _auth = await _firebaseAuth.currentUser().then((onValue) async {
-        if (onValue != null) {
-          return loadAccountFromHeroku(onValue);
+        if (event.message == null) {
+          yield AuthenticatingState(message: "กำลังล็อคอิน..");
         } else {
-          return null;
+          yield AuthenticatingState(message: event.message);
         }
-      });
+        var _auth = await _firebaseAuth.currentUser().then((onValue) async {
+          if (onValue != null) {
+            return loadAccountFromHeroku(onValue);
+          } else {
+            return null;
+          }
+        });
 
-      yield AuthenticatingState("กำลังตรวจสอบฐานข้อมูล..");
-      //Database database = await OfflineStaticDatabase().initDatabase();
+        yield AuthenticatingState(message: "กำลังตรวจสอบฐานข้อมูล..");
 
-      //await OfflineStaticDatabase().onVersionProcess();
-      /*
-      List<Version> list = await OfflineStaticDatabase().getVersionDatabase();
-      for (var i in list){
-        print(i.id);
-        print(i.version);
-      }
-      if(list != null){
-        print(list.length);
-      }else {
-        print("sdkaskdk");
+        if (_auth != null) {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          preferences.setString("USER_ID", _auth.id.toUpperCase());
 
-      }
-
-       */
-
-      if (_auth != null) {
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        preferences.setString("USER_ID",_auth.id.toUpperCase());
-
-        yield AuthenticatedState(_auth);
+          yield AuthenticatedState(account: _auth);
+        } else {
+          yield UnAuthenticationState();
+        }
       } else {
-        yield UnAuthenticationState();
+        var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        print(preferences.getString("ACCOUNT_USER_BIRTHDATE"));
+        Account account = Account(
+            id: preferences.getString("ACCOUNT_USER_ID"),
+            firstName: preferences.getString("ACCOUNT_USER_FIRSTNAME"),
+            lastName: preferences.getString("ACCOUNT_USER_LASTNAME"),
+            province: preferences.getString("ACCOUNT_USER_PROVINCE"),
+            district: preferences.getString("ACCOUNT_USER_DISTRICT"),
+            subDistrict: preferences.getString("ACCOUNT_USER_SUBDISREICT"),
+            email: preferences.getString("ACCOUNT_USER_EMAIL"),
+            loginType: preferences.getString("ACCOUNT_USER_LOGINTYPE"),
+            oAuthId: preferences.getString("ACCOUNT_USER_OAUTHID"),
+            personnel: preferences.getBool("ACCOUNT_USER_PERSONNEL"),
+            department: preferences.getString("ACCOUNT_USER_DEPARTMENT"),
+            birthDate: formatter
+                .parse(preferences.getString("ACCOUNT_USER_BIRTHDATE")));
+
+        yield AuthenticatedState(account: account,isOffline: true);
       }
     } catch (error) {
+      print(error);
       yield ErrorAuthenticationState(error.toString());
     }
   }
 
   Stream<AuthenticationState> _mapDownloadingToState() async* {
     try {
-      yield AuthenticatingState("กำลังล็อคอิน..");
+      yield AuthenticatingState(message: "กำลังล็อคอิน..");
       var _auth = await _firebaseAuth.currentUser().then((onValue) async {
         if (onValue != null) {
           return loadAccountFromHeroku(onValue);
@@ -193,9 +233,7 @@ class AuthenticationBloc
         }
       });
       if (_auth != null) {
-
-
-        yield AuthenticatedState(_auth);
+        yield AuthenticatedState(account: _auth);
       } else {
         yield UnAuthenticationState();
       }
@@ -220,5 +258,19 @@ class AuthenticationBloc
     });
     //Navigator.push(
     //    context, FrailtyRoute(builder: (BuildContext context) => HomePage()));
+  }
+
+  Future<bool> _checkInternetConnection() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+      preferences.setBool("APP_IS_OFFLINE", true);
+
+      return true;
+    }else {
+      preferences.setBool("APP_IS_OFFLINE", false);
+      return false;
+    }
   }
 }
