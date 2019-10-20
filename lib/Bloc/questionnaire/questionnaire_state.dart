@@ -31,8 +31,10 @@ class FirstQuestionState extends MyQuestionnaireState {
 
 class RecentQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
+  final List<QuestionWithChoice> list;
+  //final TotalQuesionList totalList;
 
-  RecentQuestionState(this.questionWithChoice):super(0);
+  RecentQuestionState(this.questionWithChoice,this.list):super(0);
 
   @override
   String toString() {

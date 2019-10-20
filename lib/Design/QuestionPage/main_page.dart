@@ -60,9 +60,9 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(50)),
+                                      BorderRadius.all(Radius.circular(10)),
                                   color: _state is RecentQuestionState
-                                      ? Colors.red
+                                      ? Colors.orange
                                       : Colors.transparent),
                             ),
                           ),

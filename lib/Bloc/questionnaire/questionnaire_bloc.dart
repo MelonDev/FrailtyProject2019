@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:frailty_project_2019/Model/Answer.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
+import 'package:frailty_project_2019/Model/TotalQuestionList.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestion.dart';
 import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:meta/meta.dart';
@@ -147,7 +148,15 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
       RecentQuestionEvent event) async* {
     if(event.open){
       print(event.questionWithChoice.question.type);
-      yield RecentQuestionState(event.questionWithChoice);
+
+      //List<QuestionWithChoice> listQWC = await OnDeviceQuestion().loadAllQuestion(event.questionWithChoice.question.questionnaireId);
+      //TotalQuesionList totalQuesionList = await OnDeviceQuestion().newLoadAllQuestion(event.questionWithChoice.question.questionnaireId);
+
+      List<QuestionWithChoice> listQWC = await OnDeviceQuestion().superNewLoadAllQuestion(event.questionWithChoice.question.questionnaireId);
+
+      //yield RecentQuestionState(event.questionWithChoice,TotalQuesionList());
+      yield RecentQuestionState(event.questionWithChoice,listQWC);
+
 
     }else {
       QuestionWithChoice questionWithChoice = event.questionWithChoice;

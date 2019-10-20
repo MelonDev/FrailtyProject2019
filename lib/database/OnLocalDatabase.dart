@@ -195,4 +195,24 @@ class OnLocalDatabase {
     }
     return unList;
   }
+
+  Future<Answer> loadAnswer(String questionIds) async {
+    Database database = await _initDatabase();
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final String current = preferences.getString("CURRENT_ANSWERPACK");
+
+    List<Map> pass = await database
+        .rawQuery(
+            "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${current}') AND ($answerQuestionId = '${questionIds.toUpperCase()}')")
+        .then((onValue) => onValue);
+    if (pass.length > 0) {
+      Map passFirst = pass.first;
+      Answer answer = Answer.fromMap(passFirst);
+      return answer;
+    }else {
+      return null;
+    }
+
+  }
 }
