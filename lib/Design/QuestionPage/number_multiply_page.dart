@@ -203,7 +203,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   .requestFocus(new FocusNode());
                               _actionBtn = false;
                             } else {
-                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
+                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
 
                             }
                           },

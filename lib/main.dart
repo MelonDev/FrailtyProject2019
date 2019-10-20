@@ -64,14 +64,14 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthenticationBloc>(
             builder: (context) =>
-                AuthenticationBloc()..dispatch(AuthenticatingLoginEvent(null,null))),
+                AuthenticationBloc()..add(AuthenticatingLoginEvent(null,null))),
         BlocProvider<CatalogueBloc>(
           builder: (context) =>
-              CatalogueBloc()..dispatch(QuestionnaireSelectedEvent()),
+              CatalogueBloc()..add(QuestionnaireSelectedEvent()),
         ),
         BlocProvider<QuestionnaireBloc>(
           builder: (context) =>
-              QuestionnaireBloc()..dispatch(InitialQuestionnaireEvent()),
+              QuestionnaireBloc()..add(InitialQuestionnaireEvent()),
         )
       ],
       child: DynamicTheme(

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_cupertino_settings/flutter_cupertino_settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -65,7 +66,7 @@ class _settingPage extends State<SettingPage> {
                     color: Colors.transparent,
                     child: SizedBox(
                       width: 60,
-                      height: double.infinity,
+                      height: 56,
                       child: LayoutBuilder(builder: (context, constraint) {
                         return FlatButton(
                             padding: EdgeInsets.all(0),
@@ -84,7 +85,7 @@ class _settingPage extends State<SettingPage> {
               ],
             ),
             SizedBox(
-              height: double.infinity,
+              height: 56,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +107,7 @@ class _settingPage extends State<SettingPage> {
           ],
         ),
 
-        brightness: Brightness.light,
+        brightness: brightness,
         backgroundColor: Theme.of(context).primaryColor,
         elevation: 1,
       ),

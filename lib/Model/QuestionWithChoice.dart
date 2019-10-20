@@ -5,7 +5,8 @@ class QuestionWithChoice{
 
   final Question question;
   final List<Choice> choices;
+  final Question fromQuestion;
 
-  QuestionWithChoice(this.question,this.choices);
+  QuestionWithChoice(this.question,this.choices,{this.fromQuestion});
 
 }

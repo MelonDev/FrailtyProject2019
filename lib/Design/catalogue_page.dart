@@ -1,7 +1,9 @@
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_device_type/flutter_device_type.dart';
 import 'package:flutter_rounded_progress_bar/flutter_rounded_progress_bar.dart';
 import 'package:flutter_rounded_progress_bar/rounded_progress_bar_style.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -9,9 +11,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frailty_project_2019/Bloc/catalogue/catalogue_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
 import 'package:frailty_project_2019/Design/question_page.dart';
+import 'package:frailty_project_2019/Model/Questionnaire.dart';
+import 'package:frailty_project_2019/Model/UncompletedData.dart';
 import 'package:frailty_project_2019/Question.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
-import 'package:frailty_project_2019/home.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -24,6 +27,11 @@ class CataloguePage extends StatefulWidget {
 
 class _cataloguePage extends State<CataloguePage> {
   final List<String> _tabList = ["แบบทดสอบ", "ยังทำไม่เสร็จ", "ทำเสร็จแล้ว"];
+  final List<IconData> _tabListIcon = [
+    Icons.assignment,
+    Icons.history,
+    Icons.check
+  ];
 
   //CatalogueBloc _catalogueBloc; = CatalogueBloc();
 
@@ -40,7 +48,7 @@ class _cataloguePage extends State<CataloguePage> {
     super.initState();
     _catalogueBloc = BlocProvider.of<CatalogueBloc>(this.context);
 
-    _catalogueBloc.dispatch(QuestionnaireSelectedEvent());
+    _catalogueBloc.add(QuestionnaireSelectedEvent());
   }
 
   List<Widget> _tabChildren = [
@@ -51,11 +59,11 @@ class _cataloguePage extends State<CataloguePage> {
 
   void onTabTapped(int index) {
     if (index == 0) {
-      _catalogueBloc.dispatch(QuestionnaireSelectedEvent());
+      _catalogueBloc.add(QuestionnaireSelectedEvent());
     } else if (index == 1) {
-      _catalogueBloc.dispatch(UncompletedSelectedEvent());
+      _catalogueBloc.add(UncompletedSelectedEvent());
     } else if (index == 2) {
-      _catalogueBloc.dispatch(CompletedSelectedEvent());
+      _catalogueBloc.add(CompletedSelectedEvent());
     }
     setState(() {
       _currentIndex = index;
@@ -93,7 +101,7 @@ class _cataloguePage extends State<CataloguePage> {
                     color: Colors.transparent,
                     child: SizedBox(
                       width: 60,
-                      height: double.infinity,
+                      height: 56,
                       child: LayoutBuilder(builder: (context, constraint) {
                         return FlatButton(
                             padding: EdgeInsets.all(0),
@@ -112,7 +120,7 @@ class _cataloguePage extends State<CataloguePage> {
               ],
             ),
             SizedBox(
-              height: double.infinity,
+              height: 56,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -143,42 +151,141 @@ class _cataloguePage extends State<CataloguePage> {
         backgroundColor: _themeData.primaryColor,
         elevation: 1,
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: _themeData.accentColor,
-        backgroundColor: _themeData.primaryColor,
-        currentIndex: _currentIndex,
-        onTap: onTabTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.assignment),
-            title: new Text(
-              'แบบทดสอบ',
-              style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
+      bottomNavigationBar: Device.get().isTablet
+          ? null
+          : BottomNavigationBar(
+              selectedItemColor: _themeData.accentColor,
+              backgroundColor: _themeData.primaryColor,
+              currentIndex: _currentIndex,
+              onTap: onTabTapped,
+              items: [
+                BottomNavigationBarItem(
+                  icon: new Icon(Icons.assignment),
+                  title: new Text(
+                    'แบบทดสอบ',
+                    style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
+                  ),
+                ),
+                BottomNavigationBarItem(
+                  icon: new Icon(Icons.history),
+                  title: new Text(
+                    'ยังทำไม่เสร็จ',
+                    style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
+                  ),
+                ),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.check),
+                    title: Text(
+                      'ทำเสร็จแล้ว',
+                      style:
+                          TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
+                    ))
+              ],
             ),
-          ),
-          BottomNavigationBarItem(
-            icon: new Icon(Icons.history),
-            title: new Text(
-              'ยังทำไม่เสร็จ',
-              style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
-            ),
-          ),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.check),
-              title: Text(
-                'ทำเสร็จแล้ว',
-                style: TextStyle(fontFamily: 'SukhumvitSet', fontSize: 16),
-              ))
-        ],
-      ),
       //body: _tabChildren[_currentIndex],
-      body: _loadWidgetToLayout(_state),
+      body: Device.get().isTablet
+          ? _loadTabletSize(_state)
+          : _loadWidgetToLayout(_state),
+    );
+  }
+
+  Widget _loadTabletSize(CatalogueState _state) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 260,
+          color: DynamicTheme.of(context).brightness == Brightness.dark
+              ? Color(0xFF121212)
+              : Color(0xFFe8e8e8),
+          child: _sideBar(_state),
+        ),
+        Container(
+          width: MediaQuery.of(context).size.width - 260,
+          child: _loadWidgetToLayout(_state),
+        )
+      ],
+    );
+  }
+
+  Widget _sideBar(CatalogueState _state) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+      child: ListView.builder(
+          itemCount: _tabList.length,
+          itemBuilder: (context, position) {
+            if (_currentIndex == position) {
+              return Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(10),
+                        bottomRight: Radius.circular(10)),
+                    color: Colors.teal),
+                height: 60,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        _tabListIcon[position],
+                        color: Colors.white,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                        child: Text(
+                          _tabList[position],
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'SukhumvitSet',
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return GestureDetector(
+                onTap: () {
+                  onTabTapped(position);
+                },
+                child: Container(
+                    color: Colors.transparent,
+                    height: 60,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Icon(
+                            _tabListIcon[position],
+                            color: _themeData.primaryTextTheme.subtitle.color,
+                          ),
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                            child: Text(
+                              _tabList[position],
+                              style: TextStyle(
+                                  color: _themeData
+                                      .primaryTextTheme.subtitle.color,
+                                  fontFamily: 'SukhumvitSet',
+                                  fontSize: 16),
+                            ),
+                          )
+                        ],
+                      ),
+                    )),
+              );
+            }
+          }),
     );
   }
 
   Widget _loadWidgetToLayout(CatalogueState _state) {
     if (_state is InitialCatalogueState) {
-      _catalogueBloc.dispatch(QuestionnaireSelectedEvent());
+      _catalogueBloc.add(QuestionnaireSelectedEvent());
       return PlaceholderWidget(Colors.yellow);
     } else if (_state is QuestionnaireCatalogueState) {
       return QuestionnaireTab(_state);
@@ -230,6 +337,10 @@ class UncompletedTab extends StatelessWidget {
 
   ThemeData _themeData;
 
+  Function reloadUncomplete() {
+    _catalogueBloc.add(UncompletedSelectedEvent());
+  }
+
   @override
   Widget build(BuildContext context) {
     _themeData = Theme.of(context);
@@ -239,9 +350,14 @@ class UncompletedTab extends StatelessWidget {
     if (this._state == null) {
       return Container();
     } else {
-      return Stack(
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
+            width: MediaQuery.of(context).size.width,
+            constraints: BoxConstraints(maxWidth: 500),
             //color: Color(0xFFE0E0E0),
             color: _themeData.backgroundColor,
 
@@ -277,7 +393,8 @@ class UncompletedTab extends StatelessWidget {
                                                       .fontFamily,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.white.withAlpha(200)),
+                                                  color: Colors.white
+                                                      .withAlpha(200)),
                                             ),
                                             content: new Text(
                                                 "หากคุณต้องการจบบันทึกอันนี้ให้กดปุ่มยืนยัน",
@@ -289,7 +406,9 @@ class UncompletedTab extends StatelessWidget {
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.normal,
-                                                    color: Colors.white.withAlpha(200).withAlpha(150))),
+                                                    color: Colors.white
+                                                        .withAlpha(200)
+                                                        .withAlpha(150))),
                                             actions: [
                                               CupertinoDialogAction(
                                                 isDestructiveAction: true,
@@ -304,7 +423,7 @@ class UncompletedTab extends StatelessWidget {
                                                             FontWeight.normal,
                                                         color: Colors.red)),
                                                 onPressed: () {
-                                                  _catalogueBloc.dispatch(
+                                                  _catalogueBloc.add(
                                                       UncompletedDeleteItemEvent(
                                                           _state.data[position]
                                                               .uncompletedData));
@@ -321,7 +440,8 @@ class UncompletedTab extends StatelessWidget {
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.normal,
-                                                        color: Colors.white.withAlpha(200))),
+                                                        color: Colors.white
+                                                            .withAlpha(200))),
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                 },
@@ -338,7 +458,8 @@ class UncompletedTab extends StatelessWidget {
                                                       .fontFamily,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Colors.black.withAlpha(180)),
+                                                  color: Colors.black
+                                                      .withAlpha(180)),
                                             ),
                                             content: new Text(
                                                 "หากคุณต้องการจบบันทึกอันนี้ให้กดปุ่มยืนยัน",
@@ -350,7 +471,9 @@ class UncompletedTab extends StatelessWidget {
                                                     fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.normal,
-                                                    color: Colors.black.withAlpha(180).withAlpha(150))),
+                                                    color: Colors.black
+                                                        .withAlpha(180)
+                                                        .withAlpha(150))),
                                             actions: [
                                               CupertinoDialogAction(
                                                 isDestructiveAction: true,
@@ -365,7 +488,7 @@ class UncompletedTab extends StatelessWidget {
                                                             FontWeight.normal,
                                                         color: Colors.red)),
                                                 onPressed: () {
-                                                  _catalogueBloc.dispatch(
+                                                  _catalogueBloc.add(
                                                       UncompletedDeleteItemEvent(
                                                           _state.data[position]
                                                               .uncompletedData));
@@ -382,7 +505,8 @@ class UncompletedTab extends StatelessWidget {
                                                         fontSize: 18,
                                                         fontWeight:
                                                             FontWeight.normal,
-                                                        color: Colors.black.withAlpha(180))),
+                                                        color: Colors.black
+                                                            .withAlpha(180))),
                                                 onPressed: () {
                                                   Navigator.of(context).pop();
                                                 },
@@ -418,9 +542,22 @@ class UncompletedTab extends StatelessWidget {
     }
   }
 
+  void _resumeQuestion(BuildContext context, int position) {
+    Navigator.push(context,
+        //MaterialPageRoute(builder: (context) => SecondRoute()),
+        FrailtyRoute(builder: (BuildContext context) {
+      UncompletedData slot = _state.data[position].uncompletedData;
+      return MainQuestion(slot.questionnaire.id, slot.answerPack.id);
+    })).then((value) {
+      _catalogueBloc.add(UncompletedSelectedEvent());
+    });
+
+
+  }
+
   Widget _cardWidget(BuildContext context, int position) {
     return GestureDetector(
-      onTap: () => {},
+      onTap: () => {_resumeQuestion(context, position)},
       child: Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Container(
@@ -644,9 +781,14 @@ class QuestionnaireTab extends StatelessWidget {
     if (this._state == null) {
       return Container();
     } else {
-      return Stack(
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
+            width: MediaQuery.of(context).size.width,
+            constraints: BoxConstraints(maxWidth: 500),
             //color: Color(0xFFE0E0E0),
             color: _themeData.backgroundColor,
             child: ListView.builder(
@@ -677,16 +819,14 @@ class QuestionnaireTab extends StatelessWidget {
                 } else {
                   return GestureDetector(
                     onTap: () => {
-                      Navigator.push(
-                          context,
+                      Navigator.push(context,
                           //MaterialPageRoute(builder: (context) => SecondRoute()),
-                          FrailtyRoute(
-                              builder: (BuildContext context) => MainQuestion(
-                                  position == 1
-                                      ? _state.questionnaireList[0].id
-                                      : _state
-                                          .questionnaireList[position - 2].id,
-                                  Uuid().v4())))
+                          FrailtyRoute(builder: (BuildContext context) {
+                        Questionnaire questionnaire = position == 1
+                            ? _state.questionnaireList[0]
+                            : _state.questionnaireList[position - 2];
+                        return MainQuestion(questionnaire.id, null);
+                      }))
                     },
                     child: Padding(
                         padding: EdgeInsets.fromLTRB(16, 0, 16, 16),

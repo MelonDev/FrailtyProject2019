@@ -120,7 +120,7 @@ PODS:
     - nanopb/encode (= 0.3.901)
   - nanopb/decode (0.3.901)
   - nanopb/encode (0.3.901)
-  - permission_handler (3.2.2):
+  - permission_handler (3.3.0):
     - Flutter
   - Reachability (3.2)
   - shared_preferences (0.0.1):
@@ -205,7 +205,7 @@ SPEC CHECKSUMS:
   AppAuth: bce82c76043657c99d91e7882e8a9e1a93650cd4
   apple_sign_in: 7716c7ddfa195aeab7dec0dc374ef4ff45d1adb4
   connectivity: 6e94255659cc86dcbef1d452ad3e0491bb1b3e75
-  device_info: 3ebad48f726348f69abd802f3334a8d1ed795fbd
+  device_info: cbf09d2ec12aa7110e0b09fabe54b5bd6c8efe74
   Firebase: 5e6b7b12bf9adb90986688edc06b156c37e109cd
   firebase_auth: 1e3b7bdd37b9fbd4ef75ba1d985b00be09e02d3d
   firebase_core: 44f31f51532812598f0f9f4af0caa705b9edfc19
@@ -232,9 +232,9 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
   location_permissions: 195ff2a1182fa9029ef3f2653156961ee5a1e40b
   nanopb: 2901f78ea1b7b4015c860c2fdd1ea2fee1a18d48
-  permission_handler: d59f41439f5bc6c4d1005f3355e98f05ddc68ece
+  permission_handler: 67637977b227d62d46bfbf524f335f8568de5a73
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
-  shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
+  shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
   sqflite: ff1d9da63c06588cc8d1faf7256d741f16989d5a
 
 PODFILE CHECKSUM: ebd43b443038e611b86ede96e613bd6033c49497

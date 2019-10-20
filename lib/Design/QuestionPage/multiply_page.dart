@@ -103,7 +103,7 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                       } else {
                                         return GestureDetector(
                                             onTap: () {
-                                              _questionnaireBloc.dispatch(NextQuestionEvent(state.questionWithChoice.question.questionnaireId, state.questionWithChoice.question.id, state.questionWithChoice.choices[position - 1].id,state.questionWithChoice.choices[position - 1].id));
+                                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId, state.questionWithChoice.question.id, state.questionWithChoice.choices[position - 1].id,state.questionWithChoice.choices[position - 1].id));
                                             },
                                             child: Container(
                                               margin: position == 0

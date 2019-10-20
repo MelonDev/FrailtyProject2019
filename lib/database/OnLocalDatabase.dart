@@ -27,11 +27,11 @@ class OnLocalDatabase {
     String path = join(databasesPath, 'localdatabase.db');
     Database db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-          await db.execute(
-              'CREATE TABLE IF NOT EXISTS  $answerPackTable ($answerPackId text primary key,$answerPackTakerId text not null,$answerPackDatetime text not null)');
-          await db.execute(
-              'CREATE TABLE IF NOT EXISTS  $answerTable ($answerId text primary key,$answerQuestionId text not null,$answerAnswerPackId text not null,$answerValue text not null)');
-        }).then((db) {
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS  $answerPackTable ($answerPackId text primary key,$answerPackTakerId text not null,$answerPackDatetime text not null)');
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS  $answerTable ($answerId text primary key,$answerQuestionId text not null,$answerAnswerPackId text not null,$answerValue text not null)');
+    }).then((db) {
       return db;
     });
     return db;
@@ -45,11 +45,11 @@ class OnLocalDatabase {
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     String formatted = formatter.format(now);
 
-
     String uuid = Uuid().v4().toUpperCase();
     final String userId = preferences.getString("USER_ID");
 
-    AnswerPack answerPack = AnswerPack(id: uuid.toUpperCase(),
+    AnswerPack answerPack = AnswerPack(
+        id: uuid.toUpperCase(),
         takerId: userId.toUpperCase(),
         dateTime: formatted);
 
@@ -69,16 +69,15 @@ class OnLocalDatabase {
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
     String uuid = Uuid().v4().toUpperCase();
-    final String currentAnswerPack = preferences.getString(
-        "CURRENT_ANSWERPACK");
+    final String currentAnswerPack =
+        preferences.getString("CURRENT_ANSWERPACK");
 
     List<Map> list = await database
-        .rawQuery(
-        "SELECT * FROM $answerTable")
+        .rawQuery("SELECT * FROM $answerTable")
         .then((onValue) => onValue);
 
-
-    Answer answer = Answer(id: uuid.toUpperCase(),
+    Answer answer = Answer(
+        id: uuid.toUpperCase(),
         questionId: questionId.toUpperCase(),
         answerPack: currentAnswerPack.toUpperCase(),
         value: value);
@@ -97,12 +96,13 @@ class OnLocalDatabase {
 
     Batch batch = database.batch();
 
-    batch.delete(answerPackTable, where: '$answerPackId = ?', whereArgs: [answerPackIds.toUpperCase()]);
-    batch.delete(answerTable, where: '$answerAnswerPackId = ?', whereArgs: [answerPackIds.toUpperCase()]);
-
+    batch.delete(answerPackTable,
+        where: '$answerPackId = ?', whereArgs: [answerPackIds.toUpperCase()]);
+    batch.delete(answerTable,
+        where: '$answerAnswerPackId = ?',
+        whereArgs: [answerPackIds.toUpperCase()]);
 
     batch.commit().then((onValue) {
-
       print("Batch Complete");
     }).catchError((error) {
       print("Batch Error: $error");
@@ -115,20 +115,19 @@ class OnLocalDatabase {
     Batch batch = database.batch();
 
     List<Map> list = await database
-        .rawQuery(
-        "SELECT * FROM $answerPackTable")
+        .rawQuery("SELECT * FROM $answerPackTable")
         .then((onValue) => onValue);
-    List<AnswerPack> answerPackList = list.map((m) =>
-    new AnswerPack.fromJson(m)).toList();
+    List<AnswerPack> answerPackList =
+        list.map((m) => new AnswerPack.fromJson(m)).toList();
 
     for (var answerPack in answerPackList) {
       List<Map> lists = await database
           .rawQuery(
-          "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPack
-              .id}')")
+              "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPack.id}')")
           .then((onValue) => onValue);
       if (lists.length == 0) {
-        batch.delete(answerPackTable, where: '$answerPackId = ?', whereArgs: [answerPack.id]);
+        batch.delete(answerPackTable,
+            where: '$answerPackId = ?', whereArgs: [answerPack.id]);
       }
     }
     batch.commit().then((onValue) {
@@ -141,49 +140,59 @@ class OnLocalDatabase {
   Future<int> getCounter(String answerPackIds) async {
     Database database = await _initDatabase();
 
-
     List<Map> list = await database
         .rawQuery(
-        "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackIds.toUpperCase()}')")
+            "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackIds.toUpperCase()}')")
         .then((onValue) => onValue);
 
     print(list.length);
 
     return list.length;
+  }
 
+  Future<Answer> findLastAnswer(String answerPackId) async {
+    Database database = await _initDatabase();
+    List<Map> list = await database
+        .rawQuery(
+            "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackId}')")
+        .then((onValue) => onValue);
+    Answer answer = new Answer.fromJson(list.last);
+    //print(answer.questionId);
+    //print(list.length);
+    return answer;
   }
 
   Future<List<UncompletedData>> loadUnCompletedList() async {
     Database database = await _initDatabase();
     List<Map> list = await database
-        .rawQuery(
-        "SELECT * FROM $answerPackTable")
+        .rawQuery("SELECT * FROM $answerPackTable")
         .then((onValue) => onValue);
-    List<AnswerPack> answerPackList = list.map((m) =>
-    new AnswerPack.fromJson(m)).toList();
+    List<AnswerPack> answerPackList =
+        list.map((m) => new AnswerPack.fromJson(m)).toList();
 
     List<UncompletedData> unList = [];
 
     for (var answerPack in answerPackList) {
-
       List<Map> pass = await database
           .rawQuery(
-          "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPack
-              .id}')")
+              "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPack.id}')")
           .then((onValue) => onValue);
       Map passFirst = pass.first;
       Answer answer = Answer.fromMap(passFirst);
 
-      Questionnaire questionnaire = await OnDeviceQuestion().findQuestionnaire(answer.questionId);
+      Questionnaire questionnaire =
+          await OnDeviceQuestion().findQuestionnaire(answer.questionId);
 
-      int total = await OnDeviceQuestion().countOfQuestionnaire(questionnaire.id);
+      int total =
+          await OnDeviceQuestion().countOfQuestionnaire(questionnaire.id);
 
-      unList.add(UncompletedData(answerPack: answerPack,totalQuestion: total,questionnaire: questionnaire,completedQuestion: pass.length));
-
+      unList.add(UncompletedData(
+          answerPack: answerPack,
+          totalQuestion: total,
+          questionnaire: questionnaire,
+          completedQuestion: pass.length,
+          answer: answer));
     }
     return unList;
   }
-
-
-
 }

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:frailty_project_2019/Bloc/catalogue/catalogue_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
 import 'package:frailty_project_2019/Model/Choice.dart';
 import 'package:frailty_project_2019/Model/Question.dart';
@@ -26,11 +27,14 @@ part 'QuestionPage/text_input_page.dart';
 
 part 'QuestionPage/main_page.dart';
 
+part 'QuestionPage/recent_page.dart';
+
+
 class MainQuestion extends StatefulWidget {
   String _keys;
-  String uuid;
+  String _answerPackId;
 
-  MainQuestion(this._keys, this.uuid);
+  MainQuestion(this._keys, this._answerPackId);
 
   @override
   _questionPage createState() => _questionPage();
@@ -42,8 +46,8 @@ class _questionPage extends State<MainQuestion> {
   CellCalculator _cellCalculator;
 
   String _questionnaireKey;
+  String _answerPackId;
 
-  String _uuid;
 
   int numberCounter;
 
@@ -54,26 +58,32 @@ class _questionPage extends State<MainQuestion> {
 
   @override
   Widget build(BuildContext context) {
-    _uuid = widget.uuid;
     _questionnaireKey = widget._keys;
+    _answerPackId = widget._answerPackId;
 
     _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(this.context);
     _cellCalculator = new CellCalculator(context);
 
-    _questionnaireBloc
-        .dispatch(NextQuestionEvent(_questionnaireKey, null, null, null));
+    if (_answerPackId == null) {
+      _questionnaireBloc
+          .add(NextQuestionEvent(_questionnaireKey, null, null, null));
+    } else {
+      _questionnaireBloc
+          .add(ResumeQuestionEvent(_questionnaireKey, _answerPackId));
+    }
 
-    print("UUID: $_uuid");
 
     return BlocBuilder<QuestionnaireBloc, QuestionnaireState>(
         builder: (context, _state) {
-      return mainLayout(context, _state);
-    });
+          return mainLayout(context, _state);
+        });
   }
 
   Widget mainLayout(BuildContext context, QuestionnaireState _state) {
     return Scaffold(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme
+            .of(context)
+            .primaryColor,
         appBar: mainPageAppbar(_state, context),
         body: _pageManager(context, _state));
   }
@@ -85,7 +95,9 @@ class _questionPage extends State<MainQuestion> {
       );
     } else if (_state is LoadingQuestionState) {
       return Container(
-          color: Theme.of(context).primaryColor,
+          color: Theme
+              .of(context)
+              .primaryColor,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -94,7 +106,11 @@ class _questionPage extends State<MainQuestion> {
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                   child: SpinKitThreeBounce(
-                    color: Theme.of(context).primaryTextTheme.subtitle.color,
+                    color: Theme
+                        .of(context)
+                        .primaryTextTheme
+                        .subtitle
+                        .color,
                     size: 50.0,
                   ),
                 ),
@@ -103,7 +119,11 @@ class _questionPage extends State<MainQuestion> {
                   child: Text(_state.message,
                       style: TextStyle(
                           color:
-                              Theme.of(context).primaryTextTheme.subtitle.color,
+                          Theme
+                              .of(context)
+                              .primaryTextTheme
+                              .subtitle
+                              .color,
                           fontSize: 18,
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.normal)),
@@ -129,6 +149,8 @@ class _questionPage extends State<MainQuestion> {
     } else if (_state is TextInputQuestionState) {
       //getCounter();
       return _textInputPage(context, _state);
+    } else if (_state is RecentQuestionState) {
+      return recentPage(_state, context);
     } else if (_state is RequestPermissionState) {
       return Container(
         color: Colors.blue,
@@ -136,7 +158,7 @@ class _questionPage extends State<MainQuestion> {
     }
   }
 
-  /*
+/*
   void getCounter() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
     final String currentAnswerPack =

@@ -29,6 +29,17 @@ class FirstQuestionState extends MyQuestionnaireState {
   }
 }
 
+class RecentQuestionState extends MyQuestionnaireState {
+  final QuestionWithChoice questionWithChoice;
+
+  RecentQuestionState(this.questionWithChoice):super(0);
+
+  @override
+  String toString() {
+    return "RecentState";
+  }
+}
+
 class LoadingQuestionState extends MyQuestionnaireState {
   final String message;
 

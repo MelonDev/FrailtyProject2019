@@ -176,6 +176,7 @@ class AuthenticationBloc
         } else {
           yield AuthenticatingState(message: event.message);
         }
+
         var _auth = await _firebaseAuth.currentUser().then((onValue) async {
           if (onValue != null) {
             return loadAccountFromHeroku(onValue);

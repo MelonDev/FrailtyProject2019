@@ -51,8 +51,7 @@ class _newMain extends State<NewMain>
     switch (state) {
       case AppLifecycleState.resumed:
         print("resumed");
-        _authenticationBloc
-            .dispatch(AuthenticatingLoginEvent("กำลังรีเฟรส..", context));
+        _authenticationBloc.add(AuthenticatingLoginEvent("กำลังรีเฟรส..", context));
         break;
       case AppLifecycleState.inactive:
         print("inactive");
@@ -83,6 +82,7 @@ class _newMain extends State<NewMain>
 
   @override
   Widget build(BuildContext context) {
+
     _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
     //_authenticationBloc = AuthenticationBloc();
     //_authenticationBloc = BlocProvider.BlocProvider.of(context).authenticationBloc;
@@ -95,8 +95,8 @@ class _newMain extends State<NewMain>
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, _state) {
       if (_state is InitialAuthenticationState) {
-        _authenticationBloc
-            .dispatch(AuthenticatingLoginEvent("เช็คสถานะ..", context));
+        // ignore: deprecated_member_use
+        //_authenticationBloc.add(AuthenticatingLoginEvent("เช็คสถานะ..", context));
         return SizedBox();
       } else if (_state is AuthenticatingState) {
         return Material(
@@ -129,238 +129,7 @@ class _newMain extends State<NewMain>
         );
       } else if (_state is AuthenticatedState ||
           _state is UnAuthenticationState) {
-        return Material(
-            //color: Color(0xFFD9D9D9),
-            color: _theme.scaffoldBackgroundColor,
-            child: BlocBuilder(
-                bloc: _authenticationBloc,
-                builder: (BuildContext context, AuthenticationState _state) {
-                  return SlidingUpPanel(
-                    controller: _panelController,
-                    parallaxEnabled: true,
-                    minHeight:
-                        (105 + (Device.get().isIphoneX ? 25 : 0).toDouble()),
-                    maxHeight: _state is AuthenticatedState
-                        ? (_state.account.personnel ? 520 : 570)
-                        : 460,
-                    backdropEnabled: true,
-                    backdropTapClosesPanel: true,
-                    renderPanelSheet: false,
-                    panel: _floatingPanel(context, _state),
-                    collapsed: _floatingCollapsed(_state),
-                    body: Scaffold(
-                      backgroundColor: _theme.scaffoldBackgroundColor,
-                      appBar: AppBar(
-                        backgroundColor: _checkInternetOnlineIsTrue(_state)
-                            ? Theme.of(context).appBarTheme.color
-                            : Color(0xFFD32F2F),
-                        elevation: 0,
-                        title: Text(_checkInternetOnlineIsTrue(_state) ? _appname : "ไม่พบการเชื่อมต่ออินเตอร์เน็ต",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'SukhumvitSet',
-                                fontSize: 20,
-                                fontWeight: _checkInternetOnlineIsTrue(_state) ? FontWeight.bold : FontWeight.normal)),
-                      ),
-                      body: Stack(
-                        children: <Widget>[
-                          Container(
-                              width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.height,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                    colors: [
-                                      //Color(0xFF52c7b8),
-                                      _checkInternetOnlineIsTrue(_state) ?_theme.secondaryHeaderColor :Color(0xFFE57373),
-                                      _theme.scaffoldBackgroundColor,
-                                    ],
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter),
-                              ),
-                              child: SingleChildScrollView(
-                                child: Stack(children: <Widget>[
-                                  Center(
-                                    child: Container(
-                                      margin: EdgeInsets.fromLTRB(
-                                          17.5, 25.0, 17.5, 120.0),
-                                      child: Container(
-                                          decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(24)),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: _checkInternetOnlineIsTrue(_state) ?_theme
-                                                      .appBarTheme.color
-                                                      .withAlpha(100) :Color(0xFFD32F2F).withAlpha(100) ,
-                                                  blurRadius: 10.0,
-                                                ),
-                                              ]),
-                                          child: Stack(
-                                            children: <Widget>[
-                                              Container(
-                                                constraints: BoxConstraints(
-                                                    maxWidth: 530),
-                                                //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
-                                                decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.all(
-                                                            Radius.circular(
-                                                                24)),
-                                                    color: _theme.cardColor),
-                                                child: Column(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: <Widget>[
-                                                    Container(
-                                                      padding: EdgeInsets.only(
-                                                          top: 26,
-                                                          left: 30,
-                                                          right: 30,
-                                                          bottom: 20),
-                                                      color: Colors.transparent,
-                                                      child: Image.asset(
-                                                        'images/funny-elderly-couple-dancing-cartoon-vector-24002358.png',
-                                                        fit: BoxFit.contain,
-                                                        height: Device.get()
-                                                                .isIphoneX
-                                                            ? MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width /
-                                                                1.7
-                                                            : MediaQuery.of(
-                                                                        context)
-                                                                    .size
-                                                                    .width /
-                                                                3.2,
-                                                      ),
-                                                    ),
-                                                    Padding(
-                                                        padding:
-                                                            EdgeInsets.fromLTRB(
-                                                                24, 0, 20, 0),
-                                                        child: Align(
-                                                            alignment: Alignment
-                                                                .topLeft,
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: <
-                                                                  Widget>[
-                                                                Text(
-                                                                  'แบบทดสอบภาวะเปราะบาง',
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style: TextStyle(
-                                                                      fontFamily:
-                                                                          'SukhumvitSet',
-                                                                      fontSize: Device.get()
-                                                                              .isTablet
-                                                                          ? 26
-                                                                          : 21,
-                                                                      color: _checkInternetOnlineIsTrue(_state) ? Colors
-                                                                          .teal[
-                                                                              600]
-                                                                          .withOpacity(
-                                                                              0.8) : Color(0xFFD32F2F),
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold),
-                                                                ),
-                                                                Text(
-                                                                  'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  maxLines: 5,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style: TextStyle(
-                                                                      fontFamily:
-                                                                          'SukhumvitSet',
-                                                                      fontSize: Device.get()
-                                                                              .isTablet
-                                                                          ? 22
-                                                                          : 17,
-                                                                      color: _theme
-                                                                          .primaryTextTheme
-                                                                          .subtitle
-                                                                          .color,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .normal),
-                                                                )
-                                                              ],
-                                                            ))),
-                                                    Container(
-                                                      height: 1,
-                                                      width: 180,
-                                                      margin: EdgeInsets.only(
-                                                          top: 15, bottom: 15),
-                                                      color: _checkInternetOnlineIsTrue(_state) ? Colors.teal : Color(0xFFD32F2F),
-                                                    ),
-                                                    Container(
-                                                      margin: EdgeInsets.only(
-                                                          bottom: 20),
-                                                      child: MaterialButton(
-                                                        minWidth: 256,
-                                                        height: 56,
-                                                        shape: RoundedRectangleBorder(
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        14.0)),
-                                                        splashColor:
-                                                            Colors.white12,
-                                                        color: _checkInternetOnlineIsTrue(_state) ? Colors.teal : Color(0xFFD32F2F),
-                                                        elevation: 0,
-                                                        highlightElevation: 0,
-                                                        child: Text(
-                                                          _state is AuthenticatedState
-                                                              ? "เริ่มทำแบบทดสอบ"
-                                                              : "ลงชื่อเข้าใช้",
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: TextStyle(
-                                                              fontFamily:
-                                                                  'SukhumvitSet',
-                                                              fontSize: 20,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold),
-                                                        ),
-                                                        onPressed: () {
-                                                          if (_state
-                                                              is AuthenticatedState) {
-                                                            //print("I'm ready!");
-                                                            goToQuestion(
-                                                                context);
-                                                          } else {
-                                                            _panelController
-                                                                .open();
-                                                          }
-                                                        },
-                                                      ),
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          )),
-                                    ),
-                                  )
-                                ]),
-                              ))
-                        ],
-                      ),
-                    ),
-                  );
-                }));
+        return managerMainLayout(context, _state);
       } else if (_state is ErrorAuthenticationState) {
         return Material(
           color: Colors.red,
@@ -392,7 +161,7 @@ class _newMain extends State<NewMain>
         bloc: _authenticationBloc,
         builder: (BuildContext context, AuthenticationState _state) {
           if (_state is InitialAuthenticationState) {
-            _authenticationBloc.dispatch(AuthenticatingLoginEvent(null, null));
+            _authenticationBloc.add(AuthenticatingLoginEvent(null, null));
             return SizedBox();
           } else if (_state is AuthenticatingState) {
             return Container(
@@ -627,6 +396,661 @@ class _newMain extends State<NewMain>
         });
   }
 
+  Widget managerMainLayout(BuildContext context, AuthenticationState _state) {
+    if (MediaQuery.of(context).size.width > 900) {
+      return Material(
+        color: _theme.scaffoldBackgroundColor,
+        child: layoutForTabletLandScape(context, _state),
+      );
+    } else if (MediaQuery.of(context).size.height > 900) {
+      return Material(
+        color: _theme.scaffoldBackgroundColor,
+        child: layoutForTabletPort(context, _state),
+      );
+    } else {
+      return loadMainLayoutForMobile(context, _state);
+    }
+  }
+
+  Widget loadMainLayoutForMobile(
+      BuildContext context, AuthenticationState _state) {
+    return Material(
+      //color: Color(0xFFD9D9D9),
+      color: _theme.scaffoldBackgroundColor,
+      child: SlidingUpPanel(
+        controller: _panelController,
+        parallaxEnabled: true,
+        minHeight: (105 + (Device.get().isIphoneX ? 25 : 0).toDouble()),
+        maxHeight: _state is AuthenticatedState
+            ? (_state.account.personnel ? 520 : 570)
+            : 460,
+        backdropEnabled: true,
+        backdropTapClosesPanel: true,
+        renderPanelSheet: false,
+        panel: _floatingPanel(context, _state),
+        collapsed: _floatingCollapsed(_state),
+        body: mainLayoutBodyForMobile(context, _state),
+      ),
+    );
+  }
+
+  Widget mainLayoutBodyForMobile(
+      BuildContext context, AuthenticationState _state) {
+    return Scaffold(
+      backgroundColor: _theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: _checkInternetOnlineIsTrue(_state)
+            ? Theme.of(context).appBarTheme.color
+            : Color(0xFFD32F2F),
+        elevation: 0,
+        title: Text(
+            _checkInternetOnlineIsTrue(_state)
+                ? _appname
+                : "ไม่พบการเชื่อมต่ออินเตอร์เน็ต",
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'SukhumvitSet',
+                fontSize: 20,
+                fontWeight: _checkInternetOnlineIsTrue(_state)
+                    ? FontWeight.bold
+                    : FontWeight.normal)),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  //Color(0xFF52c7b8),
+                  _checkInternetOnlineIsTrue(_state)
+                      ? _theme.secondaryHeaderColor
+                      : Color(0xFFE57373),
+                  _theme.scaffoldBackgroundColor,
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              ),
+              child: SingleChildScrollView(
+                child: Stack(children: <Widget>[
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.fromLTRB(17.5, 25.0, 17.5, 120.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(24)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _checkInternetOnlineIsTrue(_state)
+                                      ? _theme.appBarTheme.color.withAlpha(100)
+                                      : Color(0xFFD32F2F).withAlpha(100),
+                                  blurRadius: 10.0,
+                                ),
+                              ]),
+                          child: Stack(
+                            children: <Widget>[
+                              Container(
+                                constraints: BoxConstraints(maxWidth: 530),
+                                //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(24)),
+                                    color: _theme.cardColor),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Container(
+                                      padding: EdgeInsets.only(
+                                          top: 26,
+                                          left: 30,
+                                          right: 30,
+                                          bottom: 20),
+                                      color: Colors.transparent,
+                                      child: Image.asset(
+                                        'images/funny-elderly-couple-dancing-cartoon-vector-24002358.png',
+                                        fit: BoxFit.contain,
+                                        height: Device.get().isIphoneX
+                                            ? MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                1.7
+                                            : MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                3.2,
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(24, 0, 20, 0),
+                                        child: Align(
+                                            alignment: Alignment.topLeft,
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  'แบบทดสอบภาวะเปราะบาง',
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          'SukhumvitSet',
+                                                      fontSize: Device.get()
+                                                              .isTablet
+                                                          ? 26
+                                                          : 21,
+                                                      color:
+                                                          _checkInternetOnlineIsTrue(
+                                                                  _state)
+                                                              ? Colors.teal[600]
+                                                                  .withOpacity(
+                                                                      0.8)
+                                                              : Color(
+                                                                  0xFFD32F2F),
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                Text(
+                                                  'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
+                                                  textAlign: TextAlign.left,
+                                                  maxLines: 5,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      fontFamily:
+                                                          'SukhumvitSet',
+                                                      fontSize:
+                                                          Device.get().isTablet
+                                                              ? 22
+                                                              : 17,
+                                                      color: _theme
+                                                          .primaryTextTheme
+                                                          .subtitle
+                                                          .color,
+                                                      fontWeight:
+                                                          FontWeight.normal),
+                                                )
+                                              ],
+                                            ))),
+                                    Container(
+                                      height: 1,
+                                      width: 180,
+                                      margin:
+                                          EdgeInsets.only(top: 15, bottom: 15),
+                                      color: _checkInternetOnlineIsTrue(_state)
+                                          ? Colors.teal
+                                          : Color(0xFFD32F2F),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(bottom: 20),
+                                      child: MaterialButton(
+                                        minWidth: 256,
+                                        height: 56,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(14.0)),
+                                        splashColor: Colors.white12,
+                                        color:
+                                            _checkInternetOnlineIsTrue(_state)
+                                                ? Colors.teal
+                                                : Color(0xFFD32F2F),
+                                        elevation: 0,
+                                        highlightElevation: 0,
+                                        child: Text(
+                                          _state is AuthenticatedState
+                                              ? "เริ่มทำแบบทดสอบ"
+                                              : "ลงชื่อเข้าใช้",
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              fontFamily: 'SukhumvitSet',
+                                              fontSize: 20,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onPressed: () {
+                                          if (_state is AuthenticatedState) {
+                                            //print("I'm ready!");
+                                            goToQuestion(context);
+                                          } else {
+                                            _panelController.open();
+                                          }
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          )),
+                    ),
+                  )
+                ]),
+              ))
+        ],
+      ),
+    );
+  }
+
+  Widget layoutForTabletLandScape(
+      BuildContext context, AuthenticationState _state) {
+    return Scaffold(
+      backgroundColor: _theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: _checkInternetOnlineIsTrue(_state)
+            ? Theme.of(context).appBarTheme.color
+            : Color(0xFFD32F2F),
+        elevation: 0,
+        title: Text(
+            _checkInternetOnlineIsTrue(_state)
+                ? _appname
+                : "ไม่พบการเชื่อมต่ออินเตอร์เน็ต",
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'SukhumvitSet',
+                fontSize: 20,
+                fontWeight: _checkInternetOnlineIsTrue(_state)
+                    ? FontWeight.bold
+                    : FontWeight.normal)),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  //Color(0xFF52c7b8),
+                  _checkInternetOnlineIsTrue(_state)
+                      ? _theme.secondaryHeaderColor
+                      : Color(0xFFE57373),
+                  _theme.scaffoldBackgroundColor,
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              ),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: (MediaQuery.of(context).size.width / 19) * 11.5 - 32,
+                    height: MediaQuery.of(context).size.height,
+                    child: mainLayoutBodyForTabletLandscape(context, _state),
+                  ),
+
+                  Align(
+                    alignment: Alignment.topCenter,
+                    child: Container(
+                      width: 2,
+                      margin: EdgeInsets.fromLTRB(0, 70, 30, 0),
+                      padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+                      height: 350,
+                      color: _theme.cardColor.withAlpha(200),
+                    ),
+                  ),
+
+                  Container(
+                    margin: EdgeInsets.fromLTRB(0, 0, 30, 0),
+
+                    padding: EdgeInsets.fromLTRB(0, 6, 0, 0),
+                    width: (MediaQuery.of(context).size.width / 19) * 6.9,
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 560, minHeight: 500),
+                          width: (MediaQuery.of(context).size.width / 19) * 6.9,
+                          child: _floatingPanel(context, _state),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ))
+        ],
+      ),
+    );
+  }
+
+  Widget mainLayoutBodyForTabletLandscape(
+      BuildContext context, AuthenticationState _state) {
+    return SingleChildScrollView(
+      child: Stack(children: <Widget>[
+        Center(
+          child: Container(
+            margin: EdgeInsets.fromLTRB(17.5, 25.0, 17.5, 120.0),
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(24)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _checkInternetOnlineIsTrue(_state)
+                            ? _theme.appBarTheme.color.withAlpha(100)
+                            : Color(0xFFD32F2F).withAlpha(100),
+                        blurRadius: 10.0,
+                      ),
+                    ]),
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      constraints: BoxConstraints(maxWidth: 530),
+                      //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(24)),
+                          color: _theme.cardColor),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                            padding: _state is AuthenticatedState
+                                ? EdgeInsets.only(
+                                    top: 26, left: 30, right: 30, bottom: 20)
+                                : EdgeInsets.only(
+                                    top: 50, left: 30, right: 30, bottom: 20),
+                            color: Colors.transparent,
+                            child: Image.asset(
+                              'images/funny-elderly-couple-dancing-cartoon-vector-24002358.png',
+                              fit: BoxFit.contain,
+                              height: MediaQuery.of(context).size.width / 4,
+                            ),
+                          ),
+                          Padding(
+                              padding: _state is AuthenticatedState
+                                  ? EdgeInsets.fromLTRB(24, 0, 20, 10)
+                                  : EdgeInsets.fromLTRB(50, 30, 50, 30),
+                              child: Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        'แบบทดสอบภาวะเปราะบาง',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontFamily: 'SukhumvitSet',
+                                            fontSize:
+                                                Device.get().isTablet ? 26 : 21,
+                                            color: _checkInternetOnlineIsTrue(
+                                                    _state)
+                                                ? Colors.teal[600]
+                                                    .withOpacity(0.8)
+                                                : Color(0xFFD32F2F),
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Text(
+                                        'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
+                                        textAlign: TextAlign.left,
+                                        maxLines: 5,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontFamily: 'SukhumvitSet',
+                                            fontSize:
+                                                Device.get().isTablet ? 22 : 17,
+                                            color: _theme.primaryTextTheme
+                                                .subtitle.color,
+                                            fontWeight: FontWeight.normal),
+                                      )
+                                    ],
+                                  ))),
+                          _state is AuthenticatedState
+                              ? Container(
+                                  height: 1,
+                                  width: 180,
+                                  margin: EdgeInsets.only(top: 15, bottom: 25),
+                                  color: _checkInternetOnlineIsTrue(_state)
+                                      ? Colors.teal
+                                      : Color(0xFFD32F2F),
+                                )
+                              : Container(),
+                          Container(
+                            margin: EdgeInsets.only(bottom: 40),
+                            child: _state is AuthenticatedState
+                                ? MaterialButton(
+                                    minWidth: 256,
+                                    height: 56,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(14.0)),
+                                    splashColor: Colors.white12,
+                                    color: _checkInternetOnlineIsTrue(_state)
+                                        ? Colors.teal
+                                        : Color(0xFFD32F2F),
+                                    elevation: 0,
+                                    highlightElevation: 0,
+                                    child: Text(
+                                      _state is AuthenticatedState
+                                          ? "เริ่มทำแบบทดสอบ"
+                                          : "ลงชื่อเข้าใช้",
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          fontFamily: 'SukhumvitSet',
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    onPressed: () {
+                                      if (_state is AuthenticatedState) {
+                                        //print("I'm ready!");
+                                        goToQuestion(context);
+                                      } else {
+                                        _panelController.open();
+                                      }
+                                    },
+                                  )
+                                : Container(),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                )),
+          ),
+        )
+      ]),
+    );
+  }
+
+  Widget layoutForTabletPort(BuildContext context, AuthenticationState _state) {
+    return Scaffold(
+      backgroundColor: _theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: _checkInternetOnlineIsTrue(_state)
+            ? Theme.of(context).appBarTheme.color
+            : Color(0xFFD32F2F),
+        elevation: 0,
+        title: Text(
+            _checkInternetOnlineIsTrue(_state)
+                ? _appname
+                : "ไม่พบการเชื่อมต่ออินเตอร์เน็ต",
+            style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'SukhumvitSet',
+                fontSize: 20,
+                fontWeight: _checkInternetOnlineIsTrue(_state)
+                    ? FontWeight.bold
+                    : FontWeight.normal)),
+      ),
+      body: Stack(
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(colors: [
+                  //Color(0xFF52c7b8),
+                  _checkInternetOnlineIsTrue(_state)
+                      ? _theme.secondaryHeaderColor
+                      : Color(0xFFE57373),
+                  _theme.scaffoldBackgroundColor,
+                ], begin: Alignment.topCenter, end: Alignment.bottomCenter),
+              ),
+              child: mainLayoutBodyForTabletPort(context, _state))
+        ],
+      ),
+    );
+  }
+
+  Widget mainLayoutBodyForTabletPort(
+      BuildContext context, AuthenticationState _state) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Stack(children: <Widget>[
+            Center(
+              child: Container(
+                margin: EdgeInsets.fromLTRB(17.5, 25.0, 17.5, 20.0),
+                child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(24)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _checkInternetOnlineIsTrue(_state)
+                                ? _theme.appBarTheme.color.withAlpha(100)
+                                : Color(0xFFD32F2F).withAlpha(100),
+                            blurRadius: 10.0,
+                          ),
+                        ]),
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          constraints: BoxConstraints(maxWidth: 530),
+                          //width: MediaQuery.of(context).size.width > 1000 ? 1000 : MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(24)),
+                              color: _theme.cardColor),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Container(
+                                padding: _state is AuthenticatedState
+                                    ? EdgeInsets.only(
+                                        top: 26,
+                                        left: 30,
+                                        right: 30,
+                                        bottom: 20)
+                                    : EdgeInsets.only(
+                                        top: 50,
+                                        left: 30,
+                                        right: 30,
+                                        bottom: 20),
+                                color: Colors.transparent,
+                                child: Image.asset(
+                                  'images/funny-elderly-couple-dancing-cartoon-vector-24002358.png',
+                                  fit: BoxFit.contain,
+                                  height: MediaQuery.of(context).size.width / 4,
+                                ),
+                              ),
+                              Padding(
+                                  padding: _state is AuthenticatedState
+                                      ? EdgeInsets.fromLTRB(24, 0, 20, 0)
+                                      : EdgeInsets.fromLTRB(50, 30, 50, 30),
+                                  child: Align(
+                                      alignment: Alignment.topLeft,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            'แบบทดสอบภาวะเปราะบาง',
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                fontFamily: 'SukhumvitSet',
+                                                fontSize: Device.get().isTablet
+                                                    ? 26
+                                                    : 21,
+                                                color:
+                                                    _checkInternetOnlineIsTrue(
+                                                            _state)
+                                                        ? Colors.teal[600]
+                                                            .withOpacity(0.8)
+                                                        : Color(0xFFD32F2F),
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
+                                            textAlign: TextAlign.left,
+                                            maxLines: 5,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                                fontFamily: 'SukhumvitSet',
+                                                fontSize: Device.get().isTablet
+                                                    ? 22
+                                                    : 17,
+                                                color: _theme.primaryTextTheme
+                                                    .subtitle.color,
+                                                fontWeight: FontWeight.normal),
+                                          )
+                                        ],
+                                      ))),
+                              _state is AuthenticatedState
+                                  ? Container(
+                                      height: 1,
+                                      width: 180,
+                                      margin:
+                                          EdgeInsets.only(top: 15, bottom: 15),
+                                      color: _checkInternetOnlineIsTrue(_state)
+                                          ? Colors.teal
+                                          : Color(0xFFD32F2F),
+                                    )
+                                  : Container(),
+                              Container(
+                                margin: EdgeInsets.only(bottom: 20),
+                                child: _state is AuthenticatedState
+                                    ? MaterialButton(
+                                        minWidth: 256,
+                                        height: 56,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(14.0)),
+                                        splashColor: Colors.white12,
+                                        color:
+                                            _checkInternetOnlineIsTrue(_state)
+                                                ? Colors.teal
+                                                : Color(0xFFD32F2F),
+                                        elevation: 0,
+                                        highlightElevation: 0,
+                                        child: Text(
+                                          _state is AuthenticatedState
+                                              ? "เริ่มทำแบบทดสอบ"
+                                              : "ลงชื่อเข้าใช้",
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              fontFamily: 'SukhumvitSet',
+                                              fontSize: 20,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        onPressed: () {
+                                          if (_state is AuthenticatedState) {
+                                            //print("I'm ready!");
+                                            goToQuestion(context);
+                                          } else {
+                                            _panelController.open();
+                                          }
+                                        },
+                                      )
+                                    : Container(),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    )),
+              ),
+            )
+          ]),
+          Center(
+            child: Container(
+              height: 2,
+              color: _theme.cardColor,
+              width: (MediaQuery.of(context).size.width / 7) * 3,
+            ),
+          ),
+          Container(
+            constraints: BoxConstraints(maxWidth: 560, minHeight: 500),
+            child: _floatingPanel(context, _state),
+          )
+        ],
+      ),
+    );
+  }
+
   Widget _authenticatedBottomBar(AuthenticationState state) {
     var _state = state as AuthenticatedState;
     return Padding(
@@ -645,7 +1069,9 @@ class _newMain extends State<NewMain>
                       fontFamily: 'SukhumvitSet',
                       fontSize: 21,
                       //color: Colors.teal[600].withOpacity(0.8),
-                      color: _checkInternetOnlineIsTrue(_state) ? _theme.accentColor : Color(0xFFD32F2F),
+                      color: _checkInternetOnlineIsTrue(_state)
+                          ? _theme.accentColor
+                          : Color(0xFFD32F2F),
                       fontWeight: FontWeight.bold),
                 ),
                 Text(
@@ -749,7 +1175,7 @@ class _newMain extends State<NewMain>
     );
   }
 
-  bool _checkInternetOnlineIsTrue(MyAuthenticationState state){
+  bool _checkInternetOnlineIsTrue(MyAuthenticationState state) {
     return state.isOffline == null;
   }
 
@@ -780,7 +1206,9 @@ class _newMain extends State<NewMain>
                     height: 50,
                     width: 50,
                     decoration: BoxDecoration(
-                      color: _checkInternetOnlineIsTrue(_state) ? Colors.teal : Color(0xFFD32F2F),
+                      color: _checkInternetOnlineIsTrue(_state)
+                          ? Colors.teal
+                          : Color(0xFFD32F2F),
                       borderRadius: BorderRadius.all(Radius.circular(100)),
                     ),
                     child: Center(
@@ -806,7 +1234,9 @@ class _newMain extends State<NewMain>
                         fontFamily: 'SukhumvitSet',
                         fontWeight: FontWeight.bold,
                         fontSize: 21,
-                        color: _checkInternetOnlineIsTrue(_state) ? Colors.teal : Color(0xFFD32F2F))),
+                        color: _checkInternetOnlineIsTrue(_state)
+                            ? Colors.teal
+                            : Color(0xFFD32F2F))),
               ),
 
               Container(
@@ -976,8 +1406,7 @@ class _newMain extends State<NewMain>
                   child: FlatButton(
                     splashColor: Colors.white54,
                     onPressed: () {
-                      _authenticationBloc
-                          .dispatch(UnAuthenticatingLoginEvent());
+                      _authenticationBloc.add(UnAuthenticatingLoginEvent());
                       //confirmSignOut(context, widget);
                     },
                     child: Text("ลงชื่อออก",
@@ -1015,7 +1444,9 @@ class _newMain extends State<NewMain>
                       height: 50,
                       width: 50,
                       decoration: BoxDecoration(
-                        color: _checkInternetOnlineIsTrue(_state) ? Colors.teal : Color(0xFFD32F2F),
+                        color: _checkInternetOnlineIsTrue(_state)
+                            ? Colors.teal
+                            : Color(0xFFD32F2F),
                         borderRadius: BorderRadius.all(Radius.circular(100)),
                       ),
                       child: Center(
@@ -1041,7 +1472,9 @@ class _newMain extends State<NewMain>
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.bold,
                           fontSize: 21,
-                          color: _checkInternetOnlineIsTrue(_state) ? Colors.teal : Color(0xFFD32F2F))),
+                          color: _checkInternetOnlineIsTrue(_state)
+                              ? Colors.teal
+                              : Color(0xFFD32F2F))),
                 ),
 
                 Container(
@@ -1207,7 +1640,7 @@ class _newMain extends State<NewMain>
                       splashColor: Colors.white54,
                       onPressed: () {
                         _authenticationBloc
-                            .dispatch(UnAuthenticatingLoginEvent());
+                            .add(UnAuthenticatingLoginEvent());
                       },
                       child: Text("ลงชื่อออก",
                           style: TextStyle(
@@ -1321,8 +1754,8 @@ class _newMain extends State<NewMain>
               child: FlatButton(
                   onPressed: () {
                     //handleSignIn(widget, context);
-                    _authenticationBloc.dispatch(GoogleLoginEvent());
-                    //_authenticationBloc.dispatch(TestEvent(context));
+                    _authenticationBloc.add(GoogleLoginEvent());
+                    //_authenticationBloc.add(TestEvent(context));
                   },
                   child: Stack(
                     children: <Widget>[

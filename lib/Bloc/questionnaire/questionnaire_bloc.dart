@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:frailty_project_2019/Model/Answer.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestion.dart';
 import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
@@ -30,6 +31,10 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
     if (event is InitialQuestionnaireEvent) {
     } else if (event is NextQuestionEvent) {
       yield* mapNextQuestionEventToState(event);
+    } else if(event is ResumeQuestionEvent){
+      yield* mapResumeQuestionEventToState(event);
+    }else if(event is RecentQuestionEvent){
+      yield* mapRecentQuestionEventToState(event);
     }
   }
 
@@ -57,6 +62,10 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
           .then((_) async {
         questionWithChoice = await loadNext(event);
       });
+    } else if (event.questionnaireId != null &&
+        event.currentQuestionId != null &&
+        event.value == null) {
+      questionWithChoice = await loadNext(event);
     }
 
     /*QuestionWithChoice questionWithChoice = await OnDeviceQuestion()
@@ -96,10 +105,89 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
     }
   }
 
+  @override
+  Stream<QuestionnaireState> mapResumeQuestionEventToState(
+      ResumeQuestionEvent event) async* {
+    yield LoadingQuestionState("กำลังเปิดคำถาม..");
+    Answer lastAnswer = await OnLocalDatabase().findLastAnswer(event.answerPackId);
+    QuestionWithChoice questionWithChoice = await loadNext(NextQuestionEvent(event.questionnaireId,lastAnswer.questionId,lastAnswer.value,null));
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString("CURRENT_ANSWERPACK", event.answerPackId);
+
+    int count = await OnLocalDatabase().getCounter(event.answerPackId) + 1;
+
+    await Future.delayed(Duration(milliseconds: 200));
+
+    if (questionWithChoice != null) {
+      if (questionWithChoice.question.type.contains("title")) {
+        yield TitleQuestionState(questionWithChoice, count);
+      } else if (questionWithChoice.question.type.contains("textinput")) {
+        yield TextInputQuestionState(questionWithChoice, count);
+      } else if (questionWithChoice.question.type.contains("number_multiply")) {
+        yield NumberMultiplyQuestionState(
+            questionWithChoice, generateNumber(), count);
+      } else if (questionWithChoice.question.type
+          .contains("location_multiply")) {
+        yield LocationQuestionState(questionWithChoice, count);
+      } else if (questionWithChoice.question.type.contains("multiply")) {
+        yield MultiplyQuestionState(questionWithChoice, count);
+      } else if (questionWithChoice.question.type.contains("number")) {
+        yield NumberQuestionState(questionWithChoice, generateNumber(), count);
+      } else {
+        yield InitialQuestionnaireState();
+      }
+    } else {
+      yield InitialQuestionnaireState();
+    }
+  }
+
+  @override
+  Stream<QuestionnaireState> mapRecentQuestionEventToState(
+      RecentQuestionEvent event) async* {
+    if(event.open){
+      print(event.questionWithChoice.question.type);
+      yield RecentQuestionState(event.questionWithChoice);
+
+    }else {
+      QuestionWithChoice questionWithChoice = event.questionWithChoice;
+
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+
+      final String current = preferences.getString("CURRENT_ANSWERPACK");
+      print(current.length);
+      print(current);
+      int count = await OnLocalDatabase().getCounter(current) + 1;
+
+      if (questionWithChoice != null) {
+        if (questionWithChoice.question.type.contains("title")) {
+          yield TitleQuestionState(questionWithChoice, count);
+        } else if (questionWithChoice.question.type.contains("textinput")) {
+          yield TextInputQuestionState(questionWithChoice, count);
+        } else if (questionWithChoice.question.type.contains("number_multiply")) {
+          yield NumberMultiplyQuestionState(
+              questionWithChoice, generateNumber(), count);
+        } else if (questionWithChoice.question.type
+            .contains("location_multiply")) {
+          yield LocationQuestionState(questionWithChoice, count);
+        } else if (questionWithChoice.question.type.contains("multiply")) {
+          yield MultiplyQuestionState(questionWithChoice, count);
+        } else if (questionWithChoice.question.type.contains("number")) {
+          yield NumberQuestionState(questionWithChoice, generateNumber(), count);
+        } else {
+          yield InitialQuestionnaireState();
+        }
+      } else {
+        yield InitialQuestionnaireState();
+      }
+    }
+  }
+
   Future<QuestionWithChoice> loadNext(NextQuestionEvent event) async {
     QuestionWithChoice questionWithChoice = await OnDeviceQuestion()
         .nextQuesion(event.questionnaireId, event.currentQuestionId,
             event.choiceYouChoose);
+
     //print("Current: ${event.questionnaireId} ${event.currentQuestionId} ${event.choiceYouChoose}");
     //print("Current: ${questionWithChoice.question.questionnaireId} ${questionWithChoice.question.id} ${questionWithChoice.question.type}");
 

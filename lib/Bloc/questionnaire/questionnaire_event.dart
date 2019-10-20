@@ -14,11 +14,31 @@ class InitialQuestionnaireEvent extends QuestionnaireEvent {}
 
 class NextQuestionEvent extends QuestionnaireEvent {
 
-  String questionnaireId;
-  String currentQuestionId;
-  String choiceYouChoose;
-  String value;
+  final String questionnaireId;
+  final String currentQuestionId;
+  final String choiceYouChoose;
+  final String value;
 
   NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value);
+
+}
+
+class ResumeQuestionEvent extends QuestionnaireEvent {
+
+  final String questionnaireId;
+  final String answerPackId;
+
+  ResumeQuestionEvent(this.questionnaireId,this.answerPackId);
+
+}
+
+class RecentQuestionEvent extends QuestionnaireEvent {
+
+  final bool open;
+  final QuestionWithChoice questionWithChoice;
+
+
+
+  RecentQuestionEvent(this.open,this.questionWithChoice);
 
 }

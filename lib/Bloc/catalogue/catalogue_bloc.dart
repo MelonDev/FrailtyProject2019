@@ -12,6 +12,7 @@ import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'catalogue_event.dart';
 

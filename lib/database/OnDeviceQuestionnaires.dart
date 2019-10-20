@@ -110,7 +110,6 @@ class OnDeviceQuestionnaires {
     return versions;
   }
 
-
   Future<List<Choice>> downloadChoiceDatabase() async {
     String url =
         'https://melondev-frailty-project.herokuapp.com/api/download/downloadAllChoice';
@@ -122,8 +121,6 @@ class OnDeviceQuestionnaires {
 
     return choices;
   }
-
-
 
   Future<List<Question>> downloadQuestionDatabase() async {
     String url =
