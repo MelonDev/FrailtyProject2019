@@ -47,7 +47,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                                   Icon(
                                     Icons.low_priority,
                                     //color: Colors.black.withAlpha(180),
-                                    color: _questionnaireBloc.state is RecentQuestionState ? Colors.white :
+                                    color: _questionnaireBloc.state is RecentQuestionState ? Colors.black87 :
                                         _themeData.primaryTextTheme.title.color,
                                     size: 30,
                                   ),
