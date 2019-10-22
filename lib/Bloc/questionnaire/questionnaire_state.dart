@@ -5,14 +5,15 @@ abstract class QuestionnaireState {}
 
 class MyQuestionnaireState extends QuestionnaireState {
   final int questionCounter;
+  final List<QuestionWithChoice> list;
 
-  MyQuestionnaireState(this.questionCounter);
+  MyQuestionnaireState(this.questionCounter,this.list);
 }
 
 
 class InitialQuestionnaireState extends MyQuestionnaireState {
 
-  InitialQuestionnaireState() : super(0);
+  InitialQuestionnaireState({List<QuestionWithChoice> list}) : super(0,list);
 
   @override
   String toString() {
@@ -21,7 +22,7 @@ class InitialQuestionnaireState extends MyQuestionnaireState {
 }
 
 class FirstQuestionState extends MyQuestionnaireState {
-  FirstQuestionState() : super(0);
+  FirstQuestionState({List<QuestionWithChoice> list}) : super(0,list);
 
   @override
   String toString() {
@@ -31,10 +32,10 @@ class FirstQuestionState extends MyQuestionnaireState {
 
 class RecentQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
-  final List<QuestionWithChoice> list;
+  //final List<QuestionWithChoice> list;
   //final TotalQuesionList totalList;
 
-  RecentQuestionState(this.questionWithChoice,this.list):super(0);
+  RecentQuestionState(this.questionWithChoice,List<QuestionWithChoice> list):super(0,list);
 
   @override
   String toString() {
@@ -45,7 +46,7 @@ class RecentQuestionState extends MyQuestionnaireState {
 class LoadingQuestionState extends MyQuestionnaireState {
   final String message;
 
-  LoadingQuestionState(this.message) : super(0);
+  LoadingQuestionState(this.message,List<QuestionWithChoice> list) : super(0,list);
 
   @override
   String toString() {
@@ -56,7 +57,7 @@ class LoadingQuestionState extends MyQuestionnaireState {
 class TitleQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  TitleQuestionState(this.questionWithChoice,int counter) : super(counter);
+  TitleQuestionState(this.questionWithChoice,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {
@@ -68,7 +69,7 @@ class NumberMultiplyQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
   final List<int> numberList;
 
-  NumberMultiplyQuestionState(this.questionWithChoice,this.numberList,int counter) : super(counter);
+  NumberMultiplyQuestionState(this.questionWithChoice,this.numberList,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {
@@ -79,7 +80,7 @@ class NumberMultiplyQuestionState extends MyQuestionnaireState {
 class LocationQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  LocationQuestionState(this.questionWithChoice,int counter) : super(counter);
+  LocationQuestionState(this.questionWithChoice,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {
@@ -90,7 +91,7 @@ class LocationQuestionState extends MyQuestionnaireState {
 class MultiplyQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  MultiplyQuestionState(this.questionWithChoice,int counter) : super(counter);
+  MultiplyQuestionState(this.questionWithChoice,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {
@@ -103,7 +104,7 @@ class NumberQuestionState extends MyQuestionnaireState {
   final List<int> numberList;
 
 
-  NumberQuestionState(this.questionWithChoice,this.numberList,int counter) : super(counter);
+  NumberQuestionState(this.questionWithChoice,this.numberList,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {
@@ -114,7 +115,7 @@ class NumberQuestionState extends MyQuestionnaireState {
 class TextInputQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
-  TextInputQuestionState(this.questionWithChoice,int counter) : super(counter);
+  TextInputQuestionState(this.questionWithChoice,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {
@@ -123,7 +124,7 @@ class TextInputQuestionState extends MyQuestionnaireState {
 }
 
 class RequestPermissionState extends MyQuestionnaireState {
-  RequestPermissionState() : super(0);
+  RequestPermissionState() : super(0,null);
 
   @override
   String toString() {

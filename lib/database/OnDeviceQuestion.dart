@@ -64,6 +64,11 @@ class OnDeviceQuestion {
 
     Database database = await initDatabase();
 
+    print(questionnaire);
+    print(currentKey);
+    print(choiceYouChoose);
+
+
     if (currentKey == null) {
       if (questionnaire != null) {
         if (questionnaire.length > 0) {

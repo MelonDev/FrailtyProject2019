@@ -26,7 +26,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                       height: 100,
                       child: Row(
                         children: <Widget>[
-                          MaterialButton(
+                          Device.get().isTablet ? Container() : MaterialButton(
                             highlightColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             minWidth: 0,
@@ -35,7 +35,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                             onPressed: () {
                               _questionnaireBloc.add(RecentQuestionEvent(
                                   _questionnaireBloc.state
-                                          is RecentQuestionState
+                                  is RecentQuestionState
                                       ? false
                                       : true,
                                   filterState(context, _state)));
@@ -48,7 +48,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                                     Icons.low_priority,
                                     //color: Colors.black.withAlpha(180),
                                     color: _questionnaireBloc.state is RecentQuestionState ? Colors.black87 :
-                                        _themeData.primaryTextTheme.title.color,
+                                    _themeData.primaryTextTheme.title.color,
                                     size: 30,
                                   ),
                                 ],
@@ -60,7 +60,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
+                                  BorderRadius.all(Radius.circular(10)),
                                   color: _state is RecentQuestionState
                                       ? Colors.orange
                                       : Colors.transparent),

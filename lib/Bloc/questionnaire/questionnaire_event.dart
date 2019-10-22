@@ -18,8 +18,9 @@ class NextQuestionEvent extends QuestionnaireEvent {
   final String currentQuestionId;
   final String choiceYouChoose;
   final String value;
+  final List<QuestionWithChoice> lastList;
 
-  NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value);
+  NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value,this.lastList);
 
 }
 
@@ -27,6 +28,7 @@ class ResumeQuestionEvent extends QuestionnaireEvent {
 
   final String questionnaireId;
   final String answerPackId;
+
 
   ResumeQuestionEvent(this.questionnaireId,this.answerPackId);
 

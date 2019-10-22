@@ -154,7 +154,7 @@ class _cataloguePage extends State<CataloguePage> {
       bottomNavigationBar: Device.get().isTablet
           ? null
           : BottomNavigationBar(
-              selectedItemColor: _themeData.accentColor,
+              selectedItemColor: Color(0xFF00BFA5),
               backgroundColor: _themeData.primaryColor,
               currentIndex: _currentIndex,
               onTap: onTabTapped,

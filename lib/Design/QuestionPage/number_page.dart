@@ -108,7 +108,7 @@ Widget _numberPage(BuildContext context,NumberQuestionState state) {
                                 _actionBtn = false;
                               } else {
                                 //print(myValue);
-                                _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
+                                _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,"",state.list));
 
                               }
                             },

@@ -32,9 +32,9 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
     if (event is InitialQuestionnaireEvent) {
     } else if (event is NextQuestionEvent) {
       yield* mapNextQuestionEventToState(event);
-    } else if(event is ResumeQuestionEvent){
+    } else if (event is ResumeQuestionEvent) {
       yield* mapResumeQuestionEventToState(event);
-    }else if(event is RecentQuestionEvent){
+    } else if (event is RecentQuestionEvent) {
       yield* mapRecentQuestionEventToState(event);
     }
   }
@@ -42,12 +42,16 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
   @override
   Stream<QuestionnaireState> mapNextQuestionEventToState(
       NextQuestionEvent event) async* {
-    yield LoadingQuestionState("กำลังเปิดคำถาม..");
+    yield LoadingQuestionState("กำลังเปิดคำถาม..", event.lastList);
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
     OnLocalDatabase onLocalDatabase = OnLocalDatabase();
 
     QuestionWithChoice questionWithChoice;
+
+    print("questionnaireId: ${event.questionnaireId}");
+    print("choiceYouChoose: ${event.choiceYouChoose}");
+    print("currentQuestionId: ${event.currentQuestionId}");
 
     if (event.questionnaireId != null &&
         event.choiceYouChoose == null &&
@@ -80,24 +84,27 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
     final String current = preferences.getString("CURRENT_ANSWERPACK");
 
     int count = await OnLocalDatabase().getCounter(current) + 1;
+    List<QuestionWithChoice> listQWC = await OnDeviceQuestion()
+        .superNewLoadAllQuestion(questionWithChoice.question.questionnaireId);
 
     await Future.delayed(Duration(milliseconds: 200));
 
     if (questionWithChoice != null) {
       if (questionWithChoice.question.type.contains("title")) {
-        yield TitleQuestionState(questionWithChoice, count);
+        yield TitleQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("textinput")) {
-        yield TextInputQuestionState(questionWithChoice, count);
+        yield TextInputQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("number_multiply")) {
         yield NumberMultiplyQuestionState(
-            questionWithChoice, generateNumber(), count);
+            questionWithChoice, generateNumber(), count, listQWC);
       } else if (questionWithChoice.question.type
           .contains("location_multiply")) {
-        yield LocationQuestionState(questionWithChoice, count);
+        yield LocationQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("multiply")) {
-        yield MultiplyQuestionState(questionWithChoice, count);
+        yield MultiplyQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("number")) {
-        yield NumberQuestionState(questionWithChoice, generateNumber(), count);
+        yield NumberQuestionState(
+            questionWithChoice, generateNumber(), count, listQWC);
       } else {
         yield InitialQuestionnaireState();
       }
@@ -109,32 +116,41 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
   @override
   Stream<QuestionnaireState> mapResumeQuestionEventToState(
       ResumeQuestionEvent event) async* {
-    yield LoadingQuestionState("กำลังเปิดคำถาม..");
-    Answer lastAnswer = await OnLocalDatabase().findLastAnswer(event.answerPackId);
-    QuestionWithChoice questionWithChoice = await loadNext(NextQuestionEvent(event.questionnaireId,lastAnswer.questionId,lastAnswer.value,null));
+    yield LoadingQuestionState("กำลังเปิดคำถาม..", []);
+    Answer lastAnswer =
+        await OnLocalDatabase().findLastAnswer(event.answerPackId);
+    QuestionWithChoice questionWithChoice = await loadNext(NextQuestionEvent(
+        event.questionnaireId,
+        lastAnswer.questionId,
+        lastAnswer.value,
+        null, []));
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString("CURRENT_ANSWERPACK", event.answerPackId);
 
     int count = await OnLocalDatabase().getCounter(event.answerPackId) + 1;
 
+    List<QuestionWithChoice> listQWC = await OnDeviceQuestion()
+        .superNewLoadAllQuestion(questionWithChoice.question.questionnaireId);
+
     await Future.delayed(Duration(milliseconds: 200));
 
     if (questionWithChoice != null) {
       if (questionWithChoice.question.type.contains("title")) {
-        yield TitleQuestionState(questionWithChoice, count);
+        yield TitleQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("textinput")) {
-        yield TextInputQuestionState(questionWithChoice, count);
+        yield TextInputQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("number_multiply")) {
         yield NumberMultiplyQuestionState(
-            questionWithChoice, generateNumber(), count);
+            questionWithChoice, generateNumber(), count, listQWC);
       } else if (questionWithChoice.question.type
           .contains("location_multiply")) {
-        yield LocationQuestionState(questionWithChoice, count);
+        yield LocationQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("multiply")) {
-        yield MultiplyQuestionState(questionWithChoice, count);
+        yield MultiplyQuestionState(questionWithChoice, count, listQWC);
       } else if (questionWithChoice.question.type.contains("number")) {
-        yield NumberQuestionState(questionWithChoice, generateNumber(), count);
+        yield NumberQuestionState(
+            questionWithChoice, generateNumber(), count, listQWC);
       } else {
         yield InitialQuestionnaireState();
       }
@@ -146,20 +162,22 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
   @override
   Stream<QuestionnaireState> mapRecentQuestionEventToState(
       RecentQuestionEvent event) async* {
-    if(event.open){
+    if (event.open) {
       print(event.questionWithChoice.question.type);
 
       //List<QuestionWithChoice> listQWC = await OnDeviceQuestion().loadAllQuestion(event.questionWithChoice.question.questionnaireId);
       //TotalQuesionList totalQuesionList = await OnDeviceQuestion().newLoadAllQuestion(event.questionWithChoice.question.questionnaireId);
 
-      List<QuestionWithChoice> listQWC = await OnDeviceQuestion().superNewLoadAllQuestion(event.questionWithChoice.question.questionnaireId);
+      List<QuestionWithChoice> listQWC = await OnDeviceQuestion()
+          .superNewLoadAllQuestion(
+              event.questionWithChoice.question.questionnaireId);
 
       //yield RecentQuestionState(event.questionWithChoice,TotalQuesionList());
-      yield RecentQuestionState(event.questionWithChoice,listQWC);
-
-
-    }else {
+      yield RecentQuestionState(event.questionWithChoice, listQWC);
+    } else {
       QuestionWithChoice questionWithChoice = event.questionWithChoice;
+      List<QuestionWithChoice> listQWC = await OnDeviceQuestion()
+          .superNewLoadAllQuestion(questionWithChoice.question.questionnaireId);
 
       SharedPreferences preferences = await SharedPreferences.getInstance();
 
@@ -170,19 +188,21 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
 
       if (questionWithChoice != null) {
         if (questionWithChoice.question.type.contains("title")) {
-          yield TitleQuestionState(questionWithChoice, count);
+          yield TitleQuestionState(questionWithChoice, count, listQWC);
         } else if (questionWithChoice.question.type.contains("textinput")) {
-          yield TextInputQuestionState(questionWithChoice, count);
-        } else if (questionWithChoice.question.type.contains("number_multiply")) {
+          yield TextInputQuestionState(questionWithChoice, count, listQWC);
+        } else if (questionWithChoice.question.type
+            .contains("number_multiply")) {
           yield NumberMultiplyQuestionState(
-              questionWithChoice, generateNumber(), count);
+              questionWithChoice, generateNumber(), count, listQWC);
         } else if (questionWithChoice.question.type
             .contains("location_multiply")) {
-          yield LocationQuestionState(questionWithChoice, count);
+          yield LocationQuestionState(questionWithChoice, count, listQWC);
         } else if (questionWithChoice.question.type.contains("multiply")) {
-          yield MultiplyQuestionState(questionWithChoice, count);
+          yield MultiplyQuestionState(questionWithChoice, count, listQWC);
         } else if (questionWithChoice.question.type.contains("number")) {
-          yield NumberQuestionState(questionWithChoice, generateNumber(), count);
+          yield NumberQuestionState(
+              questionWithChoice, generateNumber(), count, listQWC);
         } else {
           yield InitialQuestionnaireState();
         }

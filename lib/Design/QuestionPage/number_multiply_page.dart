@@ -16,8 +16,8 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
           children: <Widget>[
             Container(
                 margin: EdgeInsets.fromLTRB(0, 0, 0, 311),
-                height: double.infinity,
-                width: double.infinity,
+                width: Device.get().isTablet ? MediaQuery.of(context).size.width - 301 : MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
                 //color: Color(0xFFEDEDED),
                 color: _themeData.backgroundColor,
                 child: Align(
@@ -51,10 +51,15 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
                               margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
                               height: 215,
-                              width: (MediaQuery
+                              width: Device.get().isTablet ? ((MediaQuery
                                   .of(context)
                                   .size
-                                  .width - 41) / 2,
+                                  .width - 342) /
+                                  2) : ((MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width - 41) /
+                                  2),
                               color: _themeData.primaryColor,
                               child: Column(
                                 children: <Widget>[
@@ -72,11 +77,15 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   ),
                                   Container(
                                     width:
-                                    (MediaQuery
+                                    Device.get().isTablet ? ((MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width - 342) /
+                                        2) : ((MediaQuery
                                         .of(context)
                                         .size
                                         .width - 41) /
-                                        2,
+                                        2),
                                     height: 160,
                                     child: CupertinoPicker(
                                       offAxisFraction: 0.0,
@@ -118,10 +127,15 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                               padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
                               margin: EdgeInsets.fromLTRB(0, 0, 20, 0),
                               height: 215,
-                              width: (MediaQuery
+                              width: Device.get().isTablet ? ((MediaQuery
                                   .of(context)
                                   .size
-                                  .width - 41) / 2,
+                                  .width - 342) /
+                                  2) : ((MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width - 41) /
+                                  2),
                               color: _themeData.primaryColor,
                               child: Column(
                                 children: <Widget>[
@@ -139,11 +153,15 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   ),
                                   Container(
                                     width:
-                                    (MediaQuery
+                                    Device.get().isTablet ? ((MediaQuery
+                                        .of(context)
+                                        .size
+                                        .width - 342) /
+                                        2) : ((MediaQuery
                                         .of(context)
                                         .size
                                         .width - 41) /
-                                        2,
+                                        2),
                                     height: 160,
                                     child: CupertinoPicker(
                                       offAxisFraction: 0.0,
@@ -176,7 +194,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                       ),
                       Container(
                         padding: EdgeInsets.fromLTRB(30, 20, 30, 26),
-                        width: double.infinity,
+                        width: MediaQuery.of(context).size.width,
                         height: 96,
                         color: _themeData.primaryColor,
                         child: MaterialButton(
@@ -203,7 +221,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   .requestFocus(new FocusNode());
                               _actionBtn = false;
                             } else {
-                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,""));
+                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,"",state.list));
 
                             }
                           },

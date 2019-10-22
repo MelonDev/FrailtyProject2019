@@ -49,7 +49,7 @@ packages:
       name: bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.16.1"
+    version: "1.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -140,7 +140,7 @@ packages:
       name: device_info
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.4.0+4"
+    version: "0.4.1"
   dynamic_theme:
     dependency: "direct main"
     description:
@@ -173,7 +173,7 @@ packages:
       name: flutter_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.22.1"
+    version: "1.0.0"
   flutter_cupertino_date_picker:
     dependency: "direct main"
     description:
@@ -305,6 +305,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
+  indexed_list_view:
+    dependency: "direct main"
+    description:
+      name: indexed_list_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.7"
   intl:
     dependency: "direct main"
     description:
