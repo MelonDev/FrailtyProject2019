@@ -19,9 +19,16 @@ class NextQuestionEvent extends QuestionnaireEvent {
   final String choiceYouChoose;
   final String value;
   final List<QuestionWithChoice> lastList;
+  final QuestionWithChoice questionWithChoice;
 
-  NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value,this.lastList);
+  NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value,this.lastList,this.questionWithChoice);
+}
 
+class UploadQuestionEvent extends QuestionnaireEvent {
+  final String answerPackId;
+  final BuildContext context;
+
+  UploadQuestionEvent(this.answerPackId,this.context);
 }
 
 class ResumeQuestionEvent extends QuestionnaireEvent {
@@ -42,5 +49,15 @@ class RecentQuestionEvent extends QuestionnaireEvent {
 
 
   RecentQuestionEvent(this.open,this.questionWithChoice);
+
+}
+
+class LoadQuestionEvent extends QuestionnaireEvent {
+
+  final QuestionWithChoice questionWithChoice;
+
+
+
+  LoadQuestionEvent(this.questionWithChoice);
 
 }

@@ -6,8 +6,9 @@ abstract class QuestionnaireState {}
 class MyQuestionnaireState extends QuestionnaireState {
   final int questionCounter;
   final List<QuestionWithChoice> list;
+  final String qKey;
 
-  MyQuestionnaireState(this.questionCounter,this.list);
+  MyQuestionnaireState(this.questionCounter,this.list,{this.qKey});
 }
 
 
@@ -54,6 +55,29 @@ class LoadingQuestionState extends MyQuestionnaireState {
   }
 }
 
+class ResultLoadingQuestionState extends MyQuestionnaireState {
+  final String message;
+
+  ResultLoadingQuestionState(this.message,List<QuestionWithChoice> list) : super(0,list);
+
+  @override
+  String toString() {
+    return "ResultLoadingQuestionState";
+  }
+}
+
+
+class FinishedQuestionState extends MyQuestionnaireState {
+
+
+  FinishedQuestionState() : super(0,null);
+
+  @override
+  String toString() {
+    return "FinishedQuestionState";
+  }
+}
+
 class TitleQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
 
@@ -67,9 +91,11 @@ class TitleQuestionState extends MyQuestionnaireState {
 
 class NumberMultiplyQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
-  final List<int> numberList;
+  final List<int> numberListA;
+  final List<int> numberListB;
 
-  NumberMultiplyQuestionState(this.questionWithChoice,this.numberList,int counter,List<QuestionWithChoice> list) : super(counter,list);
+
+  NumberMultiplyQuestionState(this.questionWithChoice,this.numberListA,this.numberListB,int counter,List<QuestionWithChoice> list) : super(counter,list);
 
   @override
   String toString() {

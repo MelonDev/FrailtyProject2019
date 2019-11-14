@@ -35,7 +35,6 @@ part 'QuestionPage/main_page.dart';
 
 part 'QuestionPage/recent_page.dart';
 
-
 class MainQuestion extends StatefulWidget {
   String _keys;
   String _answerPackId;
@@ -54,7 +53,6 @@ class _questionPage extends State<MainQuestion> {
   String _questionnaireKey;
   String _answerPackId;
 
-
   int numberCounter;
 
   @override
@@ -67,39 +65,164 @@ class _questionPage extends State<MainQuestion> {
     _questionnaireKey = widget._keys;
     _answerPackId = widget._answerPackId;
 
+    print("AnswerPackId: ${_answerPackId}");
+
     _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(this.context);
     _cellCalculator = new CellCalculator(context);
 
     if (_answerPackId == null) {
-      _questionnaireBloc
-          .add(NextQuestionEvent(_questionnaireKey, null, null, null,[]));
+      _questionnaireBloc.add(
+          NextQuestionEvent(_questionnaireKey, null, null, null, [], null));
     } else {
       _questionnaireBloc
           .add(ResumeQuestionEvent(_questionnaireKey, _answerPackId));
     }
 
-
     return BlocBuilder<QuestionnaireBloc, QuestionnaireState>(
         builder: (context, _state) {
-          return mainLayout(context, _state);
-        });
+      if (_state is FinishedQuestionState) {
+        return finishedLayout(context, _state);
+      } else if(_state is ResultLoadingQuestionState){
+        return finishingLoading(context,_state);
+      }else {
+        return mainLayout(context, _state);
+      }
+    });
+  }
+
+  Widget finishingLoading(BuildContext context,ResultLoadingQuestionState _state){
+    return Scaffold(
+      body: Container(
+          color: Theme.of(context).primaryColor,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                  child: SpinKitThreeBounce(
+                    color: Theme.of(context).primaryTextTheme.subtitle.color,
+                    size: 50.0,
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                  child: Text(_state.message,
+                      style: TextStyle(
+                          color:
+                          Theme.of(context).primaryTextTheme.subtitle.color,
+                          fontSize: 18,
+                          fontFamily: 'SukhumvitSet',
+                          fontWeight: FontWeight.normal)),
+                )
+              ],
+            ),
+          )),
+    );
+  }
+
+  Widget finishedLayout(BuildContext context, FinishedQuestionState _state) {
+    ThemeData _themeData = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Color(0xFF0f0f0f)
+          : Color(0xFFFFFFFF),
+      appBar: AppBar(backgroundColor: Colors.transparent,elevation: 0,leading: Container(),),
+      body: Stack(
+        children: <Widget>[
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(left: 30,right: 30),
+                child: Text(
+                  "คุณทำแบบทดสอบสำเร็จแล้ว",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontFamily: 'SukhumvitSet',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 36,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(left: 30,right: 30),
+                child: Text(
+                  "กดอัปโหลดเพื่อส่งข้อมูลประมวลภาวะเปราะบาง อาจจะใช้เวลาในการประมวลสักครู่ หรือกดข้ามในกรณีทึ่คุณยังไม่พร้อม",
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontFamily: 'SukhumvitSet',
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+
+
+                  CupertinoButton(
+                    onPressed: () {
+                      _questionnaireBloc.add(UploadQuestionEvent(_state.qKey,context));
+                    },
+                    color: _themeData.accentColor,
+                    child: Text(
+                      "ส่งแบบทดสอบ",
+                      style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  CupertinoButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "ข้าม",
+                      style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        color: _themeData.accentColor,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   Widget mainLayout(BuildContext context, QuestionnaireState _state) {
     return Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .brightness == Brightness.dark? Color(0xFF0f0f0f) :Color(0xFFc4c4c4),
-        appBar: Device.get().isTablet ? null :mainPageAppbar(_state, context),
+        backgroundColor: Theme.of(context).brightness == Brightness.dark
+            ? Color(0xFF0f0f0f)
+            : Color(0xFFc4c4c4),
+        appBar: Device.get().isTablet ? null : mainPageAppbar(_state, context),
         body: Device.get().isTablet
-            ? _loadTabletSize(_state,context)
+            ? _loadTabletSize(_state, context)
             : _pageManager(context, _state));
   }
 
-  Widget _loadTabletSize(QuestionnaireState _state,BuildContext context) {
+  Widget _loadTabletSize(QuestionnaireState _state, BuildContext context) {
     ThemeData _themeData = Theme.of(context);
-
-
 
     return Row(
       children: <Widget>[
@@ -109,9 +232,7 @@ class _questionPage extends State<MainQuestion> {
               ? Color(0xFF121212)
               : Color(0xFFe8e8e8),
           child: Scaffold(
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
             appBar: PreferredSize(
               preferredSize: Size.fromHeight(60.0), // here the desired height
               child: AppBar(
@@ -122,20 +243,13 @@ class _questionPage extends State<MainQuestion> {
                 // Don't show the leading button
                 title: Text(
                   "ทั้งหมด",
-                  textAlign:
-                  TextAlign.left,
+                  textAlign: TextAlign.left,
                   style: TextStyle(
-                    //color: Colors.black.withAlpha(200),
-                      color: _themeData
-                          .primaryTextTheme
-                          .title
-                          .color,
-                      fontFamily:
-                      'SukhumvitSet',
+                      //color: Colors.black.withAlpha(200),
+                      color: _themeData.primaryTextTheme.title.color,
+                      fontFamily: 'SukhumvitSet',
                       fontSize: 22,
-                      fontWeight:
-                      FontWeight
-                          .bold),
+                      fontWeight: FontWeight.bold),
                 ),
 
                 brightness: _themeData.brightness,
@@ -153,13 +267,11 @@ class _questionPage extends State<MainQuestion> {
           height: MediaQuery.of(context).size.width,
         ),
         Container(
-          width: MediaQuery.of(context).size.width - 300-1,
+          width: MediaQuery.of(context).size.width - 300 - 1,
           child: Scaffold(
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
+            backgroundColor: Theme.of(context).primaryColor,
             appBar: mainPageAppbar(_state, context),
-            body: _pageManager(context,_state),
+            body: _pageManager(context, _state),
           ),
           //child: _pageManager(context,_state),
         )
@@ -167,10 +279,9 @@ class _questionPage extends State<MainQuestion> {
     );
   }
 
-  Widget _sideBar(QuestionnaireState _state,BuildContext context) {
+  Widget _sideBar(QuestionnaireState _state, BuildContext context) {
     return recentPageTablet(_state, context);
   }
-
 
   Widget _pageManager(BuildContext context, QuestionnaireState _state) {
     if (_state is InitialQuestionnaireState) {
@@ -179,9 +290,7 @@ class _questionPage extends State<MainQuestion> {
       );
     } else if (_state is LoadingQuestionState) {
       return Container(
-          color: Theme
-              .of(context)
-              .primaryColor,
+          color: Theme.of(context).primaryColor,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -190,11 +299,7 @@ class _questionPage extends State<MainQuestion> {
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                   child: SpinKitThreeBounce(
-                    color: Theme
-                        .of(context)
-                        .primaryTextTheme
-                        .subtitle
-                        .color,
+                    color: Theme.of(context).primaryTextTheme.subtitle.color,
                     size: 50.0,
                   ),
                 ),
@@ -203,11 +308,7 @@ class _questionPage extends State<MainQuestion> {
                   child: Text(_state.message,
                       style: TextStyle(
                           color:
-                          Theme
-                              .of(context)
-                              .primaryTextTheme
-                              .subtitle
-                              .color,
+                              Theme.of(context).primaryTextTheme.subtitle.color,
                           fontSize: 18,
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.normal)),
@@ -253,6 +354,5 @@ class _questionPage extends State<MainQuestion> {
   }
 
    */
-
 
 }

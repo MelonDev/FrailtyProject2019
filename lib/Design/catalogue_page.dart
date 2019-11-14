@@ -11,6 +11,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:frailty_project_2019/Bloc/catalogue/catalogue_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
 import 'package:frailty_project_2019/Design/question_page.dart';
+import 'package:frailty_project_2019/Design/result_page.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/UncompletedData.dart';
 import 'package:frailty_project_2019/Question.dart';
@@ -292,7 +293,7 @@ class _cataloguePage extends State<CataloguePage> {
     } else if (_state is UncompletedCatalogueState) {
       return UncompletedTab(_state);
     } else if (_state is CompletedCatalogueState) {
-      return PlaceholderWidget(_themeData.backgroundColor);
+      return CompletedTab(_state);
     } else if (_state is LoadingCatalogueState) {
       return loadingTab();
     } else {
@@ -326,6 +327,227 @@ class PlaceholderWidget extends StatelessWidget {
   }
 }
 
+class CompletedTab extends StatelessWidget {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+
+  CatalogueBloc _catalogueBloc;
+
+  CompletedCatalogueState _state;
+
+  CompletedTab(this._state);
+
+  ThemeData _themeData;
+
+  Function reloadUncomplete() {
+    _catalogueBloc.add(CompletedSelectedEvent());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _themeData = Theme.of(context);
+
+    _catalogueBloc = BlocProvider.of<CatalogueBloc>(context);
+
+    return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              width: MediaQuery.of(context).size.width,
+              constraints: BoxConstraints(maxWidth: 500),
+              //color: Color(0xFFE0E0E0),
+              color: _themeData.backgroundColor,
+              child: ListView.builder(
+                  padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                  itemCount: _state.data.length,
+                  itemBuilder: (context, position) {
+                    if (_state.data[position].answerPack != null) {
+                      return _cardWidget(context, position);
+                    } else if (_state.data[position].labelDateTime != null) {
+                      return Container(
+                          color: Colors.transparent,
+                          padding: EdgeInsets.fromLTRB(20, 0, 20, 6),
+                          child: Text(
+                            _loadDateForLabel(
+                                _state.data[position].labelDateTime),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color:
+                                    _themeData.primaryTextTheme.subtitle.color,
+                                fontFamily: _themeData
+                                    .primaryTextTheme.subtitle.fontFamily),
+                          ));
+                    } else {
+                      return Container();
+                    }
+                  }))
+        ]);
+  }
+
+  Widget _cardWidget(BuildContext context, int position) {
+    return GestureDetector(
+      onTap: () => {
+        Navigator.push(context,
+            FrailtyRoute(builder: (BuildContext context) => ResultPage(keyS: _state.data[position].questionnaire.id,questionnaireName: _state.data[position].questionnaire.name,answerPackId: _state.data[position].answerPack.id,dateTime: _state.data[position].answerPack.dateTime,)))
+      },
+      child: Padding(
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                color: _themeData.cardColor),
+            child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    RichText(
+                        text: TextSpan(
+                            style: DefaultTextStyle.of(context).style,
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: "ไอดี: ",
+                                  style: TextStyle(
+                                      color: _themeData
+                                          .primaryTextTheme.title.color
+                                          .withAlpha(200),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      fontFamily: _themeData
+                                          .primaryTextTheme.title.fontFamily)),
+                              TextSpan(
+                                  text:
+                                      "${_state.data[position].answerPack.id}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                      color: _themeData
+                                          .primaryTextTheme.title.color
+                                          .withAlpha(170),
+                                      fontSize: 18,
+                                      fontFamily: _themeData.primaryTextTheme
+                                          .subtitle.fontFamily)),
+                            ]),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                    RichText(
+                      text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: "วันที่ทำ: ",
+                                style: TextStyle(
+                                    color: _themeData
+                                        .primaryTextTheme.title.color
+                                        .withAlpha(200),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    fontFamily: _themeData
+                                        .primaryTextTheme.title.fontFamily)),
+                            TextSpan(
+                                text:
+                                    "${_loadDate(_state.data[position].answerPack.dateTime)}",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: _themeData
+                                        .primaryTextTheme.title.color
+                                        .withAlpha(170),
+                                    fontSize: 18,
+                                    fontFamily: _themeData
+                                        .primaryTextTheme.subtitle.fontFamily)),
+                          ]),
+                      maxLines: 1,
+                    ),
+                    RichText(
+                      text: TextSpan(
+                          style: DefaultTextStyle.of(context).style,
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: "ชื่อชุดแบบทดสอบ: ",
+                                style: TextStyle(
+                                    color: _themeData
+                                        .primaryTextTheme.title.color
+                                        .withAlpha(200),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                    fontFamily: _themeData
+                                        .primaryTextTheme.title.fontFamily)),
+                            TextSpan(
+                                text:
+                                    "\n${_state.data[position].questionnaire.name}",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                    color: _themeData
+                                        .primaryTextTheme.title.color
+                                        .withAlpha(170),
+                                    fontSize: 18,
+                                    fontFamily: _themeData
+                                        .primaryTextTheme.subtitle.fontFamily)),
+                          ]),
+                    ),
+                  ],
+                )),
+          )),
+    );
+  }
+
+  String _loadDateForLabel(String date) {
+    var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateTime dateTime = formatter.parse(date);
+    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543}";
+  }
+
+  String _loadDate(String date) {
+    var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    DateTime dateTime = formatter.parse(date);
+    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543} (${dateTime.hour}:${dateTime.minute})";
+  }
+
+  String _getMonthName(int monthInt) {
+    String month = "";
+    switch (monthInt) {
+      case 1:
+        month = "มกราคม";
+        break;
+      case 2:
+        month = "กุมภาพันธ์";
+        break;
+      case 3:
+        month = "มีนาคม";
+        break;
+      case 4:
+        month = "เมษายน";
+        break;
+      case 5:
+        month = "พฤษภาคม";
+        break;
+      case 6:
+        month = "มิถุนายน";
+        break;
+      case 7:
+        month = "กรกฎาคม";
+        break;
+      case 8:
+        month = "สิงหาคม";
+        break;
+      case 9:
+        month = "กันยายน";
+        break;
+      case 10:
+        month = "ตุลาคม";
+        break;
+      case 11:
+        month = "พฤษจิกายน";
+        break;
+      case 12:
+        month = "ธันวาคม";
+        break;
+    }
+    return month;
+  }
+}
+
 class UncompletedTab extends StatelessWidget {
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
@@ -349,6 +571,8 @@ class UncompletedTab extends StatelessWidget {
 
     if (this._state == null) {
       return Container();
+    } else if (_state.data.length == 0) {
+      return emptyWidget();
     } else {
       return Row(
         mainAxisSize: MainAxisSize.max,
@@ -551,8 +775,37 @@ class UncompletedTab extends StatelessWidget {
     })).then((value) {
       _catalogueBloc.add(UncompletedSelectedEvent());
     });
+  }
 
-
+  Widget emptyWidget() {
+    return Container(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Icon(
+              Icons.rounded_corner,
+              size: 70,
+              color: _themeData.brightness == Brightness.dark
+                  ? Colors.white70
+                  : Colors.black54,
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text("ไม่พบข้อมูล",
+                style: TextStyle(
+                    fontFamily: _themeData.primaryTextTheme.subtitle.fontFamily,
+                    fontSize: 18,
+                    fontWeight: FontWeight.normal,
+                    color: _themeData.brightness == Brightness.dark
+                        ? Colors.white70
+                        : Colors.black54))
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _cardWidget(BuildContext context, int position) {

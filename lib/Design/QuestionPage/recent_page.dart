@@ -24,8 +24,8 @@ Widget recentPage(RecentQuestionState _state, BuildContext context) {
               20,
               10),
           child: FlatButton(
-              splashColor: Colors.red,
-              onPressed: cardOnClick(_state.list, position),
+              splashColor: Colors.black12,
+              onPressed: cardOnClick(_state.list, position,_questionnaireBloc),
               child: Container(
                   alignment: Alignment.topLeft,
                   padding: EdgeInsets.all(16),
@@ -103,8 +103,8 @@ Widget recentPageTablet(MyQuestionnaireState _state, BuildContext context) {
         padding: EdgeInsets.fromLTRB(0, 30, 0, 50),
         itemCount: _state.list.length,
         itemBuilder: (context, position) {
-          return GestureDetector(
-              onTap: () => {print("HEY!!")},
+          return FlatButton(
+              onPressed: cardOnClick(_state.list, position,_questionnaireBloc),
               child: Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -116,55 +116,56 @@ Widget recentPageTablet(MyQuestionnaireState _state, BuildContext context) {
                     ),
                 margin: EdgeInsets.fromLTRB(
                     _state.list[position].question.category.length > 1
-                        ? 60
-                        : 20,
+                        ? 40
+                        : 00,
                     0,
-                    20,
+                    0,
                     10),
                 padding: EdgeInsets.all(16),
                 child: Container(
-                  alignment: Alignment.topLeft,
+                    alignment: Alignment.topLeft,
                     child: FlatButton(
-                      splashColor: Colors.red,
+                        splashColor: Colors.black12,
                         child: RichText(
-                  maxLines: 3,
-                  text: TextSpan(
-                      style: DefaultTextStyle.of(context).style,
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: _state.list[position].question.category
-                                        .length >
-                                    1
-                                ? "ข้อที่ ${_state.list[position].fromQuestion.position}.${_state.list[position].question.position}"
-                                : "ข้อที่ ${_state.list[position].question.position}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    /*_state.list[position].answer != null
+                          maxLines: 3,
+                          text: TextSpan(
+                              style: DefaultTextStyle.of(context).style,
+                              children: <TextSpan>[
+                                TextSpan(
+                                    text: _state.list[position].question
+                                                .category.length >
+                                            1
+                                        ? "ข้อที่ ${_state.list[position].fromQuestion.position}.${_state.list[position].question.position}"
+                                        : "ข้อที่ ${_state.list[position].question.position}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            /*_state.list[position].answer != null
                                     ? Colors.white
                                     : _themeData.primaryTextTheme.title.color
                                         .withAlpha(100)*/
-                                    getCardTextColor(
-                                        _themeData, _state.list, position),
-                                fontSize: 20,
-                                fontFamily: _themeData
-                                    .primaryTextTheme.subtitle.fontFamily)),
-                        TextSpan(
-                            text: "\n${_state.list[position].question.message}",
-                            style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                color:
-                                    /*_state.list[position].answer != null
+                                            getCardTextColor(_themeData,
+                                                _state.list, position),
+                                        fontSize: 20,
+                                        fontFamily: _themeData.primaryTextTheme
+                                            .subtitle.fontFamily)),
+                                TextSpan(
+                                    text:
+                                        "\n${_state.list[position].question.message}",
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.normal,
+                                        color:
+                                            /*_state.list[position].answer != null
                                     ? Colors.white
                                     : _themeData.primaryTextTheme.title.color
                                         .withAlpha(100)*/
-                                    getCardTextColor(
-                                        _themeData, _state.list, position),
-                                fontSize: 18,
-                                fontFamily: _themeData
-                                    .primaryTextTheme.subtitle.fontFamily))
-                      ]),
-                ))),
+                                            getCardTextColor(_themeData,
+                                                _state.list, position),
+                                        fontSize: 18,
+                                        fontFamily: _themeData.primaryTextTheme
+                                            .subtitle.fontFamily))
+                              ]),
+                        ))),
                 /*child: Text(
               _state.list[position].question.category.length > 1
                   ? "ข้อที่ ${_state.list[position].fromQuestion.position}.${_state.list[position].question.position}\n${_state.list[position].question.message}"
@@ -193,6 +194,9 @@ Color getCardColor(
     ThemeData _themeData, List<QuestionWithChoice> list, int position) {
   Answer answer = list[position].answer;
   if (answer != null) {
+    /*return _themeData.brightness == Brightness.dark
+        ? Colors.white.withAlpha(230)
+        : Colors.white.withAlpha(200);*/
     return _themeData.accentColor;
   } else {
     if (position > 0) {
@@ -201,6 +205,8 @@ Color getCardColor(
         return _themeData.brightness == Brightness.dark
             ? Colors.white.withAlpha(230)
             : Colors.white.withAlpha(200);
+
+        //return _themeData.accentColor;
       } else {
         return _themeData.brightness == Brightness.dark
             ? Color(0xFF212121)
@@ -217,10 +223,12 @@ Color getCardTextColor(
   Answer answer = list[position].answer;
   if (answer != null) {
     return Colors.white;
+    //return Colors.black87;
   } else {
     if (position > 0) {
       Answer lastAnswer = list[position - 1].answer;
       if (lastAnswer != null) {
+        //return Colors.white;
         return Colors.black87;
       } else {
         return _themeData.brightness == Brightness.dark
@@ -233,26 +241,28 @@ Color getCardTextColor(
   }
 }
 
-Function cardOnClick(List<QuestionWithChoice> list, int position) {
+Function cardOnClick(List<QuestionWithChoice> list, int position,QuestionnaireBloc questionnaireBloc) {
   Answer answer = list[position].answer;
   if (answer != null) {
-    return () => cardClicked();
+    return () => cardClicked(list[position],questionnaireBloc);
   } else {
+
     if (position > 0) {
       Answer lastAnswer = list[position - 1].answer;
       if (lastAnswer != null) {
-        return () => cardClicked();
+        return () => cardClicked(list[position],questionnaireBloc);
       } else {
         return null;
       }
     } else {
-      return () => cardClicked();
+      return () => cardClicked(list[position],questionnaireBloc);
     }
   }
 }
 
-Function cardClicked() {
-  print("HELLO HEY!");
+Function cardClicked(QuestionWithChoice questionWithChoice,QuestionnaireBloc questionnaireBloc) {
+  //questionnaireBloc.add(LoadQuestionEvent(questionWithChoice));
+  print("CardClicked");
 }
 
 class MyPosition {

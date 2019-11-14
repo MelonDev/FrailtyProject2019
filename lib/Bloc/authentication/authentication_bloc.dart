@@ -15,6 +15,7 @@ import 'package:frailty_project_2019/Model/Version.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
 import 'package:frailty_project_2019/database/OfflineStaticDatabase.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestionnaires.dart';
+import 'package:frailty_project_2019/database/OnLocalDatabase.dart';
 import 'package:frailty_project_2019/home.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
@@ -54,6 +55,10 @@ class AuthenticationBloc
       yield* _mapUnAuthenticatingToState();
     } else if (event is TestEvent) {
       goToQuestion(event.context);
+    } else if (event is DatabaseRefreshEvent) {
+      yield* _mapDatabaseRefreshingToState(event);
+    } else if (event is DeleteHistoryDatabase) {
+      yield* _mapDatabaseHistoryToState(event);
     }
   }
 
@@ -82,11 +87,30 @@ class AuthenticationBloc
     }
   }
 
+  Stream<AuthenticationState> _mapDatabaseRefreshingToState(DatabaseRefreshEvent event) async* {
+    yield DatabaseRefreshingState(message: "กำลังลบฐานข้อมูล..");
+
+    yield DatabaseRefreshingState(message: "กำลังโหลดฐานข้อมูล..");
+    await OnDeviceQuestionnaires().afterLogin();
+
+    yield AuthenticatedState(account: event.account);
+
+  }
+
+  Stream<AuthenticationState> _mapDatabaseHistoryToState(DeleteHistoryDatabase event) async* {
+    yield DatabaseRefreshingState(message: "กำลังลบประวัติ..");
+
+    await OnLocalDatabase().deleteHistory();
+
+    await Future.delayed(Duration(seconds: 2));
+
+    yield AuthenticatedState(account: event.account);
+  }
+
   Stream<AuthenticationState> _mapGoogleLoginToState() async* {
     yield AuthenticatingState(message: "กำลังล็อคอิน..");
 
     try {
-
       Account _google = await _googleSignIn
           .signIn()
           .catchError((onError) {})
@@ -215,7 +239,7 @@ class AuthenticationBloc
             birthDate: formatter
                 .parse(preferences.getString("ACCOUNT_USER_BIRTHDATE")));
 
-        yield AuthenticatedState(account: account,isOffline: true);
+        yield AuthenticatedState(account: account, isOffline: true);
       }
     } catch (error) {
       print(error);
@@ -265,11 +289,12 @@ class AuthenticationBloc
     var connectivityResult = await (Connectivity().checkConnectivity());
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+    if (connectivityResult == ConnectivityResult.mobile ||
+        connectivityResult == ConnectivityResult.wifi) {
       preferences.setBool("APP_IS_OFFLINE", true);
 
       return true;
-    }else {
+    } else {
       preferences.setBool("APP_IS_OFFLINE", false);
       return false;
     }

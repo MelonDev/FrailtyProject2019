@@ -58,7 +58,7 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                                       splashColor: Colors.transparent,
                                       highlightColor: Colors.transparent,
                                       onPressed: () {
-                                        _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,"",state.list));
+                                        _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,"PASS",state.list,state.questionWithChoice));
                                       },
                                       child: Container(
                                         height: 80,

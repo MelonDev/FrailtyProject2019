@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:frailty_project_2019/Model/Choice.dart';
+import 'package:frailty_project_2019/Model/ConstraintData.dart';
 import 'package:frailty_project_2019/Model/Question.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/Version.dart';
@@ -37,6 +38,12 @@ class OnDeviceQuestionnaires {
   final String choicePosition = "position";
   final String choiceDestinationId = "destinationId";
 
+  final String constraintTable = "CONSTRAINTTABLE";
+  final String constraintId = "id";
+  final String constraintFromId = "fromId";
+  final String constraintMin = "colmin";
+  final String constraintMax = "colmax";
+
   Batch batch;
 
   Future<Database> initDatabase() async {
@@ -52,6 +59,9 @@ class OnDeviceQuestionnaires {
               'CREATE TABLE IF NOT EXISTS  $questionTable ($questionId text primary key,$questionMessage text not null,$questionType text not null,$questionPosition integer not null,$questionQuestionnaireId text not null,$questionCategory text not null)');
           await db.execute(
               'CREATE TABLE IF NOT EXISTS  $choiceTable ($choiceId text primary key,$choiceQuestionId text not null,$choiceMessage text not null,$choicePosition integer not null,$choiceDestinationId text not null)');
+          await db.execute(
+              'CREATE TABLE IF NOT EXISTS  $constraintTable ($constraintId text primary key,$constraintFromId text not null,$constraintMin integer not null,$constraintMax integer not null)');
+
         });
     return db;
   }
@@ -63,6 +73,8 @@ class OnDeviceQuestionnaires {
     batch.delete(questionnaireTable);
     batch.delete(questionTable);
     batch.delete(choiceTable);
+    batch.delete(constraintTable);
+
 
     for (var slot in await downloadVersionDatabase()) {
       batch.insert(versionTable, slot.toMap());
@@ -78,6 +90,10 @@ class OnDeviceQuestionnaires {
 
     for (var slot in await downloadChoiceDatabase()) {
       batch.insert(choiceTable, slot.toMap());
+    }
+
+    for (var slot in await downloadConstraintDatabase()) {
+      batch.insert(constraintTable, slot.toMap());
     }
 
     //await insertToDatabase(versionTable,await downloadVersionDatabase());
@@ -108,6 +124,19 @@ class OnDeviceQuestionnaires {
     versions = list.map((model) => Version.fromJson(model)).toList();
 
     return versions;
+  }
+
+  Future<List<ConstraintData>> downloadConstraintDatabase() async {
+    String url =
+        'https://melondev-frailty-project.herokuapp.com/api/download/downloadAllConstraint';
+    var response = await http.get(url);
+    var constraint = new List<ConstraintData>();
+
+    Iterable list = json.decode(response.body);
+    print(list.length);
+    constraint = list.map((model) => ConstraintData.fromJson(model)).toList();
+
+    return constraint;
   }
 
   Future<List<Choice>> downloadChoiceDatabase() async {

@@ -13,6 +13,20 @@ class FacebookLoginEvent extends AuthenticationEvent {}
 
 class GoogleLoginEvent extends AuthenticationEvent {}
 
+class DatabaseRefreshEvent extends AuthenticationEvent {
+  final Account account;
+
+  DatabaseRefreshEvent(this.account);
+}
+
+class DeleteHistoryDatabase extends AuthenticationEvent {
+  final Account account;
+
+  DeleteHistoryDatabase(this.account);
+}
+
+
+
 class AuthenticatingLoginEvent extends AuthenticationEvent {
   String message;
   BuildContext context;

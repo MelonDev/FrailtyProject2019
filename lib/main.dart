@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as prefix2;
@@ -14,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frailty_project_2019/Bloc/authentication/authentication_bloc.dart';
 import 'package:frailty_project_2019/Bloc/catalogue/catalogue_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
+import 'package:frailty_project_2019/Bloc/result_process/result_process_bloc.dart';
 import 'package:frailty_project_2019/Model/Account.dart';
 import 'package:frailty_project_2019/Model/TemporaryCode.dart';
 import 'package:frailty_project_2019/ThemeData/BasicDarkThemeData.dart';
@@ -32,6 +34,8 @@ import 'api.dart';
 
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+
+
 
 void main() {
   BlocSupervisor.delegate = FlowBlocDelegate();
@@ -59,12 +63,11 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthenticationBloc>(
-            builder: (context) =>
-                AuthenticationBloc()..add(AuthenticatingLoginEvent(null,null))),
+            builder: (context) => AuthenticationBloc()
+              ..add(AuthenticatingLoginEvent(null, null))),
         BlocProvider<CatalogueBloc>(
           builder: (context) =>
               CatalogueBloc()..add(QuestionnaireSelectedEvent()),
@@ -72,15 +75,22 @@ class MyApp extends StatelessWidget {
         BlocProvider<QuestionnaireBloc>(
           builder: (context) =>
               QuestionnaireBloc()..add(InitialQuestionnaireEvent()),
+        ),
+        BlocProvider<ResultProcessBloc>(
+          builder: (context) =>
+          ResultProcessBloc()..add(InitialResultProcessEvent()),
         )
       ],
       child: DynamicTheme(
-          defaultBrightness:Brightness.light,
-              //MediaQuery.of(context).platformBrightness == Brightness.light
-                  //? Brightness.light
-                  //: Brightness.dark,
+          defaultBrightness: Brightness.light,
+          //MediaQuery.of(context).platformBrightness == Brightness.light
+          //? Brightness.light
+          //: Brightness.dark,
           data: (brightness) {
-            return brightness == Brightness.light ? BasicLightThemeData().getTheme() : BasicDarkThemeData().getTheme();
+
+            return brightness == Brightness.light
+                ? BasicLightThemeData().getTheme()
+                : BasicDarkThemeData().getTheme();
           },
           themedWidgetBuilder: (context, theme) {
             return MaterialApp(
@@ -429,7 +439,7 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0,
         title: Text(widget.title,
             style: TextStyle(
-                fontFamily: 'SukhumvitSet', fontWeight: FontWeight.bold)),
+                fontFamily: 'SukhumvitSet',fontWeight: FontWeight.bold)),
       ),
       body: Stack(
         children: <Widget>[

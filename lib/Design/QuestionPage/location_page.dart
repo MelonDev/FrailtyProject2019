@@ -1,6 +1,6 @@
 part of '../question_page.dart';
 
-Widget _locationPage(BuildContext context,LocationQuestionState state) {
+Widget _locationPage(BuildContext context, LocationQuestionState state) {
   CellCalculator _cellCalculator = new CellCalculator(context);
 
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
@@ -41,7 +41,8 @@ Widget _locationPage(BuildContext context,LocationQuestionState state) {
                                 style: TextStyle(
                                   fontSize: 28,
                                   //color: Colors.black.withAlpha(160),
-                                  color: _themeData.primaryTextTheme.subtitle.color,
+                                  color: _themeData.primaryTextTheme.subtitle
+                                      .color,
                                   fontWeight: FontWeight.w700,
                                   //color: Colors.white.withAlpha(230),
                                   fontFamily: 'SukhumvitSet',
@@ -62,7 +63,7 @@ Widget _locationPage(BuildContext context,LocationQuestionState state) {
                                 .questionWithChoice),
                             //height: (50 + (count * 80)).toDouble(),
                             //height: 200,
-                            color:_themeData.primaryColor,
+                            color: _themeData.primaryColor,
                             child: Stack(
                               children: <Widget>[
                                 ListView.builder(
@@ -94,6 +95,7 @@ Widget _locationPage(BuildContext context,LocationQuestionState state) {
                                         return GestureDetector(
                                             onTap: () {
                                               //getLocation();
+                                              nextQuestion(context, state, position);
                                             },
                                             child: Container(
                                               margin: position == 0
@@ -144,5 +146,22 @@ Widget _locationPage(BuildContext context,LocationQuestionState state) {
         ]),
       ),
     ),
+  );
+}
+
+void nextQuestion(BuildContext context, LocationQuestionState state,
+    int position) {
+  var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
+
+  _questionnaireBloc.add(NextQuestionEvent(
+      state
+          .questionWithChoice
+          .question
+          .questionnaireId,
+      state.questionWithChoice
+          .question.id,
+      null,
+      "",
+      state.list, state.questionWithChoice)
   );
 }

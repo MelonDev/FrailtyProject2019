@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frailty_project_2019/Model/AnswerPack.dart';
+import 'package:frailty_project_2019/Model/CompleteItem.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/UncompletedData.dart';
 import 'package:frailty_project_2019/Model/UncompletedDataPack.dart';
@@ -13,6 +15,7 @@ import 'package:intl/intl.dart';
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 
 part 'catalogue_event.dart';
 
@@ -179,7 +182,80 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
   }
 
   Stream<CatalogueState> _mapCompletedToState() async* {
-    //yield LoadingCatalogueState();
-    yield CompletedCatalogueState();
+    yield LoadingCatalogueState();
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String oth = preferences.getString("ACCOUNT_USER_ID");
+
+
+    print(oth);
+
+
+    String url =
+        'https://melondev-frailty-project.herokuapp.com/api/result/getListOfResult';
+    Map map = {"id": "", "oauth": oth};
+    var response = await http.post(url, body: map);
+    Iterable list = json.decode(response.body);
+
+    List<AnswerPack> ans = list.map((model) => AnswerPack.fromJson(model)).toList();
+
+    List<CompleteItem> listCom = [];
+
+    for(var ap in ans){
+      String url =
+          'https://melondev-frailty-project.herokuapp.com/api/question/showQuestionnaireDetailFromAnswerPackId';
+      Map map = {"key": ap.id};
+      var response = await http.post(url, body: map);
+      Questionnaire questionnaire = Questionnaire.fromJson(jsonDecode(response.body));
+
+      print(questionnaire.name);
+      listCom.add(CompleteItem(ap,questionnaire,null));
+    }
+
+    //Account account = Account.fromJson(jsonDecode(response.body));
+
+    List<CompleteItem> newList = _compareCompleteListDate(listCom);
+
+
+    yield CompletedCatalogueState(newList.reversed.toList());
+  }
+
+  List<CompleteItem> _compareCompleteListDate(
+      List<CompleteItem> originalList) {
+    List<CompleteItem> newList = [];
+
+    DateTime _datetime;
+
+    int counter = 0;
+
+    for (var data in originalList) {
+      var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      DateTime dateTime = formatter.parse(data.answerPack.dateTime);
+      DateTime _date =
+      DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0, 0, 0);
+
+      if (_datetime == null) {
+        _datetime = _date;
+        //newList.add(UncompleteDataPack(uncompletedData: null, labelDateTime: formatter.format(_date)));
+      }
+
+      if (_date.isAfter(_datetime)) {
+        newList.add(CompleteItem(null, null, formatter.format(_datetime)));
+        newList.add(CompleteItem(data.answerPack, data.questionnaire, null));
+        _datetime = _date;
+      } else {
+        newList.add(CompleteItem(data.answerPack, data.questionnaire, null));
+      }
+
+      counter++;
+
+      if(counter == originalList.length){
+        newList.add(CompleteItem(null, null, formatter.format(_datetime)));
+      }
+
+
+    }
+
+    return newList;
   }
 }

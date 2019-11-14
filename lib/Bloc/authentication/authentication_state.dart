@@ -52,6 +52,19 @@ class AuthenticatingState extends AuthenticationState {
   }
 }
 
+class DatabaseRefreshingState extends AuthenticationState {
+
+  final String message;
+
+  DatabaseRefreshingState({@required this.message});
+
+  @override
+  String toString() {
+    return "DatabaseRefreshingState";
+  }
+}
+
+
 class ErrorAuthenticationState extends AuthenticationState {
 
   final String error;

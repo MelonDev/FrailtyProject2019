@@ -1,5 +1,7 @@
 import 'package:frailty_project_2019/Model/Answer.dart';
 import 'package:frailty_project_2019/Model/AnswerPack.dart';
+import 'package:frailty_project_2019/Model/AnswerResultPack.dart';
+import 'package:frailty_project_2019/Model/Choice.dart';
 import 'package:frailty_project_2019/Model/Question.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
 import 'package:frailty_project_2019/Model/UncompletedData.dart';
@@ -37,6 +39,51 @@ class OnLocalDatabase {
     return db;
   }
 
+  Future<AnswerResultPack> getAnswerResultPack(String answerPackId) async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+
+    final String currentAnswerPack =
+    preferences.getString("CURRENT_ANSWERPACK");
+
+    print("currentAnswerPack: $currentAnswerPack");
+
+    Database database = await _initDatabase();
+
+    List<Map> total = await database
+        .rawQuery(
+        "SELECT * FROM $answerPackTable ")
+        .then((onValue) => onValue);
+    List<AnswerPack> answerLists =
+    total.map((m) => new AnswerPack.fromJson(m)).toList();
+
+    AnswerPack answerPack;
+
+    for(AnswerPack a in answerLists){
+      if(a.id.contains(currentAnswerPack.toUpperCase())){
+        answerPack = a;
+      }
+    }
+
+
+    List<Map> answerList = await database
+        .rawQuery(
+        "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${currentAnswerPack.toUpperCase()}')")
+        .then((onValue) => onValue);
+
+    List<Answer> answers = answerList.map((m) => new Answer.fromJson(m)).toList();
+
+    for (var a in answers){
+      print(a.id);
+    }
+
+    if(answerPack != null){
+      return AnswerResultPack(answerPack, answers);
+    }else {
+      return AnswerResultPack(null,null);
+    }
+
+  }
+
   Future createLocalSlot() async {
     Database database = await _initDatabase();
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -68,13 +115,15 @@ class OnLocalDatabase {
     Database database = await _initDatabase();
     SharedPreferences preferences = await SharedPreferences.getInstance();
 
+    print("ME");
+    print(questionId);
+    print(value);
+
     String uuid = Uuid().v4().toUpperCase();
     final String currentAnswerPack =
         preferences.getString("CURRENT_ANSWERPACK");
 
-    List<Map> list = await database
-        .rawQuery("SELECT * FROM $answerTable")
-        .then((onValue) => onValue);
+    await OnDeviceQuestion().spinQuestionToAnswer(questionId, value);
 
     Answer answer = Answer(
         id: uuid.toUpperCase(),
@@ -109,7 +158,28 @@ class OnLocalDatabase {
     });
   }
 
-  Future analysisLocalAnswerPack() async {
+  Future deleteAnswer(String answerPackId, String targetId) async {
+    Database database = await _initDatabase();
+
+    List<Map> lists = await database
+        .rawQuery(
+            "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackId}') AND ($answerQuestionId = '${targetId}')")
+        .then((onValue) => onValue);
+
+    print("DELETE TEST: ${lists.length}");
+
+    Batch batch = database.batch();
+
+    //batch.delete(answerTable,where: '$answerId = ?', whereArgs: [answerPackIds.toUpperCase()]);
+
+    batch.commit().then((onValue) {
+      print("Batch Complete");
+    }).catchError((error) {
+      print("Batch Error: $error");
+    });
+  }
+
+  Future deleteHistory() async {
     Database database = await _initDatabase();
 
     Batch batch = database.batch();
@@ -125,11 +195,67 @@ class OnLocalDatabase {
           .rawQuery(
               "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPack.id}')")
           .then((onValue) => onValue);
+      if (lists.length > 0) {
+        List<Answer> answerList =
+            list.map((m) => new Answer.fromJson(m)).toList();
+        print(answerList.length);
+
+        for (var answer in answerList) {
+          batch.delete(answerTable,
+              where: '$answerId = ?', whereArgs: [answer.id]);
+        }
+
+        batch.delete(answerPackTable,
+            where: '$answerPackId = ?', whereArgs: [answerPack.id]);
+      }
+    }
+
+    batch.commit().then((onValue) {
+      print("Batch Complete");
+    }).catchError((error) {
+      print("Batch Error: $error");
+    });
+  }
+
+  Future analysisLocalAnswerPack() async {
+    Database database = await _initDatabase();
+
+    Batch batch = database.batch();
+
+    List<Map> list = await database
+        .rawQuery("SELECT * FROM $answerPackTable")
+        .then((onValue) => onValue);
+    List<AnswerPack> answerPackList =
+        list.map((m) => new AnswerPack.fromJson(m)).toList();
+
+    print(list.length);
+
+    for (var answerPack in answerPackList) {
+      List<Map> lists = await database
+          .rawQuery(
+              "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPack.id}')")
+          .then((onValue) => onValue);
       if (lists.length == 0) {
         batch.delete(answerPackTable,
             where: '$answerPackId = ?', whereArgs: [answerPack.id]);
       }
     }
+
+    batch.commit().then((onValue) {
+      print("Batch Complete");
+    }).catchError((error) {
+      print("Batch Error: $error");
+    });
+  }
+
+  Future changeData(List<Choice> listChoice, Answer answer) async {
+    Database database = await _initDatabase();
+
+    Batch batch = database.batch();
+
+    batch.update(answerTable, answer.toMap(),
+        where: '$answerId = ?', whereArgs: [answer.id]);
+
     batch.commit().then((onValue) {
       print("Batch Complete");
     }).catchError((error) {
@@ -210,9 +336,8 @@ class OnLocalDatabase {
       Map passFirst = pass.first;
       Answer answer = Answer.fromMap(passFirst);
       return answer;
-    }else {
+    } else {
       return null;
     }
-
   }
 }

@@ -1,11 +1,10 @@
 part of '../question_page.dart';
 
-Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
+Widget _multiplyPage(BuildContext context, MultiplyQuestionState state) {
   CellCalculator _cellCalculator = new CellCalculator(context);
 
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
   ThemeData _themeData = Theme.of(context);
-
 
   return Container(
     color: _themeData.primaryColor,
@@ -24,12 +23,14 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                         alignment: Alignment.topCenter,
                         child: Container(
                           //margin: EdgeInsets.fromLTRB(0, 0, 0, (20+(80*count)).toDouble()),
-                          margin:
-                          EdgeInsets.fromLTRB(0, 0, 0,
-                              _cellCalculator.calDesHeight(
-                                  state.questionWithChoice)),
-                          height: double.infinity,
-                          width: double.infinity,
+                          margin: EdgeInsets.fromLTRB(
+                              0,
+                              0,
+                              0,
+                              _cellCalculator
+                                  .calDesHeight(state.questionWithChoice)),
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
                           color: Colors.transparent,
                           child: Align(
                             alignment: Alignment.center,
@@ -41,7 +42,8 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                 style: TextStyle(
                                   fontSize: 28,
                                   //color: Colors.black.withAlpha(160),
-                                  color: _themeData.primaryTextTheme.subtitle.color,
+                                  color: _themeData
+                                      .primaryTextTheme.subtitle.color,
                                   fontWeight: FontWeight.w700,
                                   //color: Colors.white.withAlpha(230),
                                   fontFamily: 'SukhumvitSet',
@@ -54,8 +56,8 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Container(
-                          //margin: EdgeInsets.fromLTRB(0, 580, 0, 0),
-                          /*
+                            //margin: EdgeInsets.fromLTRB(0, 580, 0, 0),
+                            /*
                             margin: EdgeInsets.fromLTRB(
                                 0,
                                 (560 - ((count > 5 ? 5 : count) * 80))
@@ -65,19 +67,23 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                 */
 
                             margin: EdgeInsets.fromLTRB(
-                                0, _cellCalculator.calChoiceAreaMarginTop(
-                                state.questionWithChoice), 0, 0),
+                                0,
+                                _cellCalculator.calChoiceAreaMarginTop(
+                                    state.questionWithChoice),
+                                0,
+                                0),
                             width: double.infinity,
-                            height: _cellCalculator.calChoiceAreaHeight(state
-                                .questionWithChoice),
+                            height: _cellCalculator
+                                .calChoiceAreaHeight(state.questionWithChoice),
                             //height: (50 + (count * 80)).toDouble(),
                             //height: 200,
                             color: _themeData.primaryColor,
                             child: Stack(
                               children: <Widget>[
                                 ListView.builder(
-                                    itemCount: state.questionWithChoice
-                                        .choices.length + 1,
+                                    itemCount: state
+                                            .questionWithChoice.choices.length +
+                                        1,
                                     //itemCount: count,
                                     itemBuilder: (context, position) {
                                       if (position == 0) {
@@ -86,36 +92,53 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                               20, 20, 20, 0),
                                           color: Colors.transparent,
                                           height: 30,
-                                          width: double.infinity,
+                                          width:
+                                              MediaQuery.of(context).size.width,
                                           child: Text(
-                                            "ตัวเลือก ${state
-                                                .questionWithChoice.choices
-                                                .length} ข้อ",
+                                            "ตัวเลือก ${state.questionWithChoice.choices.length} ข้อ",
                                             style: TextStyle(
                                               fontSize: 16,
-                                              color:
-                                              Colors.teal.withAlpha(255),
+                                              color: Colors.teal.withAlpha(255),
                                               fontWeight: FontWeight.w700,
                                               fontFamily: 'SukhumvitSet',
                                             ),
                                           ),
                                         );
                                       } else {
-                                        return GestureDetector(
-                                            onTap: () {
-                                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId, state.questionWithChoice.question.id, state.questionWithChoice.choices[position - 1].id,state.questionWithChoice.choices[position - 1].id,state.list));
-                                            },
-                                            child: Container(
-                                              margin: position == 0
-                                                  ? EdgeInsets.fromLTRB(
-                                                  20, 30, 20, 10)
-                                                  : EdgeInsets.fromLTRB(
+                                        return Container(
+                                          margin: position == 0
+                                              ? EdgeInsets.fromLTRB(
+                                                  20, 30,20, 10)
+                                              : EdgeInsets.fromLTRB(
                                                   20, 10, 20, 10),
-                                              width: double.infinity,
-                                              height: 60,
-                                              child: Align(
+                                          width:
+                                              MediaQuery.of(context).size.width,
+                                          height: 60,
+                                          child: FlatButton(
+                                            splashColor: Colors.white70,
+                                              onPressed: () {
+                                                _questionnaireBloc.add(
+                                                    NextQuestionEvent(
+                                                        state
+                                                            .questionWithChoice
+                                                            .question
+                                                            .questionnaireId,
+                                                        state.questionWithChoice
+                                                            .question.id,
+                                                        state
+                                                            .questionWithChoice
+                                                            .choices[position - 1].id,
+                                                        state
+                                                            .questionWithChoice
+                                                            .choices[
+                                                                position - 1]
+                                                            .message,
+                                                        state.list,state.questionWithChoice));
+                                              },
+                                              child: Container(child:Align(
                                                 child: Text(
-                                                  state.questionWithChoice
+                                                  state
+                                                      .questionWithChoice
                                                       .choices[position - 1]
                                                       .message,
                                                   style: TextStyle(
@@ -123,27 +146,23 @@ Widget _multiplyPage(BuildContext context,MultiplyQuestionState state) {
                                                     color: Colors.white
                                                         .withAlpha(255),
                                                     //color: Color(0xFF42A898),
-                                                    fontWeight:
-                                                    FontWeight.w700,
+                                                    fontWeight: FontWeight.w700,
                                                     //color: Colors.white.withAlpha(230),
-                                                    fontFamily:
-                                                    'SukhumvitSet',
+                                                    fontFamily: 'SukhumvitSet',
                                                   ),
                                                 ),
-                                              ),
-                                              decoration: BoxDecoration(
-                                                /*border: new Border.all(
+                                              ))),
+                                          decoration: BoxDecoration(
+                                              /*border: new Border.all(
                                                         color:
                                                             Color(0xFF42A898),
                                                         width: 3.0),*/
-                                                  borderRadius:
-                                                  BorderRadius.all(
-                                                      Radius.circular(
-                                                          16)),
-                                                  //color: Colors.black.withAlpha(50)
-                                                  color: Color(0xFF009688)),
-                                              //color: Colors.white)
-                                            ));
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(16)),
+                                              //color: Colors.black.withAlpha(50)
+                                              color: Color(0xFF009688)),
+                                          //color: Colors.white)
+                                        );
                                       }
                                     })
                               ],

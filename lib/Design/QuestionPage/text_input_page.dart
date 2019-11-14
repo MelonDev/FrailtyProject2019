@@ -7,6 +7,8 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
 
   bool _actionBtn = false;
 
+  String str = "";
+
   return Container(
     color: _themeData.primaryColor,
     child: SafeArea(
@@ -101,6 +103,9 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                               onTap: () {
                                                 _actionBtn = true;
                                               },
+                                              onChanged: (value){
+                                                str = value;
+                                              },
                                               onSubmitted: (str) {
                                                 _actionBtn = false;
                                                 FocusScope.of(context)
@@ -160,13 +165,18 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           onPressed: () {
+                                            print(_actionBtn);
                                             if (_actionBtn) {
                                               FocusScope.of(context)
                                                   .requestFocus(
                                                   new FocusNode());
                                               _actionBtn = false;
                                             } else {
-                                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,"",state.list));
+                                              if(str.length > 0){
+                                                _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,str,state.list,state.questionWithChoice));
+                                              }else {
+                                                showMyDialog(context);
+                                              }
                                             }
                                           },
                                         ),
@@ -181,4 +191,106 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
       ),
     ),
   );
+}
+
+void showMyDialog(BuildContext context){
+ ThemeData _themeData = Theme.of(context);
+
+
+  showDialog(context: context,
+      builder: (BuildContext context) =>
+      MediaQuery.of(context).platformBrightness ==
+          Brightness.dark
+          ? new CupertinoAlertDialog(
+        title: new Text(
+          "ช่องว่างเปล่า",
+          style: TextStyle(
+              fontFamily: _themeData
+                  .primaryTextTheme
+                  .subtitle
+                  .fontFamily,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white
+                  .withAlpha(200)),
+        ),
+        content: new Text(
+            "กรุณากรอกข้อมูลในช่องกรอกข้อมูลแล้วลองอีกครั้ง",
+            style: TextStyle(
+                fontFamily: _themeData
+                    .primaryTextTheme
+                    .subtitle
+                    .fontFamily,
+                fontSize: 16,
+                fontWeight:
+                FontWeight.normal,
+                color: Colors.white
+                    .withAlpha(200)
+                    .withAlpha(150))),
+        actions: [
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: new Text("รับทราบ",
+                style: TextStyle(
+                    fontFamily: _themeData
+                        .primaryTextTheme
+                        .subtitle
+                        .fontFamily,
+                    fontSize: 18,
+                    fontWeight:
+                    FontWeight.normal,
+                    color: Colors.red)),
+            onPressed: () {
+              Navigator.of(context).pop();
+
+            },
+          ),
+        ],
+      )
+          : new CupertinoAlertDialog(
+        title: new Text(
+          "ช่องว่างเปล่า",
+          style: TextStyle(
+              fontFamily: _themeData
+                  .primaryTextTheme
+                  .subtitle
+                  .fontFamily,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black
+                  .withAlpha(180)),
+        ),
+        content: new Text(
+            "กรุณากรอกข้อมูลในช่องกรอกข้อมูลแล้วลองอีกครั้ง",
+            style: TextStyle(
+                fontFamily: _themeData
+                    .primaryTextTheme
+                    .subtitle
+                    .fontFamily,
+                fontSize: 16,
+                fontWeight:
+                FontWeight.normal,
+                color: Colors.black
+                    .withAlpha(180)
+                    .withAlpha(150))),
+        actions: [
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: new Text("รับทราบ",
+                style: TextStyle(
+                    fontFamily: _themeData
+                        .primaryTextTheme
+                        .subtitle
+                        .fontFamily,
+                    fontSize: 18,
+                    fontWeight:
+                    FontWeight.normal,
+                    color: Colors.red)),
+            onPressed: () {
+
+              Navigator.of(context).pop();
+            },
+          )
+        ],
+      ));
 }

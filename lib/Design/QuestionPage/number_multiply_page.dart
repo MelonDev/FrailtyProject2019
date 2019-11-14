@@ -7,7 +7,9 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
 
   bool _actionBtn = false;
 
-  int myValue;
+  int myValueA = 0;
+  int myValueB = 0;
+
 
   return Container(
     color: _themeData.primaryColor,
@@ -92,11 +94,11 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                       magnification: 1.5,
                                       backgroundColor: _themeData.primaryColor,
                                       children: List<Widget>.generate(
-                                          state.numberList.length,
+                                          state.numberListA.length,
                                               (int index) {
                                             return Center(
                                               child: Text(
-                                                state.numberList[index]
+                                                state.numberListA[index]
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
@@ -110,7 +112,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                           }),
                                       itemExtent: 30,
                                       onSelectedItemChanged: (int value) {
-                                        myValue = value;
+                                        myValueA = value;
 
                                       },
                                     ),
@@ -168,11 +170,11 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                       magnification: 1.5,
                                       backgroundColor: _themeData.primaryColor,
                                       children: List<Widget>.generate(
-                                          state.numberList.length,
+                                          state.numberListB.length,
                                               (int index) {
                                             return Center(
                                               child: Text(
-                                                state.numberList[index]
+                                                state.numberListB[index]
                                                     .toString(),
                                                 style: TextStyle(
                                                     fontFamily: 'SukhumvitSet',
@@ -185,7 +187,9 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                             );
                                           }),
                                       itemExtent: 30,
-                                      onSelectedItemChanged: (int value) {},
+                                      onSelectedItemChanged: (int value) {
+                                        myValueB = value;
+                                      },
                                     ),
                                   ),
                                 ],
@@ -202,7 +206,7 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                           height: 40,
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16.0)),
-                          splashColor: Colors.white12,
+                          splashColor: Colors.white70,
                           color: Colors.teal,
                           elevation: 0,
                           highlightElevation: 0,
@@ -221,7 +225,9 @@ Widget _numberMultiplyPage(BuildContext context,NumberMultiplyQuestionState stat
                                   .requestFocus(new FocusNode());
                               _actionBtn = false;
                             } else {
-                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,"",state.list));
+
+                              String value = "${state.numberListA[myValueA]}/${state.numberListB[myValueB]}";
+                              _questionnaireBloc.add(NextQuestionEvent(state.questionWithChoice.question.questionnaireId,state.questionWithChoice.question.id,null,value,state.list,state.questionWithChoice));
 
                             }
                           },

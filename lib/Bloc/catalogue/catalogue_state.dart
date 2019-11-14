@@ -35,6 +35,11 @@ class UncompletedCatalogueState extends CatalogueState {
 }
 
 class CompletedCatalogueState extends CatalogueState {
+
+  final List<CompleteItem> data;
+
+  CompletedCatalogueState(this.data);
+
   @override
   String toString() {
     return "CompletedCatalogueState";

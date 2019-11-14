@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:frailty_project_2019/Model/Answer.dart';
 import 'package:frailty_project_2019/Model/Choice.dart';
+import 'package:frailty_project_2019/Model/ConstraintData.dart';
 import 'package:frailty_project_2019/Model/Question.dart';
 import 'package:frailty_project_2019/Model/QuestionWithChoice.dart';
 import 'package:frailty_project_2019/Model/Questionnaire.dart';
@@ -41,20 +42,28 @@ class OnDeviceQuestion {
   final String choicePosition = "position";
   final String choiceDestinationId = "destinationId";
 
+  final String constraintTable = "CONSTRAINTTABLE";
+  final String constraintId = "id";
+  final String constraintFromId = "fromId";
+  final String constraintMin = "colmin";
+  final String constraintMax = "colmax";
+
   Future<Database> initDatabase() async {
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'mylocaldatabase.db');
     Database db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS  $versionTable ($versionId text primary key,$versionQuestionnaireId text not null,$versionVersion integer not null,$versionCreateAt text not null,$versionUpdateAt text not null)');
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS  $questionnaireTable ($questionnaireId text primary key,$questionnaireName text not null,$questionnaireDescription text not null)');
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS  $questionTable ($questionId text primary key,$questionMessage text not null,$questionType text not null,$questionPosition integer not null,$questionQuestionnaireId text not null,$questionCategory text not null)');
-      await db.execute(
-          'CREATE TABLE IF NOT EXISTS  $choiceTable ($choiceId text primary key,$choiceQuestionId text not null,$choiceMessage text not null,$choicePosition integer not null,$choiceDestinationId text not null)');
-    });
+          await db.execute(
+              'CREATE TABLE IF NOT EXISTS  $versionTable ($versionId text primary key,$versionQuestionnaireId text not null,$versionVersion integer not null,$versionCreateAt text not null,$versionUpdateAt text not null)');
+          await db.execute(
+              'CREATE TABLE IF NOT EXISTS  $questionnaireTable ($questionnaireId text primary key,$questionnaireName text not null,$questionnaireDescription text not null)');
+          await db.execute(
+              'CREATE TABLE IF NOT EXISTS  $questionTable ($questionId text primary key,$questionMessage text not null,$questionType text not null,$questionPosition integer not null,$questionQuestionnaireId text not null,$questionCategory text not null)');
+          await db.execute(
+              'CREATE TABLE IF NOT EXISTS  $choiceTable ($choiceId text primary key,$choiceQuestionId text not null,$choiceMessage text not null,$choicePosition integer not null,$choiceDestinationId text not null)');
+          await db.execute(
+              'CREATE TABLE IF NOT EXISTS $constraintTable ($constraintId text primary key,$constraintFromId text not null,$constraintMin integer not null,$constraintMax integer not null)');
+        });
     return db;
   }
 
@@ -68,13 +77,13 @@ class OnDeviceQuestion {
     print(currentKey);
     print(choiceYouChoose);
 
-
     if (currentKey == null) {
       if (questionnaire != null) {
+
         if (questionnaire.length > 0) {
           List<Map> mapsQuestion = await database
               .rawQuery(
-                  "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${questionnaire.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition = 1) ORDER BY $questionPosition ASC")
+              "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${questionnaire.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition = 1) ORDER BY $questionPosition ASC")
               .then((onValue) => onValue);
           Map mapQuestion = mapsQuestion.first;
           var q = Question.fromMap(mapQuestion);
@@ -83,10 +92,10 @@ class OnDeviceQuestion {
 
           List<Map> mapsChoice = await database
               .rawQuery(
-                  "SELECT * FROM $choiceTable WHERE ($choiceQuestionId = '${q.id.toLowerCase()}') ORDER BY $questionPosition ASC")
+              "SELECT * FROM $choiceTable WHERE ($choiceQuestionId = '${q.id.toLowerCase()}') ORDER BY $questionPosition ASC")
               .then((onValue) => onValue);
           List<Choice> choiceSnap =
-              mapsChoice.map((m) => new Choice.fromJson(m)).toList();
+          mapsChoice.map((m) => new Choice.fromJson(m)).toList();
 
           return QuestionWithChoice(q, choiceSnap);
         } else {
@@ -96,10 +105,14 @@ class OnDeviceQuestion {
         return null;
       }
     } else {
+
       List<Map> mapsA1 = await database.rawQuery(
           "SELECT * FROM $questionTable  WHERE ($questionId = '${currentKey.toUpperCase()}')");
 
       if (mapsA1 != null) {
+
+
+
         Map mapA1 = mapsA1.first;
         var qA1 = Question.fromMap(mapA1);
 
@@ -154,7 +167,9 @@ class OnDeviceQuestion {
             return null;
           }
         } else {
+
           if (qA1.category.length > 1) {
+
             List<Map> questionList = await database.rawQuery(
                 "SELECT * FROM $questionTable  WHERE ($questionCategory = '${qA1.category.toLowerCase()}') ORDER BY $questionPosition ASC");
 
@@ -175,7 +190,7 @@ class OnDeviceQuestion {
                 Question question = Question(
                     message: "FINISHED",
                     type: "FINISHED",
-                    category: "FINISHED");
+                    category: "");
                 return QuestionWithChoice(question, null);
               } else {
                 List<Map> nextQuesRaw = await database.rawQuery(
@@ -220,102 +235,117 @@ class OnDeviceQuestion {
               }
             }
           } else {
-            if (qA1.type.contains("multiply")) {
-              if (choiceYouChoose != null) {
-                //print(qA1.id);
-                //print(choiceYouChoose.toLowerCase());
 
-                List<Map> choiceRaw = await database.rawQuery(
-                    "SELECT * FROM $choiceTable  WHERE ($choiceId = '${choiceYouChoose.toUpperCase()}') ORDER BY $choicePosition ASC");
-                Map choiceRaws = choiceRaw.first;
-                //print(choiceRaws.length);
-                var choice = Choice.fromMap(choiceRaws);
 
-                //print(choice.questionId);
-                //print(qA1.id);
-                //print(choice.destinationId.length);
 
-                if (choice.questionId.toLowerCase() == qA1.id.toLowerCase() &&
-                    choice.destinationId.length > 1) {
-                  List<Map> nextQuesRaw = await database.rawQuery(
-                      "SELECT * FROM $questionTable  WHERE ($questionId = '${choice.destinationId.toUpperCase()}') ORDER BY $questionPosition ASC");
+            List<Map> allQues = await database.rawQuery(
+                "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionCategory = '-') ORDER BY $questionPosition ASC");
 
-                  Map quesNextRaws = nextQuesRaw.first;
-                  var quesNext = Question.fromMap(quesNextRaws);
+            if (allQues.length == qA1.position) {
+              Question question = Question(
+                  message: "FINISHED",
+                  type: "FINISHED",
+                  category: "");
+              return QuestionWithChoice(question, null);
+            } else {
 
-                  List<Map> choiceListRaw = await database.rawQuery(
-                      "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
-                  if (choiceListRaw != null) {
-                    var choiceList = choiceListRaw.map((model) {
-                      var q = Choice.fromMap(model);
-                      return q;
-                    }).toList();
+              if (qA1.type.contains("multiply")) {
+                if (choiceYouChoose != null) {
+                  //print(qA1.id);
+                  //print(choiceYouChoose.toLowerCase());
 
-                    return QuestionWithChoice(quesNext, choiceList);
+                  List<Map> choiceRaw = await database.rawQuery(
+                      "SELECT * FROM $choiceTable  WHERE ($choiceId = '${choiceYouChoose.toUpperCase()}') ORDER BY $choicePosition ASC");
+                  Map choiceRaws = choiceRaw.first;
+                  //print(choiceRaws.length);
+                  var choice = Choice.fromMap(choiceRaws);
+
+                  //print(choice.questionId);
+                  //print(qA1.id);
+                  //print(choice.destinationId.length);
+
+                  if (choice.questionId.toLowerCase() == qA1.id.toLowerCase() &&
+                      choice.destinationId.length > 1) {
+                    List<Map> nextQuesRaw = await database.rawQuery(
+                        "SELECT * FROM $questionTable  WHERE ($questionId = '${choice.destinationId.toUpperCase()}') ORDER BY $questionPosition ASC");
+
+                    Map quesNextRaws = nextQuesRaw.first;
+                    var quesNext = Question.fromMap(quesNextRaws);
+
+                    List<Map> choiceListRaw = await database.rawQuery(
+                        "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
+                    if (choiceListRaw != null) {
+                      var choiceList = choiceListRaw.map((model) {
+                        var q = Choice.fromMap(model);
+                        return q;
+                      }).toList();
+
+                      return QuestionWithChoice(quesNext, choiceList);
+                    } else {
+                      return null;
+                    }
+                  } else if (choice.destinationId.contains("-")) {
+                    List<Map> nextQuesRaw = await database.rawQuery(
+                        "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
+                    Map quesNextRaws = nextQuesRaw.first;
+                    var quesNext = Question.fromMap(quesNextRaws);
+
+                    List<Map> choiceListRaw = await database.rawQuery(
+                        "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
+                    if (choiceListRaw != null) {
+                      var choiceList = choiceListRaw.map((model) {
+                        var q = Choice.fromMap(model);
+                        return q;
+                      }).toList();
+
+                      return QuestionWithChoice(quesNext, choiceList);
+                    } else {
+                      return null;
+                    }
                   } else {
-                    return null;
-                  }
-                } else if (choice.destinationId.contains("-")) {
-                  List<Map> nextQuesRaw = await database.rawQuery(
-                      "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
-                  Map quesNextRaws = nextQuesRaw.first;
-                  var quesNext = Question.fromMap(quesNextRaws);
-
-                  List<Map> choiceListRaw = await database.rawQuery(
-                      "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
-                  if (choiceListRaw != null) {
-                    var choiceList = choiceListRaw.map((model) {
-                      var q = Choice.fromMap(model);
-                      return q;
-                    }).toList();
-
-                    return QuestionWithChoice(quesNext, choiceList);
-                  } else {
-                    return null;
+                    return QuestionWithChoice(null, null);
                   }
                 } else {
-                  return QuestionWithChoice(null, null);
+                  List<Map> nextQuesRaw = await database.rawQuery(
+                      "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
+
+                  Map quesNextRaws = nextQuesRaw.first;
+                  var quesNext = Question.fromMap(quesNextRaws);
+
+                  List<Map> choiceListRaw = await database.rawQuery(
+                      "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
+                  if (choiceListRaw != null) {
+                    var choiceList = choiceListRaw.map((model) {
+                      var q = Choice.fromMap(model);
+                      return q;
+                    }).toList();
+
+                    return QuestionWithChoice(quesNext, choiceList);
+                  } else {
+                    return null;
+                  }
                 }
               } else {
                 List<Map> nextQuesRaw = await database.rawQuery(
-                    "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
+                    "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
+                Map nextQuesRaws = nextQuesRaw.first;
+                var nextQues = Question.fromMap(nextQuesRaws);
 
-                Map quesNextRaws = nextQuesRaw.first;
-                var quesNext = Question.fromMap(quesNextRaws);
-
-                List<Map> choiceListRaw = await database.rawQuery(
-                    "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
-                if (choiceListRaw != null) {
-                  var choiceList = choiceListRaw.map((model) {
-                    var q = Choice.fromMap(model);
-                    return q;
-                  }).toList();
-
-                  return QuestionWithChoice(quesNext, choiceList);
+                if (nextQues.type.contains("title")) {
+                  return QuestionWithChoice(nextQues, null);
                 } else {
-                  return null;
-                }
-              }
-            } else {
-              List<Map> nextQuesRaw = await database.rawQuery(
-                  "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
-              Map nextQuesRaws = nextQuesRaw.first;
-              var nextQues = Question.fromMap(nextQuesRaws);
+                  List<Map> choiceListRaw = await database.rawQuery(
+                      "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${nextQues.id.toLowerCase()}') ORDER BY $choicePosition ASC");
+                  if (choiceListRaw != null) {
+                    var choiceList = choiceListRaw.map((model) {
+                      var q = Choice.fromMap(model);
+                      return q;
+                    }).toList();
 
-              if (nextQues.type.contains("title")) {
-                return QuestionWithChoice(nextQues, null);
-              } else {
-                List<Map> choiceListRaw = await database.rawQuery(
-                    "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${nextQues.id.toLowerCase()}') ORDER BY $choicePosition ASC");
-                if (choiceListRaw != null) {
-                  var choiceList = choiceListRaw.map((model) {
-                    var q = Choice.fromMap(model);
-                    return q;
-                  }).toList();
-
-                  return QuestionWithChoice(nextQues, choiceList);
-                } else {
-                  return null;
+                    return QuestionWithChoice(nextQues, choiceList);
+                  } else {
+                    return null;
+                  }
                 }
               }
             }
@@ -332,11 +362,13 @@ class OnDeviceQuestion {
   Future<QuestionWithChoice> nextQuesion(
       String questionnaire, String currentKey, String choiceYouChoose) async {
     QuestionWithChoice nextQues =
-        await nextQuesionProcess(questionnaire, currentKey, choiceYouChoose);
+    await nextQuesionProcess(questionnaire, currentKey, choiceYouChoose);
+
 
     Database database = await initDatabase();
 
     if (nextQues.question.category.length > 1) {
+
       List<Map> nextQuesRaw = await database.rawQuery(
           "SELECT * FROM $questionTable  WHERE ($questionId = '${nextQues.question.category.toUpperCase()}') ORDER BY $questionPosition ASC");
 
@@ -345,9 +377,56 @@ class OnDeviceQuestion {
       return QuestionWithChoice(nextQues.question, nextQues.choices,
           fromQuestion: quesNext);
     } else {
+
       return QuestionWithChoice(nextQues.question, nextQues.choices,
           fromQuestion: null);
     }
+  }
+
+  Future spinQuestionToAnswer(String qID,String value) async{
+    Database database = await initDatabase();
+
+    List<Map> list = await database
+        .rawQuery("SELECT * FROM $choiceTable WHERE ($choiceQuestionId = '${qID.toLowerCase()}')")
+        .then((onValue) => onValue);
+
+    if(list.length > 0){
+      var choiceList = list.map((choiceMap) {
+        var choice = Choice.fromMap(choiceMap);
+        return choice;
+      }).toList();
+
+      for(var choice in choiceList){
+        print(value);
+        if(value.contains(choice.message)){
+          print("P: ${choice.id}");
+        }else {
+          print("N: ${choice.id}");
+
+        }
+      }
+    }
+
+  }
+
+  Future<ConstraintData> getConstraintData(String questionIds)async{
+    Database database = await initDatabase();
+
+    List<Map> maps = await database
+        .rawQuery(
+        "SELECT * FROM $constraintTable WHERE ($constraintFromId = '${questionIds.toLowerCase()}')")
+        .then((onValue) => onValue);
+    if(maps.length > 0){
+      Map map = maps.first;
+      var c = ConstraintData.fromMap(map);
+
+      return c;
+
+    }else {
+      return null;
+    }
+
+
   }
 
   Future<int> countOfQuestionnaire(String questionnaire) async {
@@ -355,7 +434,7 @@ class OnDeviceQuestion {
 
     return await database
         .rawQuery(
-            "SELECT * FROM $questionTable WHERE ($questionQuestionnaireId = '${questionnaire.toUpperCase()}')")
+        "SELECT * FROM $questionTable WHERE ($questionQuestionnaireId = '${questionnaire.toUpperCase()}')")
         .then((onValue) => onValue.length);
   }
 
@@ -364,14 +443,14 @@ class OnDeviceQuestion {
 
     List<Map> maps = await database
         .rawQuery(
-            "SELECT * FROM $questionTable WHERE ($questionId = '${questionIds.toUpperCase()}')")
+        "SELECT * FROM $questionTable WHERE ($questionId = '${questionIds.toUpperCase()}')")
         .then((onValue) => onValue);
     Map map = maps.first;
     var question = Question.fromMap(map);
 
     return await database
         .rawQuery(
-            "SELECT * FROM $questionnaireTable WHERE ($questionnaireId = '${question.questionnaireId.toUpperCase()}')")
+        "SELECT * FROM $questionnaireTable WHERE ($questionnaireId = '${question.questionnaireId.toUpperCase()}')")
         .then((onValue) => Questionnaire.fromMap(onValue.first));
   }
 
@@ -440,7 +519,7 @@ class OnDeviceQuestion {
       List<QuestionWithChoice> subQuestionList = [];
 
       QuestionWithChoice questionWithChoices =
-          await _loadQuestionWithChoice(question, null);
+      await _loadQuestionWithChoice(question, null);
       if (question.category.length <= 1) {
         //questionList.add(question);
 
@@ -488,7 +567,7 @@ class OnDeviceQuestion {
       List<QuestionWithChoice> subQuestionList = [];
 
       QuestionWithChoice questionWithChoices =
-          await _loadQuestionWithChoice(question, null);
+      await _loadQuestionWithChoice(question, null);
 
       if (question.category.length <= 1) {
         //questionList.add(question);
@@ -498,15 +577,14 @@ class OnDeviceQuestion {
         counter += 1;
         list.add(QuestionWithChoice(
             questionWithChoices.question, questionWithChoices.choices,
-            answer: questionWithChoices.answer,
-            position: counter - 1));
+            answer: questionWithChoices.answer, position: counter - 1));
 
         for (Map myQuestionMap in myQuestionListRaw) {
           Question myquestion = Question.fromMap(myQuestionMap);
 
           QuestionWithChoice questionWithChoicess =
-              await _loadQuestionWithChoice(
-                  myquestion, questionWithChoices.choices);
+          await _loadQuestionWithChoice(
+              myquestion, questionWithChoices.choices);
           //subQuestionList.add(questionWithChoice);
 
           //list.add(QuestionWithChoice(questionWithChoicess.question,questionWithChoicess.choices,answer: questionWithChoicess.answer,position: counter));
