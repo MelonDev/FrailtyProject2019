@@ -23,14 +23,15 @@ class BasicLightThemeData {
         appBarTheme: AppBarTheme(
             color: Colors.teal,
             textTheme: TextTheme(
-                title: TextStyle(
+                subtitle1: TextStyle(
                     color: Colors.black87,
                     fontSize: 20,
                     fontFamily: _font,
                     fontWeight: FontWeight.bold))),
         primaryTextTheme: TextTheme(
             caption: TextStyle(color: Colors.white, fontSize: 20,fontFamily: _font),
-            title: TextStyle(color: Colors.black.withAlpha(150), fontSize: 30,fontFamily: _font,),
-            subtitle: TextStyle(fontFamily: _font,color: Colors.black.withAlpha(180))));
+            subtitle1: TextStyle(color: Colors.black.withAlpha(150), fontSize: 30,fontFamily: _font,),
+            bodyText1: TextStyle(fontFamily: _font,color: Colors.black.withAlpha(180))));
   }
+
 }

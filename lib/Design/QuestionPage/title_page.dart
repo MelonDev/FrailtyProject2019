@@ -33,7 +33,7 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                               maxFontSize: 30,
                               style: TextStyle(
                                 fontSize: 30,
-                                color: _themeData.primaryTextTheme.subtitle.color,
+                                color: _themeData.primaryTextTheme.bodyText1.color,
                                 //color: Colors.black.withAlpha(200),
                                 fontWeight: FontWeight.bold,
                                 //color: Colors.white.withAlpha(230),
@@ -67,12 +67,12 @@ Widget _titlePage(BuildContext context,TitleQuestionState state) {
                                           Icons.arrow_forward_ios,
                                           size: 30,
                                           //color: Colors.black.withAlpha(180),
-                                          color: _themeData.primaryTextTheme.title.color,
+                                          color: _themeData.primaryTextTheme.subtitle1.color,
                                         ),
                                         decoration: BoxDecoration(
                                             border: new Border.all(
                                                 //color: Colors.black.withAlpha(180),
-                                              color: _themeData.primaryTextTheme.title.color,
+                                              color: _themeData.primaryTextTheme.subtitle1.color,
                                                 width: 2.0),
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(50)),

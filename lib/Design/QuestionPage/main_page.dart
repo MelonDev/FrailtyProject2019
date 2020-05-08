@@ -4,6 +4,8 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
   ThemeData _themeData = Theme.of(context);
   var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
 
+  var brightness = DynamicTheme.of(context).brightness;
+
   return PreferredSize(
     preferredSize: Size.fromHeight(60.0),
     child: AppBar(
@@ -33,6 +35,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                             height: 56,
                             padding: EdgeInsets.all(0),
                             onPressed: () {
+
                               _questionnaireBloc.add(RecentQuestionEvent(
                                   _questionnaireBloc.state
                                   is RecentQuestionState
@@ -48,7 +51,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                                     Icons.low_priority,
                                     //color: Colors.black.withAlpha(180),
                                     color: _questionnaireBloc.state is RecentQuestionState ? Colors.black87 :
-                                    _themeData.primaryTextTheme.title.color,
+                                    _themeData.primaryTextTheme.subtitle1.color,
                                     size: 30,
                                   ),
                                 ],
@@ -82,7 +85,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
                                     Icons.close,
                                     //color: Colors.black.withAlpha(180),
                                     color:
-                                        _themeData.primaryTextTheme.title.color,
+                                        _themeData.primaryTextTheme.subtitle1.color,
                                     size: 30,
                                   ),
                                 ],
@@ -200,7 +203,7 @@ Widget mainPageAppbar(MyQuestionnaireState _state, BuildContext context) {
         ],
       ),
 
-      brightness: _themeData.brightness,
+      brightness: brightness,
       backgroundColor: _themeData.primaryColor,
       elevation: 0,
     ),

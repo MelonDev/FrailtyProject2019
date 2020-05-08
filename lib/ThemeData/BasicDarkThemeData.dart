@@ -20,14 +20,14 @@ class BasicDarkThemeData {
         appBarTheme: AppBarTheme(
             color: Color(0xFF00665c),
             textTheme: TextTheme(
-                title: TextStyle(
+                subtitle1: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontFamily: _font,
                     fontWeight: FontWeight.bold))),
         primaryTextTheme: TextTheme(
           caption: TextStyle(color: Colors.white, fontSize: 20,fontFamily: _font),
-            title: TextStyle(color: Colors.white, fontSize: 30,fontFamily: _font),
-            subtitle: TextStyle(color: Colors.white.withAlpha(200),fontFamily: _font)));
+            subtitle1: TextStyle(color: Colors.white, fontSize: 30,fontFamily: _font),
+            bodyText1: TextStyle(color: Colors.white.withAlpha(200),fontFamily: _font)));
   }
 }

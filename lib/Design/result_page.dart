@@ -1,5 +1,5 @@
-import 'dart:ffi';
 
+import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +24,7 @@ class ResultPage extends StatefulWidget {
 class _ResultPageState extends State<ResultPage> {
   ThemeData _themeData;
 
+
   ResultProcessBloc _resultProcessBloc;
 
   @override
@@ -36,7 +37,8 @@ class _ResultPageState extends State<ResultPage> {
 
   @override
   Widget build(BuildContext context) {
-    _themeData = Theme.of(context);
+    //_themeData = Theme.of(context);
+    _themeData = DynamicTheme.of(context).data;
 
     print(widget.keyS);
     print(widget.answerPackId);
@@ -60,7 +62,7 @@ class _ResultPageState extends State<ResultPage> {
                       Container(
                         padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                         child: SpinKitThreeBounce(
-                          color: _themeData.primaryTextTheme.title.color,
+                          color: _themeData.primaryTextTheme.subtitle1.color,
                           size: 50.0,
                         ),
                       ),
@@ -68,7 +70,7 @@ class _ResultPageState extends State<ResultPage> {
                         padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                         child: Text("กำลังโหลด..",
                             style: TextStyle(
-                                color: _themeData.primaryTextTheme.title.color,
+                                color: _themeData.primaryTextTheme.subtitle1.color,
                                 fontSize: 18,
                                 fontFamily: 'SukhumvitSet',
                                 fontWeight: FontWeight.normal)),
@@ -84,7 +86,7 @@ class _ResultPageState extends State<ResultPage> {
             title: Text(
               "ผลการวิเคราะห์",
               style: TextStyle(
-                  color: _themeData.primaryTextTheme.title.color,
+                  color: _themeData.primaryTextTheme.subtitle1.color,
                   //color: Colors.black.withAlpha(200),
                   fontFamily: 'SukhumvitSet',
                   //fontSize: 20,
@@ -223,19 +225,19 @@ class _ResultPageState extends State<ResultPage> {
                           text: "ไอดี: ",
                           style: TextStyle(
                               color: _themeData
-                                  .primaryTextTheme.title.color
+                                  .primaryTextTheme.subtitle1.color
                                   .withAlpha(200),
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                               fontFamily: _themeData
-                                  .primaryTextTheme.title.fontFamily)),
+                                  .primaryTextTheme.subtitle1.fontFamily)),
                       TextSpan(
                           text:
                           "${_state.resultAfterProcess.answerPackId}",
                           style: TextStyle(
                               fontWeight: FontWeight.normal,
                               color: _themeData
-                                  .primaryTextTheme.title.color
+                                  .primaryTextTheme.subtitle1.color
                                   .withAlpha(170),
                               fontSize: 18,
                               fontFamily: _themeData.primaryTextTheme
@@ -253,23 +255,23 @@ class _ResultPageState extends State<ResultPage> {
                         text: "วันที่ทำ: ",
                         style: TextStyle(
                             color: _themeData
-                                .primaryTextTheme.title.color
+                                .primaryTextTheme.subtitle1.color
                                 .withAlpha(200),
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                             fontFamily: _themeData
-                                .primaryTextTheme.title.fontFamily)),
+                                .primaryTextTheme.subtitle1.fontFamily)),
                     TextSpan(
                         text:
                         "${_loadDate(_state.resultAfterProcess.dateTime)}",
                         style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: _themeData
-                                .primaryTextTheme.title.color
+                                .primaryTextTheme.subtitle1.color
                                 .withAlpha(170),
                             fontSize: 18,
                             fontFamily: _themeData
-                                .primaryTextTheme.subtitle.fontFamily)),
+                                .primaryTextTheme.bodyText1.fontFamily)),
                   ]),
               maxLines: 1,
             ),
@@ -283,23 +285,23 @@ class _ResultPageState extends State<ResultPage> {
                         text: "ชื่อชุดแบบทดสอบ: ",
                         style: TextStyle(
                             color: _themeData
-                                .primaryTextTheme.title.color
+                                .primaryTextTheme.subtitle1.color
                                 .withAlpha(200),
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                             fontFamily: _themeData
-                                .primaryTextTheme.title.fontFamily)),
+                                .primaryTextTheme.subtitle1.fontFamily)),
                     TextSpan(
                         text:
                         "\n${_state.resultAfterProcess.questionnaireName}",
                         style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: _themeData
-                                .primaryTextTheme.title.color
+                                .primaryTextTheme.subtitle1.color
                                 .withAlpha(170),
                             fontSize: 18,
                             fontFamily: _themeData
-                                .primaryTextTheme.subtitle.fontFamily)),
+                                .primaryTextTheme.bodyText1.fontFamily)),
                   ]),
             ),
             SizedBox(
@@ -312,23 +314,23 @@ class _ResultPageState extends State<ResultPage> {
                         text: "คะแนนที่ได้: ",
                         style: TextStyle(
                             color: _themeData
-                                .primaryTextTheme.title.color
+                                .primaryTextTheme.subtitle1.color
                                 .withAlpha(200),
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
                             fontFamily: _themeData
-                                .primaryTextTheme.title.fontFamily)),
+                                .primaryTextTheme.subtitle1.fontFamily)),
                     TextSpan(
                         text:
                         "${_state.resultAfterProcess.score.toString()}",
                         style: TextStyle(
                             fontWeight: FontWeight.normal,
                             color: _themeData
-                                .primaryTextTheme.title.color
+                                .primaryTextTheme.subtitle1.color
                                 .withAlpha(170),
                             fontSize: 18,
                             fontFamily: _themeData
-                                .primaryTextTheme.subtitle.fontFamily)),
+                                .primaryTextTheme.bodyText1.fontFamily)),
                   ]),
               maxLines: 1,
             ),

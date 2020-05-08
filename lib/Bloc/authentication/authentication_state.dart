@@ -9,9 +9,7 @@ class MyAuthenticationState extends AuthenticationState {
   MyAuthenticationState(this.isOffline);
 }
 
-
 class InitialAuthenticationState extends AuthenticationState {
-
   @override
   String toString() {
     return "InitialAuthenticationState";
@@ -19,10 +17,9 @@ class InitialAuthenticationState extends AuthenticationState {
 }
 
 class AuthenticatedState extends MyAuthenticationState {
-
   final Account account;
 
-  AuthenticatedState({@required this.account,isOffline}) : super(isOffline);
+  AuthenticatedState({@required this.account, isOffline}) : super(isOffline);
 
   @override
   String toString() {
@@ -31,7 +28,6 @@ class AuthenticatedState extends MyAuthenticationState {
 }
 
 class UnAuthenticationState extends MyAuthenticationState {
-
   UnAuthenticationState({isOffline}) : super(isOffline);
 
   @override
@@ -41,7 +37,6 @@ class UnAuthenticationState extends MyAuthenticationState {
 }
 
 class AuthenticatingState extends AuthenticationState {
-
   final String message;
 
   AuthenticatingState({@required this.message});
@@ -52,8 +47,9 @@ class AuthenticatingState extends AuthenticationState {
   }
 }
 
-class DatabaseRefreshingState extends AuthenticationState {
 
+
+class DatabaseRefreshingState extends AuthenticationState {
   final String message;
 
   DatabaseRefreshingState({@required this.message});
@@ -64,11 +60,8 @@ class DatabaseRefreshingState extends AuthenticationState {
   }
 }
 
-
 class ErrorAuthenticationState extends AuthenticationState {
-
   final String error;
-
 
   ErrorAuthenticationState(this.error);
 
@@ -76,5 +69,4 @@ class ErrorAuthenticationState extends AuthenticationState {
   String toString() {
     return "ErrorAuthenticationState: $error";
   }
-
 }

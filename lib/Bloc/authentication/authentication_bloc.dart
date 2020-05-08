@@ -9,9 +9,14 @@ import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:frailty_project_2019/Bloc/register/register_bloc.dart';
 import 'package:frailty_project_2019/Model/Account.dart';
+import 'package:frailty_project_2019/Model/AccountRegister.dart';
+import 'package:frailty_project_2019/Model/Value.dart';
 import 'package:frailty_project_2019/Model/Version.dart';
+import 'package:frailty_project_2019/Tools/AppleSignInDetect.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
 import 'package:frailty_project_2019/database/OfflineStaticDatabase.dart';
 import 'package:frailty_project_2019/database/OnDeviceQuestionnaires.dart';
@@ -48,9 +53,9 @@ class AuthenticationBloc
     if (event is AuthenticatingLoginEvent) {
       yield* _mapAuthenticatingToState(event);
     } else if (event is AppleLoginEvent) {
-    } else if (event is FacebookLoginEvent) {
+      yield* _mapAppleLoginToState(event);
     } else if (event is GoogleLoginEvent) {
-      yield* _mapGoogleLoginToState();
+      yield* _mapGoogleLoginToState(event);
     } else if (event is UnAuthenticatingLoginEvent) {
       yield* _mapUnAuthenticatingToState();
     } else if (event is TestEvent) {
@@ -59,6 +64,8 @@ class AuthenticationBloc
       yield* _mapDatabaseRefreshingToState(event);
     } else if (event is DeleteHistoryDatabase) {
       yield* _mapDatabaseHistoryToState(event);
+    } else if (event is ResumeGoogleAuthenticationEvent) {
+      yield* _mapGooglePassedToState(event.account);
     }
   }
 
@@ -87,17 +94,24 @@ class AuthenticationBloc
     }
   }
 
-  Stream<AuthenticationState> _mapDatabaseRefreshingToState(DatabaseRefreshEvent event) async* {
+  /*Stream<AuthenticationState> _mapLoginPageToState(LoginPageEvent event) async* {
+    yield LoginPageState();
+  }
+
+   */
+
+  Stream<AuthenticationState> _mapDatabaseRefreshingToState(
+      DatabaseRefreshEvent event) async* {
     yield DatabaseRefreshingState(message: "กำลังลบฐานข้อมูล..");
 
     yield DatabaseRefreshingState(message: "กำลังโหลดฐานข้อมูล..");
     await OnDeviceQuestionnaires().afterLogin();
 
     yield AuthenticatedState(account: event.account);
-
   }
 
-  Stream<AuthenticationState> _mapDatabaseHistoryToState(DeleteHistoryDatabase event) async* {
+  Stream<AuthenticationState> _mapDatabaseHistoryToState(
+      DeleteHistoryDatabase event) async* {
     yield DatabaseRefreshingState(message: "กำลังลบประวัติ..");
 
     await OnLocalDatabase().deleteHistory();
@@ -107,8 +121,114 @@ class AuthenticationBloc
     yield AuthenticatedState(account: event.account);
   }
 
-  Stream<AuthenticationState> _mapGoogleLoginToState() async* {
+  Stream<AuthenticationState> _mapAppleLoginToState(
+      AppleLoginEvent event) async* {
     yield AuthenticatingState(message: "กำลังล็อคอิน..");
+
+    bool insertInfo = false;
+    FirebaseUser user;
+    RegisterBloc _registerBloc = BlocProvider.of<RegisterBloc>(event.context);
+
+    _registerBloc.add(LoadingEvent());
+
+    try {
+      bool isSupport = await AppleSignInDetect().isSupport();
+
+      if (isSupport) {
+        final AuthorizationResult result = await AppleSignIn.performRequests([
+          AppleIdRequest(requestedScopes: [Scope.email, Scope.fullName])
+        ]);
+        switch (result.status) {
+          case AuthorizationStatus.authorized:
+            try {
+              final AppleIdCredential appleIdCredential = result.credential;
+
+              OAuthProvider oAuthProvider =
+                  new OAuthProvider(providerId: "apple.com");
+              final AuthCredential credential = oAuthProvider.getCredential(
+                idToken: String.fromCharCodes(appleIdCredential.identityToken),
+                accessToken:
+                    String.fromCharCodes(appleIdCredential.authorizationCode),
+              );
+
+              final Account firebase = await _firebaseAuth
+                  .signInWithCredential(credential)
+                  .whenComplete(() {
+                print("AP2");
+              }).catchError((onError) {
+                print("error $onError");
+                return null;
+              }).then((onValueAccount) async {
+                print("AP4");
+                if (onValueAccount != null) {
+                  user = onValueAccount.user;
+                  Account account = event.account == null ? (await loadAccountFromHeroku(onValueAccount.user)) : event.account ;
+
+                  print(user.uid);
+
+                  if (account.loginType.length > 0) {
+                    return account;
+                  } else {
+                    insertInfo = true;
+                    account.email = user.email;
+                    return account;
+                  }
+                } else {
+                  return null;
+                }
+              });
+
+              if (insertInfo) {
+                _registerBloc.add(InputInfoEvent(
+                    event.context, AccountRegister(user, firebase,"APPLE")));
+              } else if (firebase != null) {
+
+                print("event.isUpgrade ${event.isUpgrade}");
+
+                if(event.isUpgrade){
+                  print("UpgradeToPersonnelEvent");
+                  _registerBloc.add(UpgradeToPersonnelEvent(
+                      event.context, AccountRegister(user, firebase,"APPLE")));
+                }else {
+                  _registerBloc.add(NoRegisterEvent());
+                  _mapGooglePassedToState(firebase);
+                  Navigator.pop(event.context);
+                }
+
+              } else {
+                yield UnAuthenticationState();
+                _registerBloc.add(MainLoginEvent());
+              }
+            } catch (e) {
+              print("error");
+            }
+            break;
+          case AuthorizationStatus.error:
+            print("Sign in failed: ${result.error.localizedDescription}");
+            _registerBloc.add(MainLoginEvent());
+            break;
+          case AuthorizationStatus.cancelled:
+            _registerBloc.add(MainLoginEvent());
+            break;
+        }
+      }
+
+      print("insertInfo = $insertInfo");
+    } catch (error) {
+      print("AP_E1");
+      yield ErrorAuthenticationState(error.toString());
+    }
+  }
+
+  Stream<AuthenticationState> _mapGoogleLoginToState(
+      GoogleLoginEvent event) async* {
+    yield AuthenticatingState(message: "กำลังล็อคอิน..");
+
+    bool insertInfo = false;
+    FirebaseUser user;
+    RegisterBloc _registerBloc = BlocProvider.of<RegisterBloc>(event.context);
+
+    _registerBloc.add(LoadingEvent());
 
     try {
       Account _google = await _googleSignIn
@@ -131,11 +251,26 @@ class AuthenticationBloc
           }).then((onValueAccount) async {
             print("T4");
             if (onValueAccount != null) {
-              return loadAccountFromHeroku(onValueAccount.user);
+              user = onValueAccount.user;
+
+              Account account = event.account == null ? (await loadAccountFromHeroku(onValueAccount.user)) : event.account ;
+
+              if (account.loginType.length > 0) {
+                return account;
+              } else {
+                insertInfo = true;
+                account.email = user.email;
+                return account;
+                //return registerAccountWithOauth(onValueAccount.user);
+              }
+
+              //return loadAccountFromHeroku(onValueAccount.user);
             } else {
+              //print("Please create account");
               return null;
             }
           });
+
           return firebase;
         } else {
           return null;
@@ -144,33 +279,57 @@ class AuthenticationBloc
         return null;
       });
 
-      if (_google != null) {
-        var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      print("insertInfo = $insertInfo");
+      if (insertInfo) {
+        _registerBloc
+            .add(InputInfoEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
+      } else if (_google != null) {
+        print("event.isUpgrade ${event.isUpgrade}");
 
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        preferences.setString("ACCOUNT_USER_ID", _google.id);
-        preferences.setString("ACCOUNT_USER_FIRSTNAME", _google.firstName);
-        preferences.setString("ACCOUNT_USER_LASTNAME", _google.lastName);
-        preferences.setString("ACCOUNT_USER_PROVINCE", _google.province);
-        preferences.setString("ACCOUNT_USER_DISTRICT", _google.district);
-        preferences.setString("ACCOUNT_USER_SUBDISREICT", _google.subDistrict);
-        preferences.setString("ACCOUNT_USER_EMAIL", _google.email);
-        preferences.setString("ACCOUNT_USER_LOGINTYPE", _google.loginType);
-        preferences.setString("ACCOUNT_USER_OAUTHID", _google.oAuthId);
-        preferences.setBool("ACCOUNT_USER_PERSONNEL", _google.personnel);
-        preferences.setString("ACCOUNT_USER_DEPARTMENT", _google.department);
-        preferences.setString(
-            "ACCOUNT_USER_BIRTHDATE", formatter.format(_google.birthDate));
+        if(event.isUpgrade){
+          print("UpgradeToPersonnelEvent");
+          _registerBloc
+              .add(UpgradeToPersonnelEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
+        }else {
+          _registerBloc.add(NoRegisterEvent());
+          _mapGooglePassedToState(_google);
+          Navigator.pop(event.context);
+        }
 
-        yield AuthenticatingState(message: "กำลังโหลดฐานข้อมูล..");
-        await OnDeviceQuestionnaires().afterLogin();
-        yield AuthenticatedState(account: _google);
+
       } else {
         yield UnAuthenticationState();
+        _registerBloc.add(MainLoginEvent());
       }
     } catch (error) {
+      print("E1");
       yield ErrorAuthenticationState(error.toString());
     }
+  }
+
+  Stream<AuthenticationState> _mapGooglePassedToState(Account _google) async* {
+    print("_mapGooglePassedToState");
+
+    var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.setString("ACCOUNT_USER_ID", _google.id);
+    preferences.setString("ACCOUNT_USER_FIRSTNAME", _google.firstName);
+    preferences.setString("ACCOUNT_USER_LASTNAME", _google.lastName);
+    preferences.setString("ACCOUNT_USER_PROVINCE", _google.province);
+    preferences.setString("ACCOUNT_USER_DISTRICT", _google.district);
+    preferences.setString("ACCOUNT_USER_SUBDISREICT", _google.subDistrict);
+    preferences.setString("ACCOUNT_USER_EMAIL", _google.email);
+    preferences.setString("ACCOUNT_USER_LOGINTYPE", _google.loginType);
+    preferences.setString("ACCOUNT_USER_OAUTHID", _google.oAuthId);
+    preferences.setBool("ACCOUNT_USER_PERSONNEL", _google.personnel);
+    preferences.setString("ACCOUNT_USER_DEPARTMENT", _google.department);
+    preferences.setString(
+        "ACCOUNT_USER_BIRTHDATE", formatter.format(_google.birthDate));
+
+    yield AuthenticatingState(message: "กำลังโหลดฐานข้อมูล..");
+    await OnDeviceQuestionnaires().afterLogin();
+    yield AuthenticatedState(account: _google);
   }
 
   Stream<AuthenticationState> _mapAuthenticatingToState(
@@ -195,6 +354,7 @@ class AuthenticationBloc
           }
         }
 
+        print("TEST A");
         if (event.message == null) {
           yield AuthenticatingState(message: "กำลังล็อคอิน..");
         } else {
@@ -243,6 +403,7 @@ class AuthenticationBloc
       }
     } catch (error) {
       print(error);
+      print("E2");
       yield ErrorAuthenticationState(error.toString());
     }
   }
@@ -263,8 +424,32 @@ class AuthenticationBloc
         yield UnAuthenticationState();
       }
     } catch (error) {
+      print("E3");
       yield ErrorAuthenticationState(error.toString());
     }
+  }
+
+  Future<bool> registerAccountWithOauth(FirebaseUser user) async {
+    String url =
+        'https://melondev-frailty-project.herokuapp.com/api/account/register/registerNormalAccountWithOAuth';
+    Map map = {
+      "firstName": "",
+      "lastName": "",
+      "birthDate": "",
+      "subDistrict": "",
+      "district": "",
+      "province": "",
+      "oAuth": user.uid.toString(),
+      "loginType": "GOOGLE"
+    };
+    var response = await http.post(url,
+        headers: {"Content-Type": "application/json"}, body: map);
+    print(response.body);
+    Value value = Value.fromJson(jsonDecode(response.body));
+
+    print(value.value.loginType);
+
+    //Account account = Account.fromJson(jsonDecode(response.body));
   }
 
   Future<Account> loadAccountFromHeroku(FirebaseUser user) async {
@@ -272,7 +457,10 @@ class AuthenticationBloc
         'https://melondev-frailty-project.herokuapp.com/api/account/showDetailFromId';
     Map map = {"id": "", "oauth": user.uid.toString()};
     var response = await http.post(url, body: map);
+    print("loadAccountFromHeroku");
+    print(response.body);
     Account account = Account.fromJson(jsonDecode(response.body));
+
     return account;
   }
 

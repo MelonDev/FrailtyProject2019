@@ -391,6 +391,8 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
     Answer lastAnswer =
         await OnLocalDatabase().findLastAnswer(event.answerPackId);
 
+    print(lastAnswer);
+
     QuestionWithChoice questionWithChoice = await loadNext(NextQuestionEvent(
         event.questionnaireId,
         lastAnswer.questionId,

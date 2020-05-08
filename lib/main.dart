@@ -1,9 +1,9 @@
 import 'dart:convert';
 
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:bloc/bloc.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart' as prefix2;
@@ -11,10 +11,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/widgets.dart' as prefix1;
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_statusbar_text_color/flutter_statusbar_text_color.dart';
+import 'package:flutter_thailand_provinces/flutter_thailand_provinces.dart';
 
 import 'package:frailty_project_2019/Bloc/authentication/authentication_bloc.dart';
 import 'package:frailty_project_2019/Bloc/catalogue/catalogue_bloc.dart';
 import 'package:frailty_project_2019/Bloc/questionnaire/questionnaire_bloc.dart';
+import 'package:frailty_project_2019/Bloc/register/register_bloc.dart';
 import 'package:frailty_project_2019/Bloc/result_process/result_process_bloc.dart';
 import 'package:frailty_project_2019/Model/Account.dart';
 import 'package:frailty_project_2019/Model/TemporaryCode.dart';
@@ -35,9 +39,9 @@ import 'api.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 
-
-
-void main() {
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // ensure flutter initialized.
+  await ThailandProvincesDatabase.init();
   BlocSupervisor.delegate = FlowBlocDelegate();
   return runApp(MyApp());
 }
@@ -66,19 +70,22 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthenticationBloc>(
-            builder: (context) => AuthenticationBloc()
+            create: (context) => AuthenticationBloc()
               ..add(AuthenticatingLoginEvent(null, null))),
         BlocProvider<CatalogueBloc>(
-          builder: (context) =>
+          create: (context) =>
               CatalogueBloc()..add(QuestionnaireSelectedEvent()),
         ),
         BlocProvider<QuestionnaireBloc>(
-          builder: (context) =>
+          create: (context) =>
               QuestionnaireBloc()..add(InitialQuestionnaireEvent()),
         ),
         BlocProvider<ResultProcessBloc>(
-          builder: (context) =>
-          ResultProcessBloc()..add(InitialResultProcessEvent()),
+          create: (context) =>
+              ResultProcessBloc()..add(InitialResultProcessEvent()),
+        ),
+        BlocProvider<RegisterBloc>(
+          create: (context) => RegisterBloc()..add(NoRegisterEvent()),
         )
       ],
       child: DynamicTheme(
@@ -87,7 +94,6 @@ class MyApp extends StatelessWidget {
           //? Brightness.light
           //: Brightness.dark,
           data: (brightness) {
-
             return brightness == Brightness.light
                 ? BasicLightThemeData().getTheme()
                 : BasicDarkThemeData().getTheme();
@@ -97,6 +103,17 @@ class MyApp extends StatelessWidget {
               title: 'Flutter Demo',
               debugShowCheckedModeBanner: false,
               theme: theme,
+              localizationsDelegates: [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                DefaultCupertinoLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              locale: Locale('th', 'TH'),
+              // Current locale
+              supportedLocales: [
+                const Locale('th', 'TH'), // Thai
+              ],
               //darkTheme: BasicDarkThemeData().getTheme(),
               home: NewMain(),
             );
@@ -188,6 +205,13 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     //_checkSignIn();
     loadTextBtn(false);
+
+    if (Platform.isIOS) {
+      //check for ios if developing for both android & ios
+      AppleSignIn.onCredentialRevoked.listen((_) {
+        print("Credentials revoked");
+      });
+    }
   }
 
   void initDialog(String message) async {
@@ -439,7 +463,7 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0,
         title: Text(widget.title,
             style: TextStyle(
-                fontFamily: 'SukhumvitSet',fontWeight: FontWeight.bold)),
+                fontFamily: 'SukhumvitSet', fontWeight: FontWeight.bold)),
       ),
       body: Stack(
         children: <Widget>[

@@ -1,7 +1,3 @@
-import 'dart:ffi';
-
-import 'package:intl/intl.dart';
-
 class ResultAfterProcess {
   final String questionnaireName;
   final String answerPackId;

@@ -52,7 +52,7 @@ Widget recentPage(RecentQuestionState _state, BuildContext context) {
                                   ,
                                   fontSize: 20,
                                   fontFamily: _themeData
-                                      .primaryTextTheme.subtitle.fontFamily)),
+                                      .primaryTextTheme.bodyText1.fontFamily)),
                           TextSpan(
                               text:
                                   "\n${_state.list[position].question.message}",
@@ -68,7 +68,7 @@ Widget recentPage(RecentQuestionState _state, BuildContext context) {
                                   ,
                                   fontSize: 18,
                                   fontFamily: _themeData
-                                      .primaryTextTheme.subtitle.fontFamily))
+                                      .primaryTextTheme.bodyText1.fontFamily))
                         ]),
                   ))),
           /*child: Text(

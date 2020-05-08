@@ -8,7 +8,7 @@ class Account {
   final String district;
   final String province;
   final String department;
-  final String email;
+  String email;
   final String loginType;
   final String oAuthId;
 

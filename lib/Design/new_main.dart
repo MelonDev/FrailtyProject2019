@@ -3,26 +3,26 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:frailty_project_2019/Bloc/authentication/authentication_bloc.dart';
+import 'package:frailty_project_2019/Bloc/register/register_bloc.dart';
 import 'package:frailty_project_2019/Design/catalogue_page.dart';
-import 'package:frailty_project_2019/Design/setting_page.dart';
+import 'package:frailty_project_2019/Design/SettingPage/setting_page.dart';
+import 'package:frailty_project_2019/Design/sign_in_page.dart';
+import 'package:frailty_project_2019/Design/temporary_input_page.dart';
 import 'package:frailty_project_2019/Tools/frailty_route.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'dart:io';
 
 import '../home.dart';
 
-FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-
+//FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 class NewMain extends StatefulWidget {
   _newMain createState() => new _newMain();
@@ -34,7 +34,7 @@ class _newMain extends State<NewMain>
   static const _appname = "ระบบวิเคราะห์ภาวะเปราะบาง";
   AuthenticationBloc _authenticationBloc;
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  //FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   ThemeData _theme;
 
@@ -42,20 +42,20 @@ class _newMain extends State<NewMain>
   var firebaseAuth = FirebaseAuth.instance;
   PanelController _panelController = new PanelController();
 
+  RegisterBloc _registerBloc;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    firebaseCloudMessaging_Listeners();
 
-    FirebaseInAppMessaging().triggerEvent("HELLO");
-    FirebaseInAppMessaging().setMessagesSuppressed(true);
-    FirebaseInAppMessaging().setAutomaticDataCollectionEnabled(false);
+    //firebaseCloudMessaging_Listeners();
 
+    //FirebaseInAppMessaging().triggerEvent("HELLO");
+    //FirebaseInAppMessaging().setMessagesSuppressed(true);
+    //FirebaseInAppMessaging().setAutomaticDataCollectionEnabled(false);
 
-
-
-    initNotification();
+    //initNotification();
   }
 
   @override
@@ -69,7 +69,8 @@ class _newMain extends State<NewMain>
     switch (state) {
       case AppLifecycleState.resumed:
         print("resumed");
-        _authenticationBloc.add(AuthenticatingLoginEvent("กำลังรีเฟรส..", context));
+        _authenticationBloc
+            .add(AuthenticatingLoginEvent("กำลังรีเฟรส..", context));
         break;
       case AppLifecycleState.inactive:
         print("inactive");
@@ -77,13 +78,13 @@ class _newMain extends State<NewMain>
       case AppLifecycleState.paused:
         print("paused");
         break;
-      case AppLifecycleState.suspending:
+      case AppLifecycleState.detached:
         print("suspending");
         break;
     }
   }
 
-  void firebaseCloudMessaging_Listeners() {
+  /*void firebaseCloudMessaging_Listeners() {
     if (Platform.isIOS) iOS_Permission();
 
     _firebaseMessaging.getToken().then((token){
@@ -147,6 +148,8 @@ class _newMain extends State<NewMain>
 
   }
 
+
+
   void iOS_Permission() {
     _firebaseMessaging.requestNotificationPermissions(
         IosNotificationSettings(sound: true, badge: true, alert: true)
@@ -157,6 +160,8 @@ class _newMain extends State<NewMain>
       print("Settings registered: $settings");
     });
   }
+
+   */
 
   void goToQuestion(BuildContext context) {
     Navigator.push(context,
@@ -173,10 +178,17 @@ class _newMain extends State<NewMain>
     return false;
   }
 
+  void initialStatusbar() {
+    Brightness brightness = DynamicTheme.of(context).brightness;
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+            statusBarBrightness: brightness) // Or Brightness.dark
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
-
     _authenticationBloc = BlocProvider.of<AuthenticationBloc>(context);
+    _registerBloc = BlocProvider.of<RegisterBloc>(context);
     //_authenticationBloc = AuthenticationBloc();
     //_authenticationBloc = BlocProvider.BlocProvider.of(context).authenticationBloc;
 
@@ -224,6 +236,7 @@ class _newMain extends State<NewMain>
           _state is UnAuthenticationState) {
         return managerMainLayout(context, _state);
       } else if (_state is ErrorAuthenticationState) {
+        _authenticationBloc.add(UnAuthenticatingLoginEvent());
         return Material(
           color: Colors.red,
           child: Center(
@@ -235,8 +248,10 @@ class _newMain extends State<NewMain>
                       ? 'Network Error'
                       : 'Error',
                   style: TextStyle(
-                      fontFamily:
-                          Theme.of(context).primaryTextTheme.title.fontFamily,
+                      fontFamily: Theme.of(context)
+                          .primaryTextTheme
+                          .subtitle1
+                          .fontFamily,
                       fontSize: 22,
                       color: Colors.white,
                       fontWeight: FontWeight.bold),
@@ -246,13 +261,16 @@ class _newMain extends State<NewMain>
           ),
         );
       } else {
-        return Container();
+        return Container(
+          color: _theme.accentColor,
+        );
       }
     });
-
   }
 
   Widget managerMainLayout(BuildContext context, AuthenticationState _state) {
+    //initialStatusbar();
+
     if (MediaQuery.of(context).size.width > 900) {
       return Material(
         color: _theme.scaffoldBackgroundColor,
@@ -278,8 +296,9 @@ class _newMain extends State<NewMain>
         parallaxEnabled: true,
         minHeight: (105 + (Device.get().isIphoneX ? 25 : 0).toDouble()),
         maxHeight: _state is AuthenticatedState
-            ? (_state.account.personnel ? 520 : 570)
-            : 460,
+            ? (_state.account.personnel ? 450 : 500)
+            //: 460,
+            : 410,
         backdropEnabled: true,
         backdropTapClosesPanel: true,
         renderPanelSheet: false,
@@ -295,6 +314,7 @@ class _newMain extends State<NewMain>
     return Scaffold(
       backgroundColor: _theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        brightness: Brightness.dark,
         backgroundColor: _checkInternetOnlineIsTrue(_state)
             ? Theme.of(context).appBarTheme.color
             : Color(0xFFD32F2F),
@@ -467,7 +487,14 @@ class _newMain extends State<NewMain>
                                             //print("I'm ready!");
                                             goToQuestion(context);
                                           } else {
-                                            _panelController.open();
+                                            //_panelController.open();
+                                            _registerBloc.add(MainLoginEvent());
+                                            Navigator.push(
+                                                context,
+                                                FrailtyRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        SignInPage()));
                                           }
                                         },
                                       ),
@@ -491,6 +518,7 @@ class _newMain extends State<NewMain>
     return Scaffold(
       backgroundColor: _theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        brightness: Brightness.dark,
         backgroundColor: _checkInternetOnlineIsTrue(_state)
             ? Theme.of(context).appBarTheme.color
             : Color(0xFFD32F2F),
@@ -528,7 +556,6 @@ class _newMain extends State<NewMain>
                     height: MediaQuery.of(context).size.height,
                     child: mainLayoutBodyForTabletLandscape(context, _state),
                   ),
-
                   Align(
                     alignment: Alignment.topCenter,
                     child: Container(
@@ -539,16 +566,15 @@ class _newMain extends State<NewMain>
                       color: _theme.cardColor.withAlpha(200),
                     ),
                   ),
-
                   Container(
                     margin: EdgeInsets.fromLTRB(0, 0, 30, 0),
-
                     padding: EdgeInsets.fromLTRB(0, 6, 0, 0),
                     width: (MediaQuery.of(context).size.width / 19) * 6.9,
                     child: Column(
                       children: <Widget>[
                         Container(
-                          constraints: BoxConstraints(maxWidth: 560, minHeight: 500),
+                          constraints:
+                              BoxConstraints(maxWidth: 560, minHeight: 500),
                           width: (MediaQuery.of(context).size.width / 19) * 6.9,
                           child: _floatingPanel(context, _state),
                         )
@@ -705,6 +731,7 @@ class _newMain extends State<NewMain>
     return Scaffold(
       backgroundColor: _theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        brightness: Brightness.dark,
         backgroundColor: _checkInternetOnlineIsTrue(_state)
             ? Theme.of(context).appBarTheme.color
             : Color(0xFFD32F2F),
@@ -877,7 +904,13 @@ class _newMain extends State<NewMain>
                                             //print("I'm ready!");
                                             goToQuestion(context);
                                           } else {
-                                            _panelController.open();
+                                            //_panelController.open();
+                                            Navigator.push(
+                                                context,
+                                                FrailtyRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        SignInPage()));
                                           }
                                         },
                                       )
@@ -937,7 +970,7 @@ class _newMain extends State<NewMain>
                       fontFamily: 'SukhumvitSet',
                       fontSize: 15,
                       //color: Colors.black45,
-                      color: _theme.primaryTextTheme.subtitle.color,
+                      color: _theme.primaryTextTheme.bodyText1.color,
                       fontWeight: FontWeight.w500),
                 )
               ],
@@ -956,7 +989,7 @@ class _newMain extends State<NewMain>
                       child: Image.asset(
                         'images/settings.png',
                         //color: Colors.black45,
-                        color: _theme.primaryTextTheme.subtitle.color,
+                        color: _theme.primaryTextTheme.bodyText1.color,
                         fit: BoxFit.contain,
                       )),
                 )),
@@ -967,13 +1000,14 @@ class _newMain extends State<NewMain>
   Widget _unauthenticationBottomBar(AuthenticationState _state) {
     return Center(
       child: Text(
-        'กรุณาลงชื่อเข้าใช้งาน',
+        //'กรุณาลงชื่อเข้าใช้งาน',
+        "เมนูเพิ่มเติม",
         textAlign: TextAlign.center,
         style: TextStyle(
             fontFamily: 'SukhumvitSet',
             fontSize: 21,
             //color: Colors.black54.withOpacity(0.8),
-            color: _theme.primaryTextTheme.title.color,
+            color: _theme.primaryTextTheme.subtitle1.color,
             fontWeight: FontWeight.bold),
       ),
     );
@@ -987,7 +1021,7 @@ class _newMain extends State<NewMain>
 
   Widget _unauthenticationCard(
       BuildContext context, AuthenticationState _state) {
-    return getInActive(context, _state);
+    return getNewInActive(context, _state);
   }
 
   Widget _floatingCollapsed(AuthenticationState _state) {
@@ -1109,7 +1143,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: _theme.primaryTextTheme.subtitle.color)),
+                            color: _theme.primaryTextTheme.bodyText1.color)),
                   ],
                 ),
               ),
@@ -1120,19 +1154,13 @@ class _newMain extends State<NewMain>
                 child: Column(
                   children: <Widget>[
                     Text(
-                        "ที่อยู่ : " +
-                            "ต." +
-                            _state.account.subDistrict +
-                            " อ." +
-                            _state.account.district +
-                            " จ." +
-                            _state.account.province,
+                        "ที่อยู่ : ${_state.account.province.contains("กรุงเทพมหานคร") ? 'แขวง' : 'ตำบล'}${_state.account.subDistrict} ${_state.account.province.contains("กรุงเทพมหานคร") ? '' : 'อำเภอ'}${_state.account.district} จังหวัด${_state.account.province}",
                         textAlign: TextAlign.left,
                         style: TextStyle(
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: _theme.primaryTextTheme.subtitle.color)),
+                            color: _theme.primaryTextTheme.bodyText1.color)),
                   ],
                 ),
               ),
@@ -1150,7 +1178,7 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.normal,
                             fontSize: 16,
-                            color: _theme.primaryTextTheme.subtitle.color)),
+                            color: _theme.primaryTextTheme.bodyText1.color)),
                   ],
                 ),
               ),
@@ -1163,7 +1191,7 @@ class _newMain extends State<NewMain>
                 margin: EdgeInsets.only(top: 4, left: 25, right: 25),
                 child: null,
               ),
-              Container(
+              /*Container(
                 alignment: Alignment.center,
                 child: Container(
                   margin:
@@ -1172,7 +1200,7 @@ class _newMain extends State<NewMain>
                   height: 60,
                   decoration: BoxDecoration(
                     color:
-                        _theme.primaryTextTheme.subtitle.color.withAlpha(100),
+                        _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: FlatButton(
@@ -1182,13 +1210,51 @@ class _newMain extends State<NewMain>
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: _theme.primaryTextTheme.subtitle.color
+                            color: _theme.primaryTextTheme.bodyText1.color
                                 .withAlpha(150))),
                   ),
                 ),
               ),
 
-              //แก้ไขที่อยู่
+               */
+
+              //อัปเกรดบัญชีผู้ใช้งาน
+
+              Container(
+                alignment: Alignment.center,
+                child: Container(
+                  margin:
+                      EdgeInsets.only(top: 20, left: 25, right: 25, bottom: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color:
+                        _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                  ),
+                  child: FlatButton(
+                    onPressed: () {
+                      _registerBloc.add(PinEvent(this.context));
+                      Navigator.push(
+                          context,
+                          FrailtyRoute(
+                              builder: (BuildContext
+                              context) =>
+                                  SignInPage(isUpgrade: true,)));
+
+                    },
+                    child: Text("อัปเกรดบัญชีผู้ใช้งาน",
+                        style: TextStyle(
+                            fontFamily: 'SukhumvitSet',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: _theme.primaryTextTheme.bodyText1.color
+                                .withAlpha(150))),
+                  ),
+                ),
+              ),
+
+              //ตั้งค่า
 
               Container(
                 alignment: Alignment.center,
@@ -1198,43 +1264,24 @@ class _newMain extends State<NewMain>
                   width: MediaQuery.of(context).size.width,
                   height: 60,
                   decoration: BoxDecoration(
-                    color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
+                    color:
+                        _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
                     borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: FlatButton(
-                    onPressed: () {},
-                    child: Text("แก้ไขที่อยู่",
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          FrailtyRoute(
+                              builder: (BuildContext context) =>
+                                  SettingPage()));
+                    },
+                    child: Text("ตั้งค่า",
                         style: TextStyle(
                             fontFamily: 'SukhumvitSet',
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: _theme.primaryTextTheme.subtitle.color
-                                .withAlpha(150))),
-                  ),
-                ),
-              ),
-
-              //อัปเกรดบัญชีผู้ใช้งาน
-
-              Container(
-                alignment: Alignment.center,
-                child: Container(
-                  margin:
-                      EdgeInsets.only(top: 4, left: 25, right: 25, bottom: 10),
-                  width: MediaQuery.of(context).size.width,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
-                    borderRadius: BorderRadius.all(Radius.circular(16)),
-                  ),
-                  child: FlatButton(
-                    onPressed: () {},
-                    child: Text("อัปเกรดบัญชีผู้ใช้งาน",
-                        style: TextStyle(
-                            fontFamily: 'SukhumvitSet',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: _theme.primaryTextTheme.subtitle.color
+                            color: _theme.primaryTextTheme.bodyText1.color
                                 .withAlpha(150))),
                   ),
                 ),
@@ -1344,7 +1391,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: _theme.primaryTextTheme.subtitle.color)),
+                              color: _theme.primaryTextTheme.bodyText1.color)),
                     ],
                   ),
                 ),
@@ -1355,19 +1402,13 @@ class _newMain extends State<NewMain>
                   child: Column(
                     children: <Widget>[
                       Text(
-                          "ที่อยู่ : " +
-                              "ต." +
-                              _state.account.subDistrict +
-                              " อ." +
-                              _state.account.district +
-                              " จ." +
-                              _state.account.province,
+                          "ที่อยู่ : ${_state.account.province.contains("กรุงเทพมหานคร") ? 'แขวง' : 'ตำบล'}${_state.account.subDistrict} ${_state.account.province.contains("กรุงเทพมหานคร") ? '' : 'อำเภอ'}${_state.account.district} จังหวัด${_state.account.province}",
                           textAlign: TextAlign.left,
                           style: TextStyle(
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: _theme.primaryTextTheme.subtitle.color)),
+                              color: _theme.primaryTextTheme.bodyText1.color)),
                     ],
                   ),
                 ),
@@ -1386,7 +1427,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: _theme.primaryTextTheme.subtitle.color)),
+                              color: _theme.primaryTextTheme.bodyText1.color)),
                     ],
                   ),
                 ),
@@ -1402,7 +1443,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
-                              color: _theme.primaryTextTheme.subtitle.color)),
+                              color: _theme.primaryTextTheme.bodyText1.color)),
                     ],
                   ),
                 ),
@@ -1415,6 +1456,7 @@ class _newMain extends State<NewMain>
                   margin: EdgeInsets.only(top: 4, left: 25, right: 25),
                   child: null,
                 ),
+                /*
                 Container(
                   alignment: Alignment.center,
                   child: Container(
@@ -1424,7 +1466,7 @@ class _newMain extends State<NewMain>
                     height: 60,
                     decoration: BoxDecoration(
                       color:
-                          _theme.primaryTextTheme.subtitle.color.withAlpha(30),
+                          _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: FlatButton(
@@ -1434,11 +1476,13 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: _theme.primaryTextTheme.subtitle.color
+                              color: _theme.primaryTextTheme.bodyText1.color
                                   .withAlpha(150))),
                     ),
                   ),
                 ),
+
+                 */
 
                 //ตั้งค่า
 
@@ -1446,12 +1490,12 @@ class _newMain extends State<NewMain>
                   alignment: Alignment.center,
                   child: Container(
                     margin: EdgeInsets.only(
-                        top: 0, left: 25, right: 25, bottom: 10),
+                        top: 16, left: 25, right: 25, bottom: 10),
                     width: MediaQuery.of(context).size.width,
                     height: 60,
                     decoration: BoxDecoration(
                       color:
-                          _theme.primaryTextTheme.subtitle.color.withAlpha(30),
+                          _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: FlatButton(
@@ -1467,7 +1511,7 @@ class _newMain extends State<NewMain>
                               fontFamily: 'SukhumvitSet',
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
-                              color: _theme.primaryTextTheme.subtitle.color
+                              color: _theme.primaryTextTheme.bodyText1.color
                                   .withAlpha(150))),
                     ),
                   ),
@@ -1495,8 +1539,7 @@ class _newMain extends State<NewMain>
                     child: FlatButton(
                       splashColor: Colors.white54,
                       onPressed: () {
-                        _authenticationBloc
-                            .add(UnAuthenticatingLoginEvent());
+                        _authenticationBloc.add(UnAuthenticatingLoginEvent());
                       },
                       child: Text("ลงชื่อออก",
                           style: TextStyle(
@@ -1515,7 +1558,134 @@ class _newMain extends State<NewMain>
     );
   }
 
-  Widget getInActive(BuildContext context, AuthenticationState _state) {
+  Widget getNewInActive(BuildContext context, AuthenticationState _state) {
+    return //INACTIVE
+        SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Container(
+            alignment: Alignment.topLeft,
+            padding: EdgeInsets.only(top: 0, left: 25, right: 25),
+            child: Text("เมนู",
+                style: TextStyle(
+                    fontFamily: 'SukhumvitSet',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 23,
+                    color: _theme.primaryTextTheme.bodyText1.color
+                        .withAlpha(150))),
+          ),
+          Container(
+            width: MediaQuery.of(context).size.width,
+            height: 1,
+            color: _theme.dividerColor,
+            margin: EdgeInsets.only(top: 10, left: 25, right: 25),
+            child: null,
+          ),
+          //ชื่อนามสกุล
+
+          Container(
+            alignment: Alignment.center,
+            child: Container(
+              margin: EdgeInsets.only(top: 25, left: 25, right: 25, bottom: 20),
+              width: MediaQuery.of(context).size.width,
+              height: 60,
+              decoration: BoxDecoration(
+                color: _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              child: FlatButton(
+                onPressed: () {
+                  _registerBloc.add(MainLoginEvent());
+                  Navigator.push(
+                      context,
+                      FrailtyRoute(
+                          builder: (BuildContext
+                          context) =>
+                              SignInPage()));
+
+                  //GOOGLE_DEMO
+                  /*Navigator.push(
+                        context,
+                        FrailtyRoute(
+                            builder: (BuildContext context) =>
+                                SignInPage()));
+
+                     */
+                },
+                child: Text("ลงชื่อเข้าใช้",
+                    style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: _theme.primaryTextTheme.bodyText1.color
+                            .withAlpha(150))),
+              ),
+            ),
+          ),
+
+          Container(
+            alignment: Alignment.center,
+            child: Container(
+              margin: EdgeInsets.only(top: 0, left: 25, right: 25, bottom: 20),
+              width: MediaQuery.of(context).size.width,
+              height: 60,
+              decoration: BoxDecoration(
+                color: _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              child: FlatButton(
+                onPressed: () {
+                  _registerBloc.add(PinEvent(this.context));
+                  Navigator.push(
+                      context,
+                      FrailtyRoute(
+                          builder: (BuildContext context) =>
+                              SignInPage()));
+                },
+                child: Text("กรอกรหัสยืนยันตัวตน",
+                    style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: _theme.primaryTextTheme.bodyText1.color
+                            .withAlpha(150))),
+              ),
+            ),
+          ),
+
+          Container(
+            alignment: Alignment.center,
+            child: Container(
+              margin: EdgeInsets.only(top: 0, left: 25, right: 25, bottom: 20),
+              width: MediaQuery.of(context).size.width,
+              height: 60,
+              decoration: BoxDecoration(
+                color: _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
+                borderRadius: BorderRadius.all(Radius.circular(16)),
+              ),
+              child: FlatButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      FrailtyRoute(
+                          builder: (BuildContext context) => SettingPage()));
+                },
+                child: Text("ตั้งค่า",
+                    style: TextStyle(
+                        fontFamily: 'SukhumvitSet',
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                        color: _theme.primaryTextTheme.bodyText1.color
+                            .withAlpha(150))),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /*Widget getInActive(BuildContext context, AuthenticationState _state) {
     return //INACTIVE
         SingleChildScrollView(
       child: Column(
@@ -1528,10 +1698,9 @@ class _newMain extends State<NewMain>
                     fontFamily: 'SukhumvitSet',
                     fontWeight: FontWeight.bold,
                     fontSize: 23,
-                    color:
-                        _theme.primaryTextTheme.subtitle.color.withAlpha(150))),
+                    color: _theme.primaryTextTheme.bodyText1.color
+                        .withAlpha(150))),
           ),
-          //ชื่อนามสกุล
           Container(
             width: MediaQuery.of(context).size.width,
             height: 1,
@@ -1539,6 +1708,8 @@ class _newMain extends State<NewMain>
             margin: EdgeInsets.only(top: 10, left: 25, right: 25),
             child: null,
           ),
+          //ชื่อนามสกุล
+
           Container(
             alignment: Alignment.center,
             child: Container(
@@ -1546,7 +1717,7 @@ class _newMain extends State<NewMain>
               width: MediaQuery.of(context).size.width,
               height: 60,
               decoration: BoxDecoration(
-                color: _theme.primaryTextTheme.subtitle.color.withAlpha(30),
+                color: _theme.primaryTextTheme.bodyText1.color.withAlpha(30),
                 borderRadius: BorderRadius.all(Radius.circular(16)),
               ),
               child: FlatButton(
@@ -1556,7 +1727,7 @@ class _newMain extends State<NewMain>
                         fontFamily: 'SukhumvitSet',
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
-                        color: _theme.primaryTextTheme.subtitle.color
+                        color: _theme.primaryTextTheme.bodyText1.color
                             .withAlpha(150))),
               ),
             ),
@@ -1580,7 +1751,7 @@ class _newMain extends State<NewMain>
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
-                          color: _theme.primaryTextTheme.subtitle.color
+                          color: _theme.primaryTextTheme.bodyText1.color
                               .withAlpha(150)))),
               Container(
                 width: 80,
@@ -1610,7 +1781,7 @@ class _newMain extends State<NewMain>
               child: FlatButton(
                   onPressed: () {
                     //handleSignIn(widget, context);
-                    _authenticationBloc.add(GoogleLoginEvent());
+                    _authenticationBloc.add(GoogleLoginEvent(context));
                     //_authenticationBloc.add(TestEvent(context));
                   },
                   child: Stack(
@@ -1679,6 +1850,8 @@ class _newMain extends State<NewMain>
       ),
     );
   }
+
+   */
 
   int calculatingDay(DateTime date) {
     final year1 = DateTime.now().year;

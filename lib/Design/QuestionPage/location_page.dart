@@ -41,7 +41,7 @@ Widget _locationPage(BuildContext context, LocationQuestionState state) {
                                 style: TextStyle(
                                   fontSize: 28,
                                   //color: Colors.black.withAlpha(160),
-                                  color: _themeData.primaryTextTheme.subtitle
+                                  color: _themeData.primaryTextTheme.bodyText1
                                       .color,
                                   fontWeight: FontWeight.w700,
                                   //color: Colors.white.withAlpha(230),

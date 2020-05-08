@@ -43,7 +43,7 @@ Widget _multiplyPage(BuildContext context, MultiplyQuestionState state) {
                                   fontSize: 28,
                                   //color: Colors.black.withAlpha(160),
                                   color: _themeData
-                                      .primaryTextTheme.subtitle.color,
+                                      .primaryTextTheme.bodyText1.color,
                                   fontWeight: FontWeight.w700,
                                   //color: Colors.white.withAlpha(230),
                                   fontFamily: 'SukhumvitSet',

@@ -13,7 +13,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../main.dart';
 import 'package:progress_dialog/progress_dialog.dart';
-import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 
 class RegisterApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -343,7 +342,7 @@ class _normalNameRegisterRoute extends State<NormalNameRegisterRoute> {
                               fontSize: 18,
                               fontWeight: FontWeight.bold)),
                     ),
-                    Container(
+                    /*Container(
                         height: 256,
                         child: DatePickerWidget(
                           onChange: (dateTime, selectedIndex) {
@@ -358,6 +357,8 @@ class _normalNameRegisterRoute extends State<NormalNameRegisterRoute> {
                             titleHeight: 0.0,
                           ),
                         ))
+
+                     */
                   ],
                 ),
               ))),

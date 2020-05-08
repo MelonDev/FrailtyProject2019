@@ -34,7 +34,7 @@ Widget _numberPage(BuildContext context, NumberQuestionState state) {
                     style: TextStyle(
                       fontSize: 34,
                       //color: Colors.black.withAlpha(200),
-                      color: _themeData.primaryTextTheme.subtitle.color,
+                      color: _themeData.primaryTextTheme.bodyText1.color,
                       fontWeight: FontWeight.bold,
                       //color: Colors.white.withAlpha(230),
                       fontFamily: 'SukhumvitSet',
@@ -65,7 +65,7 @@ Widget _numberPage(BuildContext context, NumberQuestionState state) {
                               fontFamily: 'SukhumvitSet',
                               fontSize: 22,
                               //color: Colors.black.withAlpha(200),
-                              color: _themeData.primaryTextTheme.subtitle.color,
+                              color: _themeData.primaryTextTheme.bodyText1.color,
                               fontWeight: FontWeight.bold),
                         ),
                       );

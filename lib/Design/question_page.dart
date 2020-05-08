@@ -70,6 +70,12 @@ class _questionPage extends State<MainQuestion> {
     _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(this.context);
     _cellCalculator = new CellCalculator(context);
 
+    print("A0 START");
+    print(_answerPackId);
+    print(_questionnaireKey);
+    print("A0 END");
+
+
     if (_answerPackId == null) {
       _questionnaireBloc.add(
           NextQuestionEvent(_questionnaireKey, null, null, null, [], null));
@@ -102,7 +108,7 @@ class _questionPage extends State<MainQuestion> {
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                   child: SpinKitThreeBounce(
-                    color: Theme.of(context).primaryTextTheme.subtitle.color,
+                    color: Theme.of(context).primaryTextTheme.bodyText1.color,
                     size: 50.0,
                   ),
                 ),
@@ -111,7 +117,7 @@ class _questionPage extends State<MainQuestion> {
                   child: Text(_state.message,
                       style: TextStyle(
                           color:
-                          Theme.of(context).primaryTextTheme.subtitle.color,
+                          Theme.of(context).primaryTextTheme.bodyText1.color,
                           fontSize: 18,
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.normal)),
@@ -125,11 +131,13 @@ class _questionPage extends State<MainQuestion> {
   Widget finishedLayout(BuildContext context, FinishedQuestionState _state) {
     ThemeData _themeData = Theme.of(context);
 
+    var brightness = DynamicTheme.of(context).brightness;
+
     return Scaffold(
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? Color(0xFF0f0f0f)
           : Color(0xFFFFFFFF),
-      appBar: AppBar(backgroundColor: Colors.transparent,elevation: 0,leading: Container(),),
+      appBar: AppBar(brightness: brightness,backgroundColor: Colors.transparent,elevation: 0,leading: Container(),),
       body: Stack(
         children: <Widget>[
           Column(
@@ -224,6 +232,9 @@ class _questionPage extends State<MainQuestion> {
   Widget _loadTabletSize(QuestionnaireState _state, BuildContext context) {
     ThemeData _themeData = Theme.of(context);
 
+    var brightness = DynamicTheme.of(context).brightness;
+
+
     return Row(
       children: <Widget>[
         Container(
@@ -246,13 +257,13 @@ class _questionPage extends State<MainQuestion> {
                   textAlign: TextAlign.left,
                   style: TextStyle(
                       //color: Colors.black.withAlpha(200),
-                      color: _themeData.primaryTextTheme.title.color,
+                      color: _themeData.primaryTextTheme.subtitle1.color,
                       fontFamily: 'SukhumvitSet',
                       fontSize: 22,
                       fontWeight: FontWeight.bold),
                 ),
 
-                brightness: _themeData.brightness,
+                brightness: brightness,
                 backgroundColor: _themeData.primaryColor,
                 elevation: 0,
               ),
@@ -299,7 +310,7 @@ class _questionPage extends State<MainQuestion> {
                 Container(
                   padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                   child: SpinKitThreeBounce(
-                    color: Theme.of(context).primaryTextTheme.subtitle.color,
+                    color: Theme.of(context).primaryTextTheme.bodyText1.color,
                     size: 50.0,
                   ),
                 ),
@@ -308,7 +319,7 @@ class _questionPage extends State<MainQuestion> {
                   child: Text(_state.message,
                       style: TextStyle(
                           color:
-                              Theme.of(context).primaryTextTheme.subtitle.color,
+                              Theme.of(context).primaryTextTheme.bodyText1.color,
                           fontSize: 18,
                           fontFamily: 'SukhumvitSet',
                           fontWeight: FontWeight.normal)),

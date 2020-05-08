@@ -43,6 +43,7 @@ class _cataloguePage extends State<CataloguePage> {
   int _currentIndex = 0;
 
   ThemeData _themeData;
+  Brightness _brightness;
 
   @override
   void initState() {
@@ -75,6 +76,7 @@ class _cataloguePage extends State<CataloguePage> {
   @override
   Widget build(BuildContext context) {
     _themeData = Theme.of(context);
+    _brightness = DynamicTheme.of(context).brightness;
 
     return BlocBuilder<CatalogueBloc, CatalogueState>(
         builder: (context, _state) {
@@ -114,7 +116,7 @@ class _cataloguePage extends State<CataloguePage> {
                               Icons.close,
                               size: constraint.biggest.height - 26,
                               //color: Colors.black.withAlpha(150),
-                              color: _themeData.primaryTextTheme.title.color,
+                              color: _themeData.primaryTextTheme.subtitle1.color,
                             ));
                       }),
                     )),
@@ -130,7 +132,7 @@ class _cataloguePage extends State<CataloguePage> {
                     child: Text(
                       _titleText,
                       style: TextStyle(
-                          color: _themeData.primaryTextTheme.title.color,
+                          color: _themeData.primaryTextTheme.subtitle1.color,
                           //color: Colors.black.withAlpha(200),
                           fontFamily: 'SukhumvitSet',
                           //fontSize: 20,
@@ -148,13 +150,15 @@ class _cataloguePage extends State<CataloguePage> {
           ],
         ),
 
-        brightness: _themeData.brightness,
+        //brightness: _themeData.brightness,
+        brightness: _brightness,
         backgroundColor: _themeData.primaryColor,
         elevation: 1,
       ),
       bottomNavigationBar: Device.get().isTablet
           ? null
           : BottomNavigationBar(
+              //unselectedItemColor: _themeData.appBarTheme.textTheme.subtitle1.color,
               selectedItemColor: Color(0xFF00BFA5),
               backgroundColor: _themeData.primaryColor,
               currentIndex: _currentIndex,
@@ -262,7 +266,7 @@ class _cataloguePage extends State<CataloguePage> {
                         children: <Widget>[
                           Icon(
                             _tabListIcon[position],
-                            color: _themeData.primaryTextTheme.subtitle.color,
+                            color: _themeData.primaryTextTheme.bodyText1.color,
                           ),
                           Padding(
                             padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
@@ -270,7 +274,7 @@ class _cataloguePage extends State<CataloguePage> {
                               _tabList[position],
                               style: TextStyle(
                                   color: _themeData
-                                      .primaryTextTheme.subtitle.color,
+                                      .primaryTextTheme.bodyText1.color,
                                   fontFamily: 'SukhumvitSet',
                                   fontSize: 16),
                             ),
@@ -287,7 +291,8 @@ class _cataloguePage extends State<CataloguePage> {
   Widget _loadWidgetToLayout(CatalogueState _state) {
     if (_state is InitialCatalogueState) {
       _catalogueBloc.add(QuestionnaireSelectedEvent());
-      return PlaceholderWidget(Colors.yellow);
+      //return PlaceholderWidget(Colors.yellow);
+      return PlaceholderWidget(_themeData.backgroundColor);
     } else if (_state is QuestionnaireCatalogueState) {
       return QuestionnaireTab(_state);
     } else if (_state is UncompletedCatalogueState) {
@@ -306,7 +311,7 @@ class _cataloguePage extends State<CataloguePage> {
       color: Colors.transparent,
       child: Center(
         child: SpinKitThreeBounce(
-          color: _themeData.primaryTextTheme.subtitle.color,
+          color: _themeData.primaryTextTheme.bodyText1.color,
           size: 50.0,
         ),
       ),
@@ -375,9 +380,9 @@ class CompletedTab extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
                                 color:
-                                    _themeData.primaryTextTheme.subtitle.color,
+                                    _themeData.primaryTextTheme.bodyText1.color,
                                 fontFamily: _themeData
-                                    .primaryTextTheme.subtitle.fontFamily),
+                                    .primaryTextTheme.bodyText1.fontFamily),
                           ));
                     } else {
                       return Container();
@@ -411,23 +416,23 @@ class CompletedTab extends StatelessWidget {
                                   text: "ไอดี: ",
                                   style: TextStyle(
                                       color: _themeData
-                                          .primaryTextTheme.title.color
+                                          .primaryTextTheme.subtitle1.color
                                           .withAlpha(200),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       fontFamily: _themeData
-                                          .primaryTextTheme.title.fontFamily)),
+                                          .primaryTextTheme.subtitle1.fontFamily)),
                               TextSpan(
                                   text:
                                       "${_state.data[position].answerPack.id}",
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       color: _themeData
-                                          .primaryTextTheme.title.color
+                                          .primaryTextTheme.subtitle1.color
                                           .withAlpha(170),
                                       fontSize: 18,
                                       fontFamily: _themeData.primaryTextTheme
-                                          .subtitle.fontFamily)),
+                                          .bodyText1.fontFamily)),
                             ]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
@@ -439,23 +444,23 @@ class CompletedTab extends StatelessWidget {
                                 text: "วันที่ทำ: ",
                                 style: TextStyle(
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(200),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.title.fontFamily)),
+                                        .primaryTextTheme.subtitle1.fontFamily)),
                             TextSpan(
                                 text:
                                     "${_loadDate(_state.data[position].answerPack.dateTime)}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(170),
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.subtitle.fontFamily)),
+                                        .primaryTextTheme.bodyText1.fontFamily)),
                           ]),
                       maxLines: 1,
                     ),
@@ -467,23 +472,23 @@ class CompletedTab extends StatelessWidget {
                                 text: "ชื่อชุดแบบทดสอบ: ",
                                 style: TextStyle(
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(200),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.title.fontFamily)),
+                                        .primaryTextTheme.subtitle1.fontFamily)),
                             TextSpan(
                                 text:
                                     "\n${_state.data[position].questionnaire.name}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(170),
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.subtitle.fontFamily)),
+                                        .primaryTextTheme.bodyText1.fontFamily)),
                           ]),
                     ),
                   ],
@@ -605,15 +610,14 @@ class UncompletedTab extends StatelessWidget {
                             showDialog(
                                 context: context,
                                 builder: (BuildContext context) =>
-                                    MediaQuery.of(context).platformBrightness ==
-                                            Brightness.dark
+                                    _themeData.brightness == Brightness.dark
                                         ? new CupertinoAlertDialog(
                                             title: new Text(
                                               "ยืนยันการลบ",
                                               style: TextStyle(
                                                   fontFamily: _themeData
                                                       .primaryTextTheme
-                                                      .subtitle
+                                                      .bodyText1
                                                       .fontFamily,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
@@ -625,7 +629,7 @@ class UncompletedTab extends StatelessWidget {
                                                 style: TextStyle(
                                                     fontFamily: _themeData
                                                         .primaryTextTheme
-                                                        .subtitle
+                                                        .bodyText1
                                                         .fontFamily,
                                                     fontSize: 16,
                                                     fontWeight:
@@ -640,7 +644,7 @@ class UncompletedTab extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontFamily: _themeData
                                                             .primaryTextTheme
-                                                            .subtitle
+                                                            .bodyText1
                                                             .fontFamily,
                                                         fontSize: 18,
                                                         fontWeight:
@@ -659,7 +663,7 @@ class UncompletedTab extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontFamily: _themeData
                                                             .primaryTextTheme
-                                                            .subtitle
+                                                            .bodyText1
                                                             .fontFamily,
                                                         fontSize: 18,
                                                         fontWeight:
@@ -678,7 +682,7 @@ class UncompletedTab extends StatelessWidget {
                                               style: TextStyle(
                                                   fontFamily: _themeData
                                                       .primaryTextTheme
-                                                      .subtitle
+                                                      .bodyText1
                                                       .fontFamily,
                                                   fontSize: 18,
                                                   fontWeight: FontWeight.bold,
@@ -690,7 +694,7 @@ class UncompletedTab extends StatelessWidget {
                                                 style: TextStyle(
                                                     fontFamily: _themeData
                                                         .primaryTextTheme
-                                                        .subtitle
+                                                        .bodyText1
                                                         .fontFamily,
                                                     fontSize: 16,
                                                     fontWeight:
@@ -705,7 +709,7 @@ class UncompletedTab extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontFamily: _themeData
                                                             .primaryTextTheme
-                                                            .subtitle
+                                                            .bodyText1
                                                             .fontFamily,
                                                         fontSize: 18,
                                                         fontWeight:
@@ -724,7 +728,7 @@ class UncompletedTab extends StatelessWidget {
                                                     style: TextStyle(
                                                         fontFamily: _themeData
                                                             .primaryTextTheme
-                                                            .subtitle
+                                                            .bodyText1
                                                             .fontFamily,
                                                         fontSize: 18,
                                                         fontWeight:
@@ -751,9 +755,9 @@ class UncompletedTab extends StatelessWidget {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
-                            color: _themeData.primaryTextTheme.subtitle.color,
+                            color: _themeData.primaryTextTheme.bodyText1.color,
                             fontFamily: _themeData
-                                .primaryTextTheme.subtitle.fontFamily),
+                                .primaryTextTheme.bodyText1.fontFamily),
                       ));
                 } else {
                   return Container();
@@ -796,7 +800,7 @@ class UncompletedTab extends StatelessWidget {
             ),
             Text("ไม่พบข้อมูล",
                 style: TextStyle(
-                    fontFamily: _themeData.primaryTextTheme.subtitle.fontFamily,
+                    fontFamily: _themeData.primaryTextTheme.bodyText1.fontFamily,
                     fontSize: 18,
                     fontWeight: FontWeight.normal,
                     color: _themeData.brightness == Brightness.dark
@@ -849,23 +853,23 @@ class UncompletedTab extends StatelessWidget {
                                   text: "ไอดี: ",
                                   style: TextStyle(
                                       color: _themeData
-                                          .primaryTextTheme.title.color
+                                          .primaryTextTheme.subtitle1.color
                                           .withAlpha(200),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,
                                       fontFamily: _themeData
-                                          .primaryTextTheme.title.fontFamily)),
+                                          .primaryTextTheme.subtitle1.fontFamily)),
                               TextSpan(
                                   text:
                                       "${_state.data[position].uncompletedData.answerPack.id}",
                                   style: TextStyle(
                                       fontWeight: FontWeight.normal,
                                       color: _themeData
-                                          .primaryTextTheme.title.color
+                                          .primaryTextTheme.subtitle1.color
                                           .withAlpha(170),
                                       fontSize: 18,
                                       fontFamily: _themeData.primaryTextTheme
-                                          .subtitle.fontFamily)),
+                                          .bodyText1.fontFamily)),
                             ]),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
@@ -877,23 +881,23 @@ class UncompletedTab extends StatelessWidget {
                                 text: "จำนวนข้อที่ทำ: ",
                                 style: TextStyle(
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(200),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.title.fontFamily)),
+                                        .primaryTextTheme.subtitle1.fontFamily)),
                             TextSpan(
                                 text:
                                     "${_state.data[position].uncompletedData.completedQuestion} จาก ${_state.data[position].uncompletedData.totalQuestion} ข้อ",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(170),
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.subtitle.fontFamily)),
+                                        .primaryTextTheme.bodyText1.fontFamily)),
                           ]),
                       maxLines: 1,
                     ),
@@ -905,23 +909,23 @@ class UncompletedTab extends StatelessWidget {
                                 text: "วันที่ทำ: ",
                                 style: TextStyle(
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(200),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.title.fontFamily)),
+                                        .primaryTextTheme.subtitle1.fontFamily)),
                             TextSpan(
                                 text:
                                     "${_loadDate(_state.data[position].uncompletedData.answerPack.dateTime)}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(170),
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.subtitle.fontFamily)),
+                                        .primaryTextTheme.bodyText1.fontFamily)),
                           ]),
                       maxLines: 1,
                     ),
@@ -933,23 +937,23 @@ class UncompletedTab extends StatelessWidget {
                                 text: "ชื่อชุดแบบทดสอบ: ",
                                 style: TextStyle(
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(200),
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.title.fontFamily)),
+                                        .primaryTextTheme.subtitle1.fontFamily)),
                             TextSpan(
                                 text:
                                     "\n${_state.data[position].uncompletedData.questionnaire.name}",
                                 style: TextStyle(
                                     fontWeight: FontWeight.normal,
                                     color: _themeData
-                                        .primaryTextTheme.title.color
+                                        .primaryTextTheme.subtitle1.color
                                         .withAlpha(170),
                                     fontSize: 18,
                                     fontFamily: _themeData
-                                        .primaryTextTheme.subtitle.fontFamily)),
+                                        .primaryTextTheme.bodyText1.fontFamily)),
                           ]),
                     ),
                   ],
@@ -1061,7 +1065,7 @@ class QuestionnaireTab extends StatelessWidget {
                             position == 0 ? _tabList[0] : _tabList[1],
                             style: TextStyle(
                               //color: Colors.black.withAlpha(150),
-                              color: _themeData.primaryTextTheme.subtitle.color,
+                              color: _themeData.primaryTextTheme.bodyText1.color,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'SukhumvitSet',
                               fontSize: 18.0,
@@ -1105,7 +1109,7 @@ class QuestionnaireTab extends StatelessWidget {
                                           textAlign: TextAlign.left,
                                           style: TextStyle(
                                             color: _themeData
-                                                .primaryTextTheme.title.color
+                                                .primaryTextTheme.subtitle1.color
                                                 .withAlpha(160),
                                             fontSize: 22.0,
                                             fontWeight: FontWeight.bold,
@@ -1123,7 +1127,7 @@ class QuestionnaireTab extends StatelessWidget {
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                         color: _themeData
-                                            .primaryTextTheme.subtitle.color
+                                            .primaryTextTheme.bodyText1.color
                                             .withAlpha(150),
                                         fontSize: 17.0,
                                         fontFamily: 'SukhumvitSet',

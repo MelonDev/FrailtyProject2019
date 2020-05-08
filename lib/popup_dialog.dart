@@ -898,6 +898,68 @@ Opacity getInActive(BuildContext context, PopupRoute widget) {
                         )),
                   ),
                 ),
+
+
+                Container(
+                  alignment: Alignment.center,
+                  child: Container(
+                    margin: EdgeInsets.only(
+                        top: 25, left: 25, right: 25, bottom: 20),
+                    width: MediaQuery.of(context).size.width,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
+                    ),
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            //MaterialPageRoute(builder: (context) => SecondRoute()),
+                            RegisterRoute(
+                                builder: (BuildContext context) =>
+                                    NormalNameRegisterRoute())
+                        );
+                      },
+                      child: Text("ชื่อ-นามสกุล",
+                          style: TextStyle(
+                              fontFamily: 'SukhumvitSet',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: Colors.black87)),
+                    ),
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      width: 80,
+                      height: 1,
+                      color: Colors.black38,
+                      margin: EdgeInsets.only(top: 0, left: 0, right: 20),
+                      child: null,
+                    ),
+                    Container(
+                        alignment: Alignment.center,
+                        child: Text("หรือ",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontFamily: 'SukhumvitSet',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.black87))),
+                    Container(
+                      width: 80,
+                      height: 1,
+                      color: Colors.black38,
+                      margin: EdgeInsets.only(left: 20),
+                      child: null,
+                    ),
+                  ],
+                ),
+
               ],
             ),
           ));

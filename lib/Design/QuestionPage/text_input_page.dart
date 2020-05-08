@@ -3,7 +3,8 @@ part of '../question_page.dart';
 Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
   ThemeData _themeData = Theme.of(context);
 
-  var _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
+  // ignore: close_sinks
+  QuestionnaireBloc _questionnaireBloc = BlocProvider.of<QuestionnaireBloc>(context);
 
   bool _actionBtn = false;
 
@@ -39,7 +40,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                               style: TextStyle(
                                 fontSize: 34,
                                 //color: Colors.black.withAlpha(200),
-                                color: _themeData.primaryTextTheme.subtitle.color,
+                                color: _themeData.primaryTextTheme.bodyText1.color,
                                 fontWeight: FontWeight.bold,
                                 //color: Colors.white.withAlpha(230),
                                 fontFamily: 'SukhumvitSet',
@@ -70,7 +71,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                           style: TextStyle(
                                               fontFamily: 'SukhumvitSet',
                                               //color: Colors.black.withAlpha(150),
-                                              color: _themeData.primaryTextTheme.title.color,
+                                              color: _themeData.primaryTextTheme.subtitle1.color,
                                               fontSize: 22,
                                               fontWeight: FontWeight.bold),
                                         ),
@@ -88,7 +89,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(10)),
                                           //color: Colors.black.withAlpha(30)
-                                        color: _themeData.primaryTextTheme.title.color.withAlpha(30)
+                                        color: _themeData.primaryTextTheme.subtitle1.color.withAlpha(30)
                                       ),
                                       child: Align(
                                         alignment: Alignment.center,
@@ -96,8 +97,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                           margin: EdgeInsets.fromLTRB(
                                               20, 0, 20, 0),
                                           child: TextField(
-                                              keyboardAppearance: Brightness
-                                                  .light,
+                                              keyboardAppearance: _themeData.brightness,
                                               keyboardType: TextInputType
                                                   .text,
                                               onTap: () {
@@ -115,7 +115,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                               style: TextStyle(
                                                   fontFamily: 'SukhumvitSet',
                                                   //color: Colors.black,
-                                                  color: _themeData.primaryTextTheme.subtitle.color,
+                                                  color: _themeData.primaryTextTheme.bodyText1.color,
                                                   fontSize: 21,
                                                   fontWeight:
                                                   FontWeight.normal),
@@ -127,7 +127,7 @@ Widget _textInputPage(BuildContext context,TextInputQuestionState state) {
                                                       fontFamily:
                                                       'SukhumvitSet',
                                                       //color: Colors.black.withAlpha(120),
-                                                      color: _themeData.primaryTextTheme.title.color.withAlpha(160),
+                                                      color: _themeData.primaryTextTheme.subtitle1.color.withAlpha(160),
                                                       fontSize: 20,
                                                       fontWeight:
                                                       FontWeight
@@ -199,34 +199,29 @@ void showMyDialog(BuildContext context){
 
   showDialog(context: context,
       builder: (BuildContext context) =>
-      MediaQuery.of(context).platformBrightness ==
-          Brightness.dark
-          ? new CupertinoAlertDialog(
+       new CupertinoAlertDialog(
         title: new Text(
           "ช่องว่างเปล่า",
           style: TextStyle(
               fontFamily: _themeData
                   .primaryTextTheme
-                  .subtitle
+                  .bodyText1
                   .fontFamily,
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: Colors.white
-                  .withAlpha(200)),
+              color: _themeData.appBarTheme.textTheme.subtitle1.color.withAlpha(200)),
         ),
         content: new Text(
             "กรุณากรอกข้อมูลในช่องกรอกข้อมูลแล้วลองอีกครั้ง",
             style: TextStyle(
                 fontFamily: _themeData
                     .primaryTextTheme
-                    .subtitle
+                    .bodyText1
                     .fontFamily,
                 fontSize: 16,
                 fontWeight:
                 FontWeight.normal,
-                color: Colors.white
-                    .withAlpha(200)
-                    .withAlpha(150))),
+                color: _themeData.appBarTheme.textTheme.subtitle1.color.withAlpha(200).withAlpha(150))),
         actions: [
           CupertinoDialogAction(
             isDestructiveAction: true,
@@ -234,7 +229,7 @@ void showMyDialog(BuildContext context){
                 style: TextStyle(
                     fontFamily: _themeData
                         .primaryTextTheme
-                        .subtitle
+                        .bodyText1
                         .fontFamily,
                     fontSize: 18,
                     fontWeight:
@@ -245,52 +240,6 @@ void showMyDialog(BuildContext context){
 
             },
           ),
-        ],
-      )
-          : new CupertinoAlertDialog(
-        title: new Text(
-          "ช่องว่างเปล่า",
-          style: TextStyle(
-              fontFamily: _themeData
-                  .primaryTextTheme
-                  .subtitle
-                  .fontFamily,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black
-                  .withAlpha(180)),
-        ),
-        content: new Text(
-            "กรุณากรอกข้อมูลในช่องกรอกข้อมูลแล้วลองอีกครั้ง",
-            style: TextStyle(
-                fontFamily: _themeData
-                    .primaryTextTheme
-                    .subtitle
-                    .fontFamily,
-                fontSize: 16,
-                fontWeight:
-                FontWeight.normal,
-                color: Colors.black
-                    .withAlpha(180)
-                    .withAlpha(150))),
-        actions: [
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: new Text("รับทราบ",
-                style: TextStyle(
-                    fontFamily: _themeData
-                        .primaryTextTheme
-                        .subtitle
-                        .fontFamily,
-                    fontSize: 18,
-                    fontWeight:
-                    FontWeight.normal,
-                    color: Colors.red)),
-            onPressed: () {
-
-              Navigator.of(context).pop();
-            },
-          )
         ],
       ));
 }

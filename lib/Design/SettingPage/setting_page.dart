@@ -136,7 +136,8 @@ class _settingPage extends State<SettingPage> {
                       Container(
                         child: Text(
                           _titleText,
-                          style: Theme.of(context).appBarTheme.textTheme.title,
+                          style:
+                              Theme.of(context).appBarTheme.textTheme.subtitle1,
                         ),
                       )
                     ],
@@ -150,7 +151,7 @@ class _settingPage extends State<SettingPage> {
               ],
             ),
 
-            brightness: brightness,
+            //brightness: brightness,
             backgroundColor: Theme.of(context).primaryColor,
             elevation: 1,
           ),
@@ -165,7 +166,15 @@ class _settingPage extends State<SettingPage> {
     });
   }
 
-  List<Widget> _mergeListSetting(AuthenticatedState state) {
+  List<Widget> _mergeListSetting(MyAuthenticationState state) {
+    return state is AuthenticatedState
+        ? [
+            ..._loadDarkSetting(),
+            //..._loadLoginSetting(state),
+            ..._loadDatabaseSetting(state)
+          ]
+        : [..._loadDarkSetting()];
+
     return [..._loadDarkSetting(), ..._loadDatabaseSetting(state)];
   }
 
@@ -173,7 +182,7 @@ class _settingPage extends State<SettingPage> {
     return [
       CSHeader(
         "ฐานข้อมูล",
-        textColor: Theme.of(context).primaryTextTheme.subtitle.color,
+        textColor: Theme.of(context).primaryTextTheme.bodyText1.color,
       ),
       CSButton(
         CSButtonType.DEFAULT,
@@ -181,7 +190,8 @@ class _settingPage extends State<SettingPage> {
         () {
           _authenticationBloc.add(DatabaseRefreshEvent(state.account));
         },
-        fontSize: 18,backgroudColor: _theme.cardColor,
+        fontSize: 18,
+        backgroudColor: _theme.cardColor,
       ),
       CSButton(
         CSButtonType.DEFAULT_DESTRUCTIVE,
@@ -189,7 +199,8 @@ class _settingPage extends State<SettingPage> {
         () {
           _authenticationBloc.add(DeleteHistoryDatabase(state.account));
         },
-        fontSize: 18,backgroudColor: _theme.cardColor,
+        fontSize: 18,
+        backgroudColor: _theme.cardColor,
       )
     ];
   }
@@ -198,7 +209,7 @@ class _settingPage extends State<SettingPage> {
     return [
       CSHeader(
         'ธีม',
-        textColor: Theme.of(context).primaryTextTheme.subtitle.color,
+        textColor: Theme.of(context).primaryTextTheme.bodyText1.color,
       ),
       CSWidget(
         CSControl(
@@ -226,7 +237,7 @@ class _settingPage extends State<SettingPage> {
               size: 35,
             ),
           ),
-          textColor: Theme.of(context).appBarTheme.textTheme.title.color,
+          textColor: Theme.of(context).appBarTheme.textTheme.subtitle1.color,
           backgroudColor: Theme.of(context).primaryColor,
         ),
         backgroudColor: Theme.of(context).primaryColor,
@@ -234,7 +245,7 @@ class _settingPage extends State<SettingPage> {
       _customDarkMode
           ? CSHeader(
               'โหมดธีมสี',
-              textColor: Theme.of(context).primaryTextTheme.subtitle.color,
+              textColor: Theme.of(context).primaryTextTheme.bodyText1.color,
             )
           : Container(),
       _customDarkMode
@@ -250,9 +261,9 @@ class _settingPage extends State<SettingPage> {
                       ? 0
                       : 1,
               backgroudColor: Theme.of(context).primaryColor,
-              fontColor: Theme.of(context).primaryTextTheme.subtitle.color,
+              fontColor: Theme.of(context).primaryTextTheme.bodyText1.color,
               fontFamiry:
-                  Theme.of(context).primaryTextTheme.subtitle.fontFamily,
+                  Theme.of(context).primaryTextTheme.bodyText1.fontFamily,
               fontSize: 20,
               checkActiveColor:
                   DynamicTheme.of(context).brightness == Brightness.light
@@ -263,4 +274,30 @@ class _settingPage extends State<SettingPage> {
           : Container(),
     ];
   }
+
+  /*
+  List<Widget> _loadLoginSetting(AuthenticatedState state) {
+    return [
+      CSHeader(
+        "ลงชื่อเข้าใช้",
+        textColor: Theme.of(context).primaryTextTheme.bodyText1.color,
+      ),
+      CSSelection(
+        ['ชื่อ-นามสกุล', 'Google','AppleID'],
+        (index) {},
+        currentSelection: 0,
+        backgroudColor: Theme.of(context).primaryColor,
+        fontColor: Theme.of(context).primaryTextTheme.bodyText1.color,
+        fontFamiry: Theme.of(context).primaryTextTheme.bodyText1.fontFamily,
+        fontSize: 16,
+        checkActiveColor:
+            DynamicTheme.of(context).brightness == Brightness.light
+                ? Theme.of(context).accentColor
+                : Colors.white,
+        checkSize: 20,
+      )
+    ];
+  }
+
+   */
 }
