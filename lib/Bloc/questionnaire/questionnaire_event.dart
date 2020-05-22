@@ -24,6 +24,18 @@ class NextQuestionEvent extends QuestionnaireEvent {
   NextQuestionEvent(this.questionnaireId,this.currentQuestionId,this.choiceYouChoose,this.value,this.lastList,this.questionWithChoice);
 }
 
+class SearchingLocationEvent extends QuestionnaireEvent {
+
+  final BuildContext context;
+
+  final String searchMessage;
+  final LocationQuestionState locationQuestionState;
+
+  SearchingLocationEvent(this.locationQuestionState,{this.context,this.searchMessage});
+
+}
+
+
 class UploadQuestionEvent extends QuestionnaireEvent {
   final String answerPackId;
   final BuildContext context;

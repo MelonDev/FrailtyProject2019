@@ -188,13 +188,16 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     String oth = preferences.getString("ACCOUNT_USER_ID");
 
 
-    print(oth);
+    print("oth $oth");
 
 
     String url =
         'https://melondev-frailty-project.herokuapp.com/api/result/getListOfResult';
     Map map = {"id": "", "oauth": oth};
     var response = await http.post(url, body: map);
+
+    print("COM: ${response.body}");
+
     Iterable list = json.decode(response.body);
 
     List<AnswerPack> ans = list.map((model) => AnswerPack.fromJson(model)).toList();
@@ -216,8 +219,36 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
 
     List<CompleteItem> newList = _compareCompleteListDate(listCom);
 
+    print("newList.length ${newList.length}");
+
 
     yield CompletedCatalogueState(newList.reversed.toList());
+
+
+
+/*
+    String url =
+        'https://melondev-frailty-project.herokuapp.com/api/result/getAllOfResult';
+
+    Map map = {"id": "", "oauth": oth};
+    var response = await http.post(url, body: map);
+
+    print("COM: ${response.body}");
+
+    Iterable listMap = json.decode(response.body);
+
+    List<CompleteItem> listComplete = _compareCompleteListDate(listMap.map((model) {
+
+      Questionnaire questionnaire = Questionnaire.fromJson(model['answer']['question']['questionnaire']);
+      AnswerPack answerPack = AnswerPack.fromJson(model);
+      return CompleteItem(answerPack,questionnaire,null);
+    }).toList());
+
+    yield CompletedCatalogueState(listComplete);
+
+ */
+
+
   }
 
   List<CompleteItem> _compareCompleteListDate(

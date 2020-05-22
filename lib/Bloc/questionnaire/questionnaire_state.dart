@@ -105,8 +105,9 @@ class NumberMultiplyQuestionState extends MyQuestionnaireState {
 
 class LocationQuestionState extends MyQuestionnaireState {
   final QuestionWithChoice questionWithChoice;
+  final List<AddressDao> listAddress;
 
-  LocationQuestionState(this.questionWithChoice,int counter,List<QuestionWithChoice> list) : super(counter,list);
+  LocationQuestionState(this.questionWithChoice,int counter,List<QuestionWithChoice> list,{this.listAddress}) : super(counter,list);
 
   @override
   String toString() {

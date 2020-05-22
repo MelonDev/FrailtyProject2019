@@ -28,6 +28,9 @@ class ResultProcessBloc extends Bloc<ResultProcessEvent, ResultProcessState> {
     var body = json.encode({"key": event.key, "answerPackId": event.answerPackId, "questionnaireName": event.questionnaireName, "dateTime": event.dateTime});
 
     var response = await http.post(url, body: body,headers: {'Content-type': 'application/json'});
+
+    print("RESULT :${response.body}");
+
     ResultAfterProcess resultAfterProcess = ResultAfterProcess.fromJson(jsonDecode(response.body));
 
     yield LoadedResultProcessState(resultAfterProcess);

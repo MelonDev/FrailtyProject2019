@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_thailand_provinces/dao/address_dao.dart';
+import 'package:flutter_thailand_provinces/provider/address_provider.dart';
 import 'package:frailty_project_2019/Design/result_page.dart';
+import 'package:frailty_project_2019/Model/AccountRegister.dart';
 import 'package:frailty_project_2019/Model/Answer.dart';
 import 'package:frailty_project_2019/Model/AnswerResultPack.dart';
 import 'package:frailty_project_2019/Model/Choice.dart';
@@ -60,7 +63,17 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
       yield* mapLoadQuestionEventToState(event);
     } else if (event is UploadQuestionEvent) {
       yield* mapUploadEventToState(event);
+    } else if (event is SearchingLocationEvent){
+      yield* mapSearchingEventToState(event);
     }
+  }
+
+  @override
+  Stream<QuestionnaireState> mapSearchingEventToState(SearchingLocationEvent event) async* {
+    List<AddressDao> list =
+    await AddressProvider.search(keyword: event.searchMessage);
+    //yield AddressRegisterState(event.account, listAddress: _filterZeroAddress(list));
+    yield LocationQuestionState(event.locationQuestionState.questionWithChoice, event.locationQuestionState.questionCounter, event.locationQuestionState.list,listAddress: list);
   }
 
   @override
@@ -259,7 +272,9 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
               generateNumber(conA), generateNumber(conB), count, listQWC);
         } else if (questionWithChoice.question.type
             .contains("location_multiply")) {
-          yield LocationQuestionState(questionWithChoice, count, listQWC);
+          List<AddressDao> list =
+          await AddressProvider.search(keyword: "");
+          yield LocationQuestionState(questionWithChoice, count, listQWC,listAddress: list);
         } else if (questionWithChoice.question.type.contains("multiply")) {
           yield MultiplyQuestionState(questionWithChoice, count, listQWC);
         } else if (questionWithChoice.question.type.contains("number")) {
@@ -364,7 +379,9 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
               generateNumber(conA), generateNumber(conB), count, listQWC);
         } else if (questionWithChoice.question.type
             .contains("location_multiply")) {
-          yield LocationQuestionState(questionWithChoice, count, listQWC);
+          List<AddressDao> list =
+          await AddressProvider.search(keyword: "");
+          yield LocationQuestionState(questionWithChoice, count, listQWC,listAddress: list);
         } else if (questionWithChoice.question.type.contains("multiply")) {
           yield MultiplyQuestionState(questionWithChoice, count, listQWC);
         } else if (questionWithChoice.question.type.contains("number")) {
@@ -400,6 +417,8 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
         null,
         [],
         null));
+
+    print("CHOICE ${questionWithChoice.choices != null ? questionWithChoice.choices.length : "NULL"}");
 
     print("H3");
 
@@ -484,7 +503,9 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
               generateNumber(conA), generateNumber(conB), count, listQWC);
         } else if (questionWithChoice.question.type
             .contains("location_multiply")) {
-          yield LocationQuestionState(questionWithChoice, count, listQWC);
+          List<AddressDao> list =
+          await AddressProvider.search(keyword: "");
+          yield LocationQuestionState(questionWithChoice, count, listQWC,listAddress: list);
         } else if (questionWithChoice.question.type.contains("multiply")) {
           yield MultiplyQuestionState(questionWithChoice, count, listQWC);
         } else if (questionWithChoice.question.type.contains("number")) {
@@ -580,7 +601,9 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
                 generateNumber(conA), generateNumber(conB), count, listQWC);
           } else if (questionWithChoice.question.type
               .contains("location_multiply")) {
-            yield LocationQuestionState(questionWithChoice, count, listQWC);
+            List<AddressDao> list =
+            await AddressProvider.search(keyword: "");
+            yield LocationQuestionState(questionWithChoice, count, listQWC,listAddress: list);
           } else if (questionWithChoice.question.type.contains("multiply")) {
             yield MultiplyQuestionState(questionWithChoice, count, listQWC);
           } else if (questionWithChoice.question.type.contains("number")) {

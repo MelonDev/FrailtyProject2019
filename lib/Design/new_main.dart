@@ -236,7 +236,7 @@ class _newMain extends State<NewMain>
           _state is UnAuthenticationState) {
         return managerMainLayout(context, _state);
       } else if (_state is ErrorAuthenticationState) {
-        _authenticationBloc.add(UnAuthenticatingLoginEvent());
+        //_authenticationBloc.add(UnAuthenticatingLoginEvent());
         return Material(
           color: Colors.red,
           child: Center(

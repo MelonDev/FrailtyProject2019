@@ -73,9 +73,9 @@ class OnDeviceQuestion {
 
     Database database = await initDatabase();
 
-    print(questionnaire);
-    print(currentKey);
-    print(choiceYouChoose);
+    print("questionnaire : $questionnaire");
+    print("currentKey : $currentKey");
+    print("choiceYouChoose : $choiceYouChoose");
 
     if (currentKey == null) {
       if (questionnaire != null) {
@@ -87,7 +87,7 @@ class OnDeviceQuestion {
           Map mapQuestion = mapsQuestion.first;
           var q = Question.fromMap(mapQuestion);
 
-          print(q.id);
+          print("q.id ${q.id}");
 
           List<Map> mapsChoice = await database
               .rawQuery(
@@ -264,14 +264,21 @@ class OnDeviceQuestion {
                   List<Map> choiceRaw = await database.rawQuery(
                       "SELECT * FROM $choiceTable  WHERE ($choiceId = '${choiceYouChoose.toUpperCase()}') ORDER BY $choicePosition ASC");
 
+                  print("choiceRaw : ${choiceRaw != null ? choiceRaw.length : "NULL"}");
+
                   if(choiceRaw.length == 0){
                     choiceRaw = await database.rawQuery(
                         "SELECT * FROM $choiceTable  WHERE ($choiceMessage = '$choiceYouChoose') ORDER BY $choicePosition ASC");
+
+                    print("choiceRaw 2 : ${choiceRaw != null ? choiceRaw.length : "NULL"}");
+
                   }
 
                   if(choiceRaw.length == 0){
                     choiceRaw = await database.rawQuery(
                         "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${currentKey.toLowerCase()}') ORDER BY $choicePosition ASC");
+
+                    print("choiceRaw 3 : ${choiceRaw != null ? choiceRaw.length : "NULL"}");
                   }
 
                   Map choiceRaws = choiceRaw.first;
@@ -282,8 +289,7 @@ class OnDeviceQuestion {
                   //print(qA1.id);
                   //print(choice.destinationId.length);
 
-                  print(choice.questionId.toLowerCase() == qA1.id.toLowerCase() &&
-                      choice.destinationId.length > 1);
+                  print("choice.questionId.toLowerCase() == qA1.id.toLowerCase() && choice.destinationId.length > 1 : ${choice.questionId.toLowerCase() == qA1.id.toLowerCase() && choice.destinationId.length > 1}");
 
                   if (choice.questionId.toLowerCase() == qA1.id.toLowerCase() &&
                       choice.destinationId.length > 1) {
@@ -306,6 +312,9 @@ class OnDeviceQuestion {
                       return null;
                     }
                   } else if (choice.destinationId.contains("-")) {
+
+                    print("choice.destinationId.contains('-') : ${choice.destinationId.contains("-")}");
+
                     List<Map> nextQuesRaw = await database.rawQuery(
                         "SELECT * FROM $questionTable  WHERE ($questionQuestionnaireId = '${qA1.questionnaireId.toUpperCase()}') AND ($questionCategory = '-') AND ($questionPosition > ${qA1.position}) ORDER BY $questionPosition ASC");
                     Map quesNextRaws = nextQuesRaw.first;
@@ -313,7 +322,11 @@ class OnDeviceQuestion {
 
                     List<Map> choiceListRaw = await database.rawQuery(
                         "SELECT * FROM $choiceTable  WHERE ($choiceQuestionId = '${quesNext.id.toLowerCase()}') ORDER BY $choicePosition ASC");
+
+                    print("choiceListRaw != null : ${choiceListRaw != null}");
+
                     if (choiceListRaw != null) {
+                      print("choiceListRaw : ${choiceListRaw.length}");
                       var choiceList = choiceListRaw.map((model) {
                         var q = Choice.fromMap(model);
                         return q;

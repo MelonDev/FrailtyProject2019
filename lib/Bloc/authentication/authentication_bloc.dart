@@ -7,6 +7,7 @@ import 'package:connectivity/connectivity.dart';
 import 'package:device_info/device_info.dart';
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -190,8 +191,9 @@ class AuthenticationBloc
                   _registerBloc.add(UpgradeToPersonnelEvent(
                       event.context, AccountRegister(user, firebase,"APPLE")));
                 }else {
+                  _registerBloc.add(LoadingEvent());
+                  yield* _mapGooglePassedToState(firebase);
                   _registerBloc.add(NoRegisterEvent());
-                  _mapGooglePassedToState(firebase);
                   Navigator.pop(event.context);
                 }
 
@@ -280,21 +282,37 @@ class AuthenticationBloc
       });
 
       print("insertInfo = $insertInfo");
+      print("GOOGLE ${_google.id}");
       if (insertInfo) {
         _registerBloc
             .add(InputInfoEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
       } else if (_google != null) {
         print("event.isUpgrade ${event.isUpgrade}");
 
-        if(event.isUpgrade){
-          print("UpgradeToPersonnelEvent");
-          _registerBloc
-              .add(UpgradeToPersonnelEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
+        if(event.isUpgrade != null){
+          if(event.isUpgrade){
+            print("UpgradeToPersonnelEvent");
+            _registerBloc
+                .add(UpgradeToPersonnelEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
+          }else {
+            print("Z1_1");
+            _registerBloc.add(LoadingEvent());
+
+            print("Z1_2");
+            yield* _mapGooglePassedToState(_google);
+            _registerBloc.add(NoRegisterEvent());
+            Navigator.pop(event.context);
+          }
         }else {
+          print("Z2_1");
+          _registerBloc.add(LoadingEvent());
+          print("Z2_2");
+          yield* _mapGooglePassedToState(_google);
           _registerBloc.add(NoRegisterEvent());
-          _mapGooglePassedToState(_google);
+
           Navigator.pop(event.context);
         }
+
 
 
       } else {
@@ -311,6 +329,8 @@ class AuthenticationBloc
     print("_mapGooglePassedToState");
 
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    print("ACCOUNT_USER_ID ${_google.id}");
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString("ACCOUNT_USER_ID", _google.id);
