@@ -1,3 +1,6 @@
+import 'package:frailty_project_2019/Tools/DateTools.dart';
+import 'package:intl/intl.dart';
+
 class ResultAfterProcess {
   final String questionnaireName;
   final String answerPackId;
@@ -11,9 +14,11 @@ class ResultAfterProcess {
   ResultAfterProcess.fromJson(Map<String, dynamic> json)
       : questionnaireName = json['questionnaireName'],
         answerPackId = json['answerPackId'],
+        //dateTime = json['dateTime'],
         dateTime = json['dateTime'],
         resultMessage = json['resultMessage'],
         score = double.parse((json['score']).toString()),
         percent = double.parse((json['percent']).toString());
+
 
 }

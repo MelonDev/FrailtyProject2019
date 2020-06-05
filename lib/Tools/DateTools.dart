@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class DateTools {
 
@@ -57,6 +58,28 @@ class DateTools {
 
     }
     return strMonth;
+  }
+
+ /*String dateToString(DateTime dateTime){
+    print(dateTime);
+    var formatter = new DateFormat('yyyy-MM-dd');
+    String formatted = formatter.format(dateTime);
+    print(formatted);
+    return formatted;
+  }
+
+  */
+
+  String stringDateToString(String dateTime){
+    var parsedDate = DateTime.parse(dateTime);
+    print(dateTime);
+    print(parsedDate);
+    //print(dateTime);
+    //var formatter = new DateFormat('yyyy-MM-dd');
+    //String formatted = formatter.format(dateTime);
+    //print(formatted);
+    //return formatted;
+    return "";
   }
 
 }

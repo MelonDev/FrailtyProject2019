@@ -1,4 +1,3 @@
-
 import 'package:dynamic_theme/dynamic_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,13 +8,18 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class ResultPage extends StatefulWidget {
-
   final String keyS;
   final String answerPackId;
   final String questionnaireName;
   final String dateTime;
 
-  ResultPage({Key key,this.answerPackId,this.questionnaireName,this.dateTime,this.keyS}) : super(key: key);
+  ResultPage(
+      {Key key,
+      this.answerPackId,
+      this.questionnaireName,
+      this.dateTime,
+      this.keyS})
+      : super(key: key);
 
   @override
   _ResultPageState createState() => _ResultPageState();
@@ -24,7 +28,6 @@ class ResultPage extends StatefulWidget {
 class _ResultPageState extends State<ResultPage> {
   ThemeData _themeData;
 
-
   ResultProcessBloc _resultProcessBloc;
 
   @override
@@ -32,7 +35,6 @@ class _ResultPageState extends State<ResultPage> {
     super.initState();
 
     _resultProcessBloc = BlocProvider.of<ResultProcessBloc>(this.context);
-
   }
 
   @override
@@ -45,7 +47,8 @@ class _ResultPageState extends State<ResultPage> {
     print(widget.questionnaireName);
     print(widget.dateTime);
 
-    _resultProcessBloc.add(LoadingResultProcessEvent(widget.keyS,widget.answerPackId,widget.questionnaireName,widget.dateTime));
+    _resultProcessBloc.add(LoadingResultProcessEvent(widget.keyS,
+        widget.answerPackId, widget.questionnaireName, widget.dateTime));
 
     return BlocBuilder<ResultProcessBloc, ResultProcessState>(
         builder: (context, _state) {
@@ -53,7 +56,9 @@ class _ResultPageState extends State<ResultPage> {
         return Scaffold(
           body: Material(
             child: Container(
-                color: _themeData.brightness == Brightness.dark ? _themeData.backgroundColor : _themeData.primaryColor,
+                color: _themeData.brightness == Brightness.dark
+                    ? _themeData.backgroundColor
+                    : _themeData.primaryColor,
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -70,7 +75,8 @@ class _ResultPageState extends State<ResultPage> {
                         padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
                         child: Text("กำลังโหลด..",
                             style: TextStyle(
-                                color: _themeData.primaryTextTheme.subtitle1.color,
+                                color:
+                                    _themeData.primaryTextTheme.subtitle1.color,
                                 fontSize: 18,
                                 fontFamily: 'SukhumvitSet',
                                 fontWeight: FontWeight.normal)),
@@ -114,7 +120,9 @@ class _ResultPageState extends State<ResultPage> {
           body: bodyWidget(_state),
         );
       } else {
-        return Container(color: Colors.blue,);
+        return Container(
+          color: Colors.blue,
+        );
       }
     });
   }
@@ -127,7 +135,7 @@ class _ResultPageState extends State<ResultPage> {
       child: SfRadialGauge(axes: <RadialAxis>[
         RadialAxis(
             minimum: 0,
-            maximum: 100 ,
+            maximum: 100,
             showAxisLine: false,
             ranges: <GaugeRange>[
               GaugeRange(
@@ -167,12 +175,16 @@ class _ResultPageState extends State<ResultPage> {
                   endWidth: 50)
             ],
             pointers: <GaugePointer>[
-              NeedlePointer(value: _state.resultAfterProcess.percent.toDouble(), enableAnimation: true, needleLength: 0.8)
+              NeedlePointer(
+                  value: _state.resultAfterProcess.percent.toDouble(),
+                  enableAnimation: true,
+                  needleLength: 0.8)
             ],
             annotations: <GaugeAnnotation>[
               GaugeAnnotation(
                   widget: Container(
-                      child: Text(getMessage(_state.resultAfterProcess.resultMessage),
+                      child: Text(
+                          getMessage(_state.resultAfterProcess.resultMessage),
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -188,10 +200,30 @@ class _ResultPageState extends State<ResultPage> {
 
   Widget bodyWidget(LoadedResultProcessState _state) {
     return ListView.builder(
-        itemCount: 2,
+        itemCount: _state.resultAfterProcess.questionnaireName
+            .contains("24129D77-F289-4634-A34F-E00C623CCF5F") ? 2 :1,
         itemBuilder: (BuildContext context, int position) {
-          if (position == 0) {
-            return gaugeWidget(_state);
+          if (_state.resultAfterProcess.questionnaireName
+              .contains("24129D77-F289-4634-A34F-E00C623CCF5F")) {
+            if (position == 0) {
+              return gaugeWidget(_state);
+            } else {
+              return Container(
+                decoration: BoxDecoration(
+                    color: _themeData.brightness == Brightness.light
+                        ? _themeData.backgroundColor
+                        : _themeData.primaryColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                        bottomLeft: Radius.circular(10),
+                        bottomRight: Radius.circular(10))),
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                margin: EdgeInsets.only(left: 20, right: 20, top: 30),
+                child: getCard(_state),
+              );
+            }
           } else {
             return Container(
               decoration: BoxDecoration(
@@ -204,7 +236,7 @@ class _ResultPageState extends State<ResultPage> {
                       bottomLeft: Radius.circular(10),
                       bottomRight: Radius.circular(10))),
               width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.only(top: 10,bottom: 10),
+              padding: EdgeInsets.only(top: 10, bottom: 10),
               margin: EdgeInsets.only(left: 20, right: 20, top: 30),
               child: getCard(_state),
             );
@@ -212,146 +244,125 @@ class _ResultPageState extends State<ResultPage> {
         });
   }
 
-  Widget getCard(LoadedResultProcessState _state){
+  Widget getCard(LoadedResultProcessState _state) {
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             RichText(
-                text: TextSpan(
-                    children: <TextSpan>[
-                      TextSpan(
-                          text: "ไอดี: ",
-                          style: TextStyle(
-                              color: _themeData
-                                  .primaryTextTheme.subtitle1.color
-                                  .withAlpha(200),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              fontFamily: _themeData
-                                  .primaryTextTheme.subtitle1.fontFamily)),
-                      TextSpan(
-                          text:
-                          "${_state.resultAfterProcess.answerPackId}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: _themeData
-                                  .primaryTextTheme.subtitle1.color
-                                  .withAlpha(170),
-                              fontSize: 18,
-                              fontFamily: _themeData.primaryTextTheme
-                                  .subtitle.fontFamily)),
-                    ]),
+                text: TextSpan(children: <TextSpan>[
+                  TextSpan(
+                      text: "ไอดี: ",
+                      style: TextStyle(
+                          color: _themeData.primaryTextTheme.subtitle1.color
+                              .withAlpha(200),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          fontFamily: _themeData
+                              .primaryTextTheme.subtitle1.fontFamily)),
+                  TextSpan(
+                      text: "${_state.resultAfterProcess.answerPackId}",
+                      style: TextStyle(
+                          fontWeight: FontWeight.normal,
+                          color: _themeData.primaryTextTheme.subtitle1.color
+                              .withAlpha(170),
+                          fontSize: 18,
+                          fontFamily:
+                              _themeData.primaryTextTheme.subtitle.fontFamily)),
+                ]),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis),
             SizedBox(
               height: 10,
             ),
             RichText(
-              text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: "วันที่ทำ: ",
-                        style: TextStyle(
-                            color: _themeData
-                                .primaryTextTheme.subtitle1.color
-                                .withAlpha(200),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            fontFamily: _themeData
-                                .primaryTextTheme.subtitle1.fontFamily)),
-                    TextSpan(
-                        text:
-                        "${_loadDate(_state.resultAfterProcess.dateTime)}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: _themeData
-                                .primaryTextTheme.subtitle1.color
-                                .withAlpha(170),
-                            fontSize: 18,
-                            fontFamily: _themeData
-                                .primaryTextTheme.bodyText1.fontFamily)),
-                  ]),
+              text: TextSpan(children: <TextSpan>[
+                TextSpan(
+                    text: "วันที่ทำ: ",
+                    style: TextStyle(
+                        color: _themeData.primaryTextTheme.subtitle1.color
+                            .withAlpha(200),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily:
+                            _themeData.primaryTextTheme.subtitle1.fontFamily)),
+                TextSpan(
+                    text: "${_loadDate(_state.resultAfterProcess.dateTime)}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: _themeData.primaryTextTheme.subtitle1.color
+                            .withAlpha(170),
+                        fontSize: 18,
+                        fontFamily:
+                            _themeData.primaryTextTheme.bodyText1.fontFamily)),
+              ]),
               maxLines: 1,
             ),
             SizedBox(
               height: 10,
             ),
             RichText(
-              text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: "ชื่อชุดแบบทดสอบ: ",
-                        style: TextStyle(
-                            color: _themeData
-                                .primaryTextTheme.subtitle1.color
-                                .withAlpha(200),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            fontFamily: _themeData
-                                .primaryTextTheme.subtitle1.fontFamily)),
-                    TextSpan(
-                        text:
-                        "\n${_state.resultAfterProcess.questionnaireName}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: _themeData
-                                .primaryTextTheme.subtitle1.color
-                                .withAlpha(170),
-                            fontSize: 18,
-                            fontFamily: _themeData
-                                .primaryTextTheme.bodyText1.fontFamily)),
-                  ]),
+              text: TextSpan(children: <TextSpan>[
+                TextSpan(
+                    text: "ชื่อชุดแบบทดสอบ: ",
+                    style: TextStyle(
+                        color: _themeData.primaryTextTheme.subtitle1.color
+                            .withAlpha(200),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily:
+                            _themeData.primaryTextTheme.subtitle1.fontFamily)),
+                TextSpan(
+                    text: "\n${_state.resultAfterProcess.questionnaireName}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: _themeData.primaryTextTheme.subtitle1.color
+                            .withAlpha(170),
+                        fontSize: 18,
+                        fontFamily:
+                            _themeData.primaryTextTheme.bodyText1.fontFamily)),
+              ]),
             ),
             SizedBox(
               height: 10,
             ),
             RichText(
-              text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: "คะแนนที่ได้: ",
-                        style: TextStyle(
-                            color: _themeData
-                                .primaryTextTheme.subtitle1.color
-                                .withAlpha(200),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            fontFamily: _themeData
-                                .primaryTextTheme.subtitle1.fontFamily)),
-                    TextSpan(
-                        text:
-                        "${_state.resultAfterProcess.score.toString()}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: _themeData
-                                .primaryTextTheme.subtitle1.color
-                                .withAlpha(170),
-                            fontSize: 18,
-                            fontFamily: _themeData
-                                .primaryTextTheme.bodyText1.fontFamily)),
-                  ]),
+              text: TextSpan(children: <TextSpan>[
+                TextSpan(
+                    text: "คะแนนที่ได้: ",
+                    style: TextStyle(
+                        color: _themeData.primaryTextTheme.subtitle1.color
+                            .withAlpha(200),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        fontFamily:
+                            _themeData.primaryTextTheme.subtitle1.fontFamily)),
+                TextSpan(
+                    text: "${_state.resultAfterProcess.score.toString()}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.normal,
+                        color: _themeData.primaryTextTheme.subtitle1.color
+                            .withAlpha(170),
+                        fontSize: 18,
+                        fontFamily:
+                            _themeData.primaryTextTheme.bodyText1.fontFamily)),
+              ]),
               maxLines: 1,
             ),
           ],
         ));
   }
-  
-  String getMessage(String str){
-    
-    if(str.contains("non Pre-frail")){
-return "ไม่เป็นภาวะเปราะบาง";
-    }else if(str.contains("e-frail")){
+
+  String getMessage(String str) {
+    if (str.contains("non Pre-frail")) {
+      return "ไม่เป็นภาวะเปราะบาง";
+    } else if (str.contains("e-frail")) {
       return "สุ่มเสี่ยงภาวะเปราะบาง";
-
-    }else {
+    } else {
       return "เป็นภาวะเปราะบาง";
-
     }
-
   }
-
 
   String _loadDateForLabel(String date) {
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -362,7 +373,11 @@ return "ไม่เป็นภาวะเปราะบาง";
   String _loadDate(String date) {
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     DateTime dateTime = formatter.parse(date);
-    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543} (${dateTime.hour}:${dateTime.minute})";
+
+    var dateFormat = new DateFormat('HH:mm');
+    String formattedDate = dateFormat.format(dateTime);
+
+    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543} ($formattedDate)";
   }
 
   String _getMonthName(int monthInt) {

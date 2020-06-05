@@ -39,7 +39,7 @@ class _settingPage extends State<SettingPage> {
     await SharedPreferences.getInstance().then((onValue) {
       setState(() {
         _preferences = onValue;
-        _customDarkMode = _preferences.getBool("CUSTOM_DARKMODE");
+        _customDarkMode = _preferences.getBool("CUSTOM_DARKMODE") == null ? false : _preferences.getBool("CUSTOM_DARKMODE");
       });
     });
   }
@@ -206,76 +206,116 @@ class _settingPage extends State<SettingPage> {
   }
 
   List<Widget> _loadDarkSetting() {
-    return [
-      CSHeader(
-        'ธีม',
-        textColor: Theme.of(context).primaryTextTheme.bodyText1.color,
-      ),
-      CSWidget(
-        CSControl(
-          'ปรับแต่งโหมดธีมสีเอง',
-          CupertinoSwitch(
-            activeColor: Colors.teal,
-            value: _customDarkMode,
-            onChanged: (bool value) {
-              _preferences.setBool("CUSTOM_DARKMODE", value);
-              setState(() {
-                _customDarkMode = value;
-              });
-              if (value == false) {
-                DynamicTheme.of(context).setBrightness(
-                    MediaQuery.of(context).platformBrightness == Brightness.dark
-                        ? Brightness.dark
-                        : Brightness.light);
-              }
-            },
-          ),
-          fontSize: 18,
-          style: CSWidgetStyle(
-            icon: Icon(
-              CupertinoIcons.brightness,
-              size: 35,
-            ),
-          ),
-          textColor: Theme.of(context).appBarTheme.textTheme.subtitle1.color,
-          backgroudColor: Theme.of(context).primaryColor,
+    print("_customDarkMode $_customDarkMode");
+    try {
+      return [
+        CSHeader(
+          'ธีม',
+          textColor: Theme
+              .of(context)
+              .primaryTextTheme
+              .bodyText1
+              .color,
         ),
-        backgroudColor: Theme.of(context).primaryColor,
-      ),
-      _customDarkMode
-          ? CSHeader(
-              'โหมดธีมสี',
-              textColor: Theme.of(context).primaryTextTheme.bodyText1.color,
-            )
-          : Container(),
-      _customDarkMode
-          ? CSSelection(
-              ['สว่าง', 'มืด'],
-              (index) {
-                index == 0
-                    ? DynamicTheme.of(context).setBrightness(Brightness.light)
-                    : DynamicTheme.of(context).setBrightness(Brightness.dark);
+        CSWidget(
+          CSControl(
+            'ปรับแต่งโหมดธีมสีเอง',
+            CupertinoSwitch(
+              activeColor: Colors.teal,
+              value: (_customDarkMode),
+              onChanged: (bool value) {
+                _preferences.setBool("CUSTOM_DARKMODE", value);
+                setState(() {
+                  _customDarkMode = value;
+                });
+                if (value == false) {
+                  DynamicTheme.of(context).setBrightness(
+                      MediaQuery
+                          .of(context)
+                          .platformBrightness == Brightness.dark
+                          ? Brightness.dark
+                          : Brightness.light);
+                }
               },
-              currentSelection:
-                  DynamicTheme.of(context).brightness == Brightness.light
-                      ? 0
-                      : 1,
-              backgroudColor: Theme.of(context).primaryColor,
-              fontColor: Theme.of(context).primaryTextTheme.bodyText1.color,
-              fontFamiry:
-                  Theme.of(context).primaryTextTheme.bodyText1.fontFamily,
-              fontSize: 20,
-              checkActiveColor:
-                  DynamicTheme.of(context).brightness == Brightness.light
-                      ? Theme.of(context).accentColor
-                      : Colors.white,
-              checkSize: 20,
-            )
-          : Container(),
-    ];
+            ),
+            fontSize: 18,
+            style: CSWidgetStyle(
+              icon: Icon(
+                CupertinoIcons.brightness,
+                size: 35,
+              ),
+            ),
+            textColor: Theme
+                .of(context)
+                .appBarTheme
+                .textTheme
+                .subtitle1
+                .color,
+            backgroudColor: Theme
+                .of(context)
+                .primaryColor,
+          ),
+          backgroudColor: Theme
+              .of(context)
+              .primaryColor,
+        ),
+        _customDarkMode
+            ? CSHeader(
+          'โหมดธีมสี',
+          textColor: Theme
+              .of(context)
+              .primaryTextTheme
+              .bodyText1
+              .color,
+        )
+            : Container(),
+        _customDarkMode
+            ? CSSelection(
+          ['สว่าง', 'มืด'],
+              (index) {
+            index == 0
+                ? DynamicTheme.of(context).setBrightness(Brightness.light)
+                : DynamicTheme.of(context).setBrightness(Brightness.dark);
+          },
+          currentSelection:
+          DynamicTheme
+              .of(context)
+              .brightness == Brightness.light
+              ? 0
+              : 1,
+          backgroudColor: Theme
+              .of(context)
+              .primaryColor,
+          fontColor: Theme
+              .of(context)
+              .primaryTextTheme
+              .bodyText1
+              .color,
+          fontFamiry:
+          Theme
+              .of(context)
+              .primaryTextTheme
+              .bodyText1
+              .fontFamily,
+          fontSize: 20,
+          checkActiveColor:
+          DynamicTheme
+              .of(context)
+              .brightness == Brightness.light
+              ? Theme
+              .of(context)
+              .accentColor
+              : Colors.white,
+          checkSize: 20,
+        )
+            : Container(),
+      ];
+    }catch (e, s) {
+      return [];
+    }
   }
 
-  /*
+/*
   List<Widget> _loadLoginSetting(AuthenticatedState state) {
     return [
       CSHeader(

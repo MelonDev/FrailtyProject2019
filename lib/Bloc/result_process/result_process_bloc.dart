@@ -25,7 +25,10 @@ class ResultProcessBloc extends Bloc<ResultProcessEvent, ResultProcessState> {
 
     String url =
         'https://melondev-frailty-project.herokuapp.com/api/result/calculating';
-    var body = json.encode({"key": event.key, "answerPackId": event.answerPackId, "questionnaireName": event.questionnaireName, "dateTime": event.dateTime});
+    //var body = json.encode({"key": event.key, "answerPackId": event.answerPackId, "questionnaireName": event.questionnaireName, "dateTime": event.dateTime});
+
+    var body = json.encode({"questionnaireName": event.key, "answerPackId": event.answerPackId});
+
 
     var response = await http.post(url, body: body,headers: {'Content-type': 'application/json'});
 

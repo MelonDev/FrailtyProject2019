@@ -57,7 +57,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
       if (response != null) {
         List responseJson = json.decode(response.body);
         List<Questionnaire> snapshot =
-            responseJson.map((m) => new Questionnaire.fromJson(m)).toList();
+          responseJson.map((m) => new Questionnaire.fromJson(m)).toList();
         yield QuestionnaireCatalogueState(snapshot);
       } else {
         yield ErrorCatalogueState();
@@ -73,8 +73,26 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     yield LoadingCatalogueState();
 
     try {
-      var questionnaireList =
+      List<Questionnaire> questionnaireList =
           await OnDeviceQuestionnaires().getQuestionnaireDatabase();
+
+      List<Questionnaire> list = [];
+      
+      list.add(questionnaireList[1]);
+      list.add(questionnaireList[0]);
+
+
+      for (Questionnaire questionnaire in questionnaireList){
+        print(questionnaire.name);
+        if(!questionnaire.id.contains("24129d77-f289-4634-a34f-e00c623ccf5f".toUpperCase()) && !questionnaire.id.contains("5c942947-12ef-4f31-a7ed-6793ad85f609".toUpperCase())){
+
+          print("questionnaire ${questionnaire.name}");
+
+          list.add(questionnaire);
+        }
+      }
+        
+      
 /*
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", null, null);
       //var a = await OnDeviceQuestion().nextQuesion("5c942947-12ef-4f31-a7ed-6793ad85f609", "e1a09147-1b16-48d2-86f3-16535d415902", null);
@@ -262,8 +280,7 @@ class CatalogueBloc extends Bloc<CatalogueEvent, CatalogueState> {
     for (var data in originalList) {
       var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
       DateTime dateTime = formatter.parse(data.answerPack.dateTime);
-      DateTime _date =
-      DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0, 0, 0);
+      DateTime _date = DateTime(dateTime.year, dateTime.month, dateTime.day, 0, 0, 0, 0, 0);
 
       if (_datetime == null) {
         _datetime = _date;

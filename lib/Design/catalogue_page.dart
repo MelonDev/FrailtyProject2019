@@ -506,7 +506,11 @@ class CompletedTab extends StatelessWidget {
   String _loadDate(String date) {
     var formatter = new DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     DateTime dateTime = formatter.parse(date);
-    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543} (${dateTime.hour}:${dateTime.minute})";
+
+    var dateFormat = new DateFormat('HH:mm');
+    String formattedDate = dateFormat.format(dateTime);
+
+    return "${dateTime.day} ${_getMonthName(dateTime.month)} ${dateTime.year + 543} ($formattedDate)";
   }
 
   String _getMonthName(int monthInt) {
@@ -1029,7 +1033,7 @@ class QuestionnaireTab extends StatelessWidget {
 
   ThemeData _themeData;
 
-  final List<String> _tabList = ["ชุดหลัก", "ชุดรอง"];
+  final List<String> _tabList = ["ชุดหลัก", "เพิ่มเติม"];
 
   @override
   Widget build(BuildContext context) {

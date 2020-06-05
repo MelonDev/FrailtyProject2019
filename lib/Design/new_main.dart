@@ -574,7 +574,7 @@ class _newMain extends State<NewMain>
                       children: <Widget>[
                         Container(
                           constraints:
-                              BoxConstraints(maxWidth: 560, minHeight: 500),
+                              BoxConstraints(maxWidth: 560, minHeight: 400),
                           width: (MediaQuery.of(context).size.width / 19) * 6.9,
                           child: _floatingPanel(context, _state),
                         )
@@ -932,7 +932,7 @@ class _newMain extends State<NewMain>
             ),
           ),
           Container(
-            constraints: BoxConstraints(maxWidth: 560, minHeight: 500),
+            constraints: BoxConstraints(maxWidth: 560, minHeight: 400),
             child: _floatingPanel(context, _state),
           )
         ],

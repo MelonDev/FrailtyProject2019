@@ -528,16 +528,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 'แบบทดสอบภาวะเปราะบาง',
                                                 textAlign: TextAlign.left,
                                                 style: TextStyle(
-                                                    fontFamily: 'SukhumvitSet',
+                                                  fontFamily: 'SukhumvitSet',
                                                     fontSize: _isIPad(
-                                                            MediaQuery.of(
-                                                                context))
+                                                        MediaQuery.of(
+                                                            context))
                                                         ? 28
                                                         : 23,
                                                     color: Colors.teal[600]
                                                         .withOpacity(0.8),
                                                     fontWeight:
-                                                        FontWeight.bold),
+                                                    FontWeight.bold),
                                               ),
                                               Text(
                                                 'ภาวะเปราะบาง คือ ภาวะหนึ่งของร่างกายซึ่งอยู่ระหว่าง ภาวะที่สามารถทำงานต่างๆได้ กับ ภาวะไร้ความสามารถ หรือก็คือ ระหว่างสุขภาพดี กับความเป็นโรค โดยในผู้สูงอายุ ช่วงเวลาดังกล่าวเป็นช่วงที่มีความสุ่มเสี่ยงจะเกิดการพลัดตกหรือหกล้ม',
