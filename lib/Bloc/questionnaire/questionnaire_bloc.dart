@@ -424,6 +424,7 @@ class QuestionnaireBloc extends Bloc<QuestionnaireEvent, QuestionnaireState> {
 
     SharedPreferences preferences = await SharedPreferences.getInstance();
     preferences.setString("CURRENT_ANSWERPACK", event.answerPackId);
+    print("event.answerPackId : ${event.answerPackId}");
 
     if (questionWithChoice.question.type.contains("FINISHED")) {
       yield FinishedQuestionState();

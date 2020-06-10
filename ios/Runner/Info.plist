@@ -15,7 +15,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -30,17 +30,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<string>NO</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUsageDescription</key>
-	<string>Always And In Use Permission</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Always Permission</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>When In Use Permission</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
@@ -64,5 +58,9 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location when in the background.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open and in the background.</string>
 </dict>
 </plist>

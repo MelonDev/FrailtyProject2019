@@ -41,7 +41,6 @@ class AuthenticationBloc
 
   GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
-      'https://www.googleapis.com/auth/contacts.readonly',
     ],
   );
 
@@ -88,6 +87,7 @@ class AuthenticationBloc
       preferences.remove("ACCOUNT_USER_PERSONNEL");
       preferences.remove("ACCOUNT_USER_DEPARTMENT");
       preferences.remove("ACCOUNT_USER_BIRTHDATE");
+      preferences.remove("CURRENT_ANSWERPACK");
       print("SignOut Successful");
       yield UnAuthenticationState();
     } catch (error) {
@@ -163,7 +163,9 @@ class AuthenticationBloc
                 print("AP4");
                 if (onValueAccount != null) {
                   user = onValueAccount.user;
-                  Account account = event.account == null ? (await loadAccountFromHeroku(onValueAccount.user)) : event.account ;
+                  Account account = event.account == null
+                      ? (await loadOAuthAccountFromHeroku(onValueAccount.user))
+                      : event.account;
 
                   print(user.uid);
 
@@ -181,22 +183,20 @@ class AuthenticationBloc
 
               if (insertInfo) {
                 _registerBloc.add(InputInfoEvent(
-                    event.context, AccountRegister(user, firebase,"APPLE")));
+                    event.context, AccountRegister(user, firebase, "APPLE")));
               } else if (firebase != null) {
-
                 print("event.isUpgrade ${event.isUpgrade}");
 
-                if(event.isUpgrade){
+                if (event.isUpgrade) {
                   print("UpgradeToPersonnelEvent");
                   _registerBloc.add(UpgradeToPersonnelEvent(
-                      event.context, AccountRegister(user, firebase,"APPLE")));
-                }else {
+                      event.context, AccountRegister(user, firebase, "APPLE")));
+                } else {
                   _registerBloc.add(LoadingEvent());
                   yield* _mapGooglePassedToState(firebase);
                   _registerBloc.add(NoRegisterEvent());
                   Navigator.pop(event.context);
                 }
-
               } else {
                 yield UnAuthenticationState();
                 _registerBloc.add(MainLoginEvent());
@@ -255,7 +255,9 @@ class AuthenticationBloc
             if (onValueAccount != null) {
               user = onValueAccount.user;
 
-              Account account = event.account == null ? (await loadAccountFromHeroku(onValueAccount.user)) : event.account ;
+              Account account = event.account == null
+                  ? (await loadOAuthAccountFromHeroku(onValueAccount.user))
+                  : event.account;
 
               if (account.loginType.length > 0) {
                 return account;
@@ -284,17 +286,17 @@ class AuthenticationBloc
       print("insertInfo = $insertInfo");
       print("GOOGLE ${_google.id}");
       if (insertInfo) {
-        _registerBloc
-            .add(InputInfoEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
+        _registerBloc.add(InputInfoEvent(
+            event.context, AccountRegister(user, _google, "GOOGLE")));
       } else if (_google != null) {
         print("event.isUpgrade ${event.isUpgrade}");
 
-        if(event.isUpgrade != null){
-          if(event.isUpgrade){
+        if (event.isUpgrade != null) {
+          if (event.isUpgrade) {
             print("UpgradeToPersonnelEvent");
-            _registerBloc
-                .add(UpgradeToPersonnelEvent(event.context, AccountRegister(user, _google,"GOOGLE")));
-          }else {
+            _registerBloc.add(UpgradeToPersonnelEvent(
+                event.context, AccountRegister(user, _google, "GOOGLE")));
+          } else {
             print("Z1_1");
             _registerBloc.add(LoadingEvent());
 
@@ -303,7 +305,7 @@ class AuthenticationBloc
             _registerBloc.add(NoRegisterEvent());
             Navigator.pop(event.context);
           }
-        }else {
+        } else {
           print("Z2_1");
           _registerBloc.add(LoadingEvent());
           print("Z2_2");
@@ -312,9 +314,6 @@ class AuthenticationBloc
 
           Navigator.pop(event.context);
         }
-
-
-
       } else {
         yield UnAuthenticationState();
         _registerBloc.add(MainLoginEvent());
@@ -375,6 +374,7 @@ class AuthenticationBloc
         }
 
         print("TEST A");
+        print("event.message == null : ${event.message == null}");
         if (event.message == null) {
           yield AuthenticatingState(message: "กำลังล็อคอิน..");
         } else {
@@ -382,17 +382,21 @@ class AuthenticationBloc
         }
 
         var _auth = await _firebaseAuth.currentUser().then((onValue) async {
+          print("onValue != null : $onValue");
           if (onValue != null) {
-            return loadAccountFromHeroku(onValue);
+            return loadOAuthAccountFromHeroku(onValue);
           } else {
-            return null;
+            return loadAccountFromHeroku();
           }
         });
+
+        print("_auth : ${_auth != null ? _auth.id : null}");
 
         yield AuthenticatingState(message: "กำลังตรวจสอบฐานข้อมูล..");
 
         if (_auth != null) {
           SharedPreferences preferences = await SharedPreferences.getInstance();
+          print("_auth.id : ${_auth.id}");
           preferences.setString("USER_ID", _auth.id.toUpperCase());
 
           yield AuthenticatedState(account: _auth);
@@ -433,7 +437,7 @@ class AuthenticationBloc
       yield AuthenticatingState(message: "กำลังล็อคอิน..");
       var _auth = await _firebaseAuth.currentUser().then((onValue) async {
         if (onValue != null) {
-          return loadAccountFromHeroku(onValue);
+          return loadOAuthAccountFromHeroku(onValue);
         } else {
           return null;
         }
@@ -472,16 +476,39 @@ class AuthenticationBloc
     //Account account = Account.fromJson(jsonDecode(response.body));
   }
 
-  Future<Account> loadAccountFromHeroku(FirebaseUser user) async {
+  Future<Account> loadOAuthAccountFromHeroku(FirebaseUser user) async {
     String url =
         'https://melondev-frailty-project.herokuapp.com/api/account/showDetailFromId';
     Map map = {"id": "", "oauth": user.uid.toString()};
     var response = await http.post(url, body: map);
-    print("loadAccountFromHeroku");
+    print("loadOAuthAccountFromHeroku");
     print(response.body);
     Account account = Account.fromJson(jsonDecode(response.body));
 
     return account;
+  }
+
+  Future<Account> loadAccountFromHeroku() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    String id = preferences.getString("ACCOUNT_USER_ID") ?? null;
+
+    print("ID: $id");
+
+    if (id != null) {
+      print("id != null: ${id != null}");
+      String url =
+          'https://melondev-frailty-project.herokuapp.com/api/account/showDetailFromId';
+      Map map = {"id": id, "oauth": ""};
+      var response = await http.post(url, body: map);
+      print("loadAccountFromHeroku");
+      print(response.body);
+      Account account = Account.fromJson(jsonDecode(response.body));
+
+      return account;
+    } else {
+      print("id == null: ${id == null}");
+      return null;
+    }
   }
 
   void goToQuestion(BuildContext context) {

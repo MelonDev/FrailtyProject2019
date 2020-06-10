@@ -93,7 +93,10 @@ class OnLocalDatabase {
     String formatted = formatter.format(now);
 
     String uuid = Uuid().v4().toUpperCase();
-    final String userId = preferences.getString("USER_ID");
+    //final String userId = preferences.getString("USER_ID");
+    final String userId = preferences.getString("ACCOUNT_USER_ID");
+    //print("userIds: $userId}");
+
 
     AnswerPack answerPack = AnswerPack(
         id: uuid.toUpperCase(),
@@ -266,14 +269,21 @@ class OnLocalDatabase {
   Future<int> getCounter(String answerPackIds) async {
     Database database = await _initDatabase();
 
-    List<Map> list = await database
-        .rawQuery(
-            "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackIds.toUpperCase()}')")
-        .then((onValue) => onValue);
+    if(answerPackIds != null) {
+      print("getCounter - answerPackIds : $answerPackIds");
 
-    print(list.length);
+      List<Map> list = await database
+          .rawQuery(
+          "SELECT * FROM $answerTable WHERE ($answerAnswerPackId = '${answerPackIds
+              .toUpperCase()}')")
+          .then((onValue) => onValue);
 
-    return list.length;
+      print(list.length);
+
+      return list.length;
+    }else {
+      return 0;
+    }
   }
 
   Future<Answer> findLastAnswer(String answerPackId) async {

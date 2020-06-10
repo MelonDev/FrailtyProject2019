@@ -5,8 +5,7 @@ import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:permission_handler/permission_handler.dart';
-import 'package:geolocator/geolocator.dart';
+//import 'package:permission_handler/permission_handler.dart';
 
 import 'package:auto_size_text/auto_size_text.dart';
 
@@ -1266,6 +1265,7 @@ class _locationWidget extends State<LocationPage> {
     );
   }
 
+  /*
   PermissionStatus permissionStatus;
 
   @override
@@ -1301,6 +1301,9 @@ class _locationWidget extends State<LocationPage> {
     _update(statuss);
   }
 
+
+   */
+  /*
   void getLocation() async {
     GeolocationStatus geolocationStatus =
         await Geolocator().checkGeolocationPermissionStatus();
@@ -1320,6 +1323,9 @@ class _locationWidget extends State<LocationPage> {
     }
   }
 
+   */
+
+  /*
   Future<bool> _requestPermission(PermissionGroup permission) async {
     final PermissionHandler _permissionHandler = PermissionHandler();
     var result = await _permissionHandler.requestPermissions([permission]);
@@ -1329,9 +1335,11 @@ class _locationWidget extends State<LocationPage> {
     return false;
   }
 
+*/
+
   @override
   Widget build(BuildContext context) {
-    prefix2.print(permissionStatus);
+    //prefix2.print(permissionStatus);
     return Container(
       color: Colors.white,
       child: SafeArea(
@@ -1426,7 +1434,7 @@ class _locationWidget extends State<LocationPage> {
                                                         .id,
                                                     ques.question
                                                         .questionnaireId);*/
-                                                getLocation();
+                                                //getLocation();
                                               },
                                               child: Container(
                                                 margin: position == 0
@@ -1479,6 +1487,8 @@ class _locationWidget extends State<LocationPage> {
       ),
     );
   }
+
+
 }
 
 class TextInputPage extends StatefulWidget {

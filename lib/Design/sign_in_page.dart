@@ -550,14 +550,16 @@ class _SignInPageState extends State<SignInPage> {
           child: PinCodeTextField(
             length: 4,
             inputFormatters: [UpperCaseTextFormatter()],
-            inactiveColor: Colors.redAccent,
             obsecureText: false,
             animationType: AnimationType.fade,
-            shape: PinCodeFieldShape.box,
             animationDuration: Duration(milliseconds: 200),
-            borderRadius: BorderRadius.circular(5),
-            fieldHeight: 60,
-            fieldWidth: 50,
+            pinTheme: PinTheme(
+              borderRadius: BorderRadius.circular(5),
+              fieldHeight: 60,
+              fieldWidth: 50,
+              shape: PinCodeFieldShape.box,
+              inactiveColor: Colors.redAccent,
+            ),
             autoFocus: true,
             backgroundColor: _theme.bottomAppBarColor,
             textStyle: TextStyle(

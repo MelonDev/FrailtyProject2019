@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "286931058500-11i4233datg2ol1q30q5lki7f4cgvlk6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melondev.frailty_project_2019",
+            "certificate_hash": "8f89e2ee5c253160238b3c4fcc91495072832b1f"
+          }
+        },
+        {
+          "client_id": "286931058500-ncmmeoc4f9k8197i58pipbl0au9mt71n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.melondev.frailty_project_2019",
+            "certificate_hash": "0aaf6882cde7bfd519534ae049dd205fb720b61c"
+          }
+        },
+        {
           "client_id": "286931058500-nc666jsr5i8dh0u8netspfe75c65vahc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -38,6 +54,13 @@
             {
               "client_id": "286931058500-g2ls8244it9p1c3d68oecfp41f48koss.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "286931058500-aqjfncih4tnavub7rug0ml28hc4r7tla.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.melondev.frailtyProject2019"
+              }
             }
           ]
         }
